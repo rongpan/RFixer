@@ -1,0 +1,6 @@
+\w+.\w+
+---
+(0:9)
+(10:19)
+---
+file1.jpg file2.png abc.txt def.doc archive.zip

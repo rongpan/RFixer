@@ -1,0 +1,34 @@
+(mailto\:|news|ht|ftp(s)?\:){1}(\S)+
+---
+(0:17)
+(20:46)
+(49:87)
+(88:108)
+(109:126)
+(127:159)
+(160:183)
+(216:228)
+(229:246)
+(247:279)
+(280:303)
+(329:344)
+(346:372)
+(375:403)
+(406:424)
+(426:473)
+(475:488)
+---
+http://someserver | http://www.someserver.com/ | http://www.someserver.com/somefile.txt
+www.yahoo.com/period	http://foo.co.uk/
+http://regexr.com/foo.html?q=bar
+https://mediatemple.net
+
+foo@demo.net	bar.ba@test.co.uk
+www.demo.com	http://foo.co.uk/
+http://regexr.com/foo.html?q=bar
+https://mediatemple.net
+-domain.com domain-.com 
+http://yourmoma
+ http://www.aspemporium.com | mailto:dominionx@hotmail.com | ftp://ftp.test.com
+ http://regexlib.com/REDetails.aspx?regexp_id=37
+ www.abc.co.il

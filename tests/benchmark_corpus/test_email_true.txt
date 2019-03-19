@@ -1,0 +1,29 @@
+\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}
+---
+(0:12)
+(17:27)
+(35:48)
+(55:68)
+(71:88)
+(92:103)
+(112:133)
+(139:153)
+(162:180)
+(181:191)
+(192:204)
+(205:217)
+(218:228)
+(229:240)
+---
+foo@demo.net	bar.ba@test.co.uk
+bob-smith@foo.com | bob.smith@foo.com | bob_smith@foo.com
+me.you@home.co.uk
+fred&barney@stonehenge.com
+king-bart@home.simpsons.com bart@simpsons.info
+test@t.com test@ab.comd test@cde.com test@f.com test@gh.com 
+
+.test.@test.com | spammer@[203.12.145.68] | bla@bla
+A short and sweet email address validator. Checks that the username starts and e
+nds with an alphanumeric character, allows a few non-repeating 'special characters' (
+namely -, ., _, +, &amp;) and checks for a sensible domain name (2-6 character TLD required). Some unconventional, 
+yet technically valid, addresses will not be matched, but this is only a simple expression ;-)

@@ -1,0 +1,14 @@
+((a|b){3}(a|b)*aaa+)|(aaa*)
++++
+aabaaa
+aaaaaa
+bbbaaa
+aaabaaa
+aaaaa
+abbaaa
+abaaa
+bbaaa
+---
+aa
+aaa
+aaaa

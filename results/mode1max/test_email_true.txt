@@ -1,0 +1,345 @@
+
+Given the regular expression:
+
+  (\w)+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}
+
+That that should match the strings:
+
+  ✓ (0:12)   foo@demo.net
+  ✓ (12:22)  ba@test.co
+  ✓ (22:35)  smith@foo.com
+  ✓ (35:48)  smith@foo.com
+  ✓ (48:65)  bob_smith@foo.com
+  ✓ (65:76)  you@home.co
+  ✓ (76:97)  barney@stonehenge.com
+  ✓ (97:108) test@gh.com
+  ✓ (108:118) test@f.com
+  ✓ (118:130) test@cde.com
+  ✓ (130:148) bart@simpsons.info
+  ✓ (148:158) test@t.com
+  ✓ (158:170) test@ab.comd
+  ✓ (170:184) bart@home.simp
+
+And reject the strings:
+
+  ✗ (184:198) you@home.coddd
+  ✗ (198:221) barney@stonehenge.comfs
+  ✗ (221:234) test@gh.comcs
+  ✗ (234:247) test@f.comads
+  ✗ (247:251) bar.
+  ✗ (251:268) bob-smith@foo.com
+  ✗ (268:284) ob.smith@foo.com
+  ✗ (284:301) bob_smith@foo.com
+  ✗ (301:318) me.you@home.co.uk
+  ✗ (318:344) fred&barney@stonehenge.com
+  ✗ (344:371) king-bart@home.simpsons.com
+  ✗ (371:386) .test.@test.com
+  ✗ (386:409) spammer@[203.12.145.68]
+  ✗ (409:416) bla@bla
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     (\w){■}@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  2      |  1     (\w)+@(([a-zA-Z_]){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  3      |  1     (\w)+■(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  4      |  1     (\w)+@(([a-zA-Z_])+)?\.(■){2,3}  Failed dot test or empty set test. 
+  5      |  1     (\w)+@(([a-zA-Z_])+)?\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  6      |  1     (\w)+@((■)+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  7      |  1     (■)+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  8      |  1     (\w)+@(([a-zA-Z_])+)?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  9      |  1     (\w)+@(([a-zA-Z_])+){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  10     |  2     (\w)+@(([a-zA-Z_])+)?(■){■}([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  11     |  2     (\w)+@■\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  12     |  2     (\w)+@(([a-zA-Z_])+)?\.((■|■)){2,3}  Failed dot test or empty set test. 
+  13     |  2     (\w)+@(■)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  14     |  2     ■@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  15     |  2     (\w){■}@(([a-zA-Z_])+)?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  16     |  2     (\w)+@(([a-zA-Z_])+)?■(■){2,3}  Failed dot test or empty set test. 
+  17     |  2     (■)+@(([a-zA-Z_])+)?\.(■){2,3}  Failed dot test or empty set test. 
+  18     |  2     (\w)+■(([a-zA-Z_]){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  19     |  2     (\w)+@(([a-zA-Z_])+){■}\.(■){2,3}  Failed dot test or empty set test. 
+  20     |  2     (\w)+@((■)+)?\.(■){2,3}   Failed dot test or empty set test. 
+  21     |  2     (\w){■}@(([a-zA-Z_])+){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  22     |  2     (\w)+@((■){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  23     |  2     (\w)+@(([a-zA-Z_])+)?\.(■){■}  unsatisfiable SAT formula       
+  24     |  2     (\w)+@(([a-zA-Z_])+)?\.■  Failed dot test or empty set test. 
+  25     |  2     (■)+@(([a-zA-Z_]){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  26     |  2     (\w)+@(([a-zA-Z_])+)?\.(■■){2,3}  Failed dot test or empty set test. 
+  27     |  2     (\w)+@(([a-zA-Z_])+)?\.((■){■}){2,3}  unsatisfiable SAT formula       
+  28     |  2     (\w)+(■|■)(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  29     |  2     (\w){■}■(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  30     |  2     (\w)+@(([a-zA-Z_]){■})?\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  31     |  2     (\w)+@(([a-zA-Z_])+){■}\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  32     |  2     (■)+@(([a-zA-Z_])+)?\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  33     |  2     (\w)+@(([a-zA-Z_]){■})?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  34     |  2     (\w)+@((■)+)?\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  35     |  2     (■)+@((■)+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  36     |  2     (\w){■}@(([a-zA-Z_])+)?\.(■){2,3}  Failed dot test or empty set test. 
+  37     |  2     (\w)+@(([a-zA-Z_]){■}){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  38     |  2     (\w)+@((■)+){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  39     |  2     (\w)+@((■)+)?■([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  40     |  2     (\w)+@(([a-zA-Z_]){■})?\.(■){2,3}  Failed dot test or empty set test. 
+  41     |  2     (\w)+@(((■|■))+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  42     |  2     (\w)+@(((■){■})+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  43     |  2     ((■|■))+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  44     |  2     (\w)+@(([a-zA-Z_])+)?■([a-zA-Z]){■}  unsatisfiable SAT formula       
+  45     |  2     (\w){■}@((■)+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  46     |  2     (\w)+■(([a-zA-Z_])+)?\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  47     |  2     (■)+@(([a-zA-Z_])+){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  48     |  2     (■)+@(([a-zA-Z_])+)?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  49     |  2     (\w)+■((■)+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  50     |  2     (■■)+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  51     |  2     ((■){■})+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  52     |  2     (■){■}@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  53     |  2     (■)+■(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  54     |  2     (\w)+@(([a-zA-Z_])+){■}■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  55     |  2     (\w)+@(([a-zA-Z_])+)?(■■)([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  56     |  2     (\w)+■(([a-zA-Z_])+){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  57     |  2     (\w)+@(([a-zA-Z_])+)?(■|■)([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  58     |  2     (\w)+@((■■)+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  59     |  2     (\w){■}@(([a-zA-Z_])+)?\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  60     |  2     (\w)+■(([a-zA-Z_])+)?\.(■){2,3}  Failed dot test or empty set test. 
+  61     |  2     (\w)+■(([a-zA-Z_])+)?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  62     |  2     (\w){■}@(([a-zA-Z_]){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  63     |  2     (\w)+(■){■}(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  64     |  2     (\w)+(■■)(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  65     |  3     (\w)+((■){■}){■}(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  66     |  3     (\w)+((■|■)■)(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  67     |  3     (\w)+@((■■)+)?■([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  68     |  3     (\w)+@(([a-zA-Z_])+)?\.(■|■)  Failed dot test or empty set test. 
+  69     |  3     (\w)+@(([a-zA-Z_])+)?■(■■){2,3}  unsatisfiable SAT formula       
+  70     |  3     (\w)+@(([a-zA-Z_])+)?\.((■■|■)){2,3}  unsatisfiable SAT formula       
+  71     |  3     (\w)+@(([a-zA-Z_])+)?(■■){■}([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  72     |  3     (\w)+@(([a-zA-Z_])+)?((■){■}){■}([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  73     |  3     ((■|■))+@(([a-zA-Z_])+)?\.(■){2,3}  Failed dot test or empty set test. 
+  74     |  3     ((■|■))+■(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  75     |  3     ((■|■))+@(([a-zA-Z_])+)?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  76     |  3     (■)+@(([a-zA-Z_])+)?\.((■){■}){2,3}  unsatisfiable SAT formula       
+  77     |  3     ((■|■)){■}@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  78     |  3     (((■|■)|■))+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  79     |  3     (\w)+@■\.([a-zA-Z]){■}    Failed dot test or empty set test. 
+  80     |  3     (\w)+■(([a-zA-Z_]){■}){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  81     |  3     ((■■|■))+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  82     |  3     ((■|(■|■)))+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  83     |  3     (\w)+■((■){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  84     |  3     (((■){■}|■))+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  85     |  3     ((■|(■){■}))+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  86     |  3     (\w)+@(■■)\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  87     |  3     (\w)+■■\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  88     |  3     (\w){■}■(([a-zA-Z_]){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  89     |  3     (\w)+■(([a-zA-Z_])+)?■([a-zA-Z]){■}  unsatisfiable SAT formula       
+  90     |  3     (\w)+@(([a-zA-Z_])+)?(■■)([a-zA-Z]){■}  unsatisfiable SAT formula       
+  91     |  3     (\w)+■(([a-zA-Z_]){■})?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  92     |  3     (\w)+(■){■}(([a-zA-Z_])+)?\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  93     |  3     (■)+■(([a-zA-Z_])+){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  94     |  3     (\w)+@■■([a-zA-Z]){2,3}   Failed dot test or empty set test. 
+  95     |  3     (\w)+■(([a-zA-Z_]){■})?\.(■){2,3}  Failed dot test or empty set test. 
+  96     |  3     (■)+@(([a-zA-Z_])+){■}■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  97     |  3     ((■){■})+@(([a-zA-Z_])+){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  98     |  3     (\w)+■(([a-zA-Z_]){■})?\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  99     |  3     (■)+■(([a-zA-Z_])+)?■([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  100    |  3     (■)+@(([a-zA-Z_])+)?(■|■)([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  101    |  3     (\w){■}@(([a-zA-Z_])+)?(■|■)([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  102    |  3     (\w)+@(■■)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  103    |  3     (\w){■}@■\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  104    |  3     (■)+■(([a-zA-Z_]){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  105    |  3     (■■)+@(([a-zA-Z_])+)?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  106    |  3     (■)+@(([a-zA-Z_])+)?(■■)([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  107    |  3     (\w)+(■|■)(([a-zA-Z_]){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  108    |  3     (\w)+(■■)((■)+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  109    |  3     (\w)+(■){■}((■)+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  110    |  3     (■)+@■\.([a-zA-Z]){2,3}   Failed dot test or empty set test. 
+  111    |  3     (\w)+(■■)(([a-zA-Z_]){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  112    |  3     (■■)+■(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  113    |  3     (■■){■}@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  114    |  3     (\w)+@(([a-zA-Z_]){■}){■}\.(■){2,3}  Failed dot test or empty set test. 
+  115    |  3     ((■■)■)+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  116    |  3     (■(■|■))+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  117    |  3     (■■)@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  118    |  3     (\w)+@■\.(■){2,3}         Failed dot test or empty set test. 
+  119    |  3     (\w)+@(([a-zA-Z_])+){■}\.(■){■}  unsatisfiable SAT formula       
+  120    |  3     (■(■■))+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  121    |  3     ((■|■)■)+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  122    |  3     (\w)+■(([a-zA-Z_])+){■}\.(■){2,3}  Failed dot test or empty set test. 
+  123    |  3     ((■){■}■)+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  124    |  3     ((■){■}){■}@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  125    |  3     (\w)+@(■|■)\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  126    |  3     (\w)+@((■)+){■}\.(■){2,3}  Failed dot test or empty set test. 
+  127    |  3     ((■){■})+■(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  128    |  3     (((■|■)){■})+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  129    |  3     (\w){■}@(([a-zA-Z_])+){■}\.(■){2,3}  Failed dot test or empty set test. 
+  130    |  3     (■)+(■){■}(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  131    |  3     (\w)+■(([a-zA-Z_])+){■}■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  132    |  3     (\w)+@(([a-zA-Z_])+)?\.((■){■}){■}  unsatisfiable SAT formula       
+  133    |  3     (\w)+@(([a-zA-Z_])+){■}\.(■■){2,3}  Failed dot test or empty set test. 
+  134    |  3     (■)+@(([a-zA-Z_])+)?\.(■■){2,3}  Failed dot test or empty set test. 
+  135    |  3     (\w)+@(■){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  136    |  3     (\w)+@(([a-zA-Z_])+){■}\.■  Failed dot test or empty set test. 
+  137    |  3     (\w)+@(([a-zA-Z_])+){■}(■|■)([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  138    |  3     (\w)+■(([a-zA-Z_])+)?(■■)([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  139    |  3     (\w)+@(([a-zA-Z_])+){■}\.((■){■}){2,3}  unsatisfiable SAT formula       
+  140    |  3     (\w)+@(([a-zA-Z_])+)?(■)([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  141    |  3     (\w)+@(([a-zA-Z_])+)?((■■)■)([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  142    |  3     (\w){■}@(([a-zA-Z_])+)?\.((■|■)){2,3}  Failed dot test or empty set test. 
+  143    |  3     (\w)+@((■){■})?\.(■){2,3}  Failed dot test or empty set test. 
+  144    |  3     (\w)+@(([a-zA-Z_])+)?(■(■■))([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  145    |  3     (\w)+@(([a-zA-Z_])+)?(■(■){■})([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  146    |  3     (\w)+@((■)+)?\.(■){■}     unsatisfiable SAT formula       
+  147    |  3     (\w)+@(([a-zA-Z_])+)?((■){■}■)([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  148    |  3     (\w)+@(([a-zA-Z_])+)?(■(■|■))([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  149    |  3     (\w)+(■){■}(([a-zA-Z_]){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  150    |  3     (\w)+@(([a-zA-Z_])+)?\.((■|■)){■}  unsatisfiable SAT formula       
+  151    |  3     (\w)+■((■)+)?\.(■){2,3}   Failed dot test or empty set test. 
+  152    |  3     (\w)+(■){■}(([a-zA-Z_])+){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  153    |  3     (\w)+■(([a-zA-Z_])+)?(■|■)([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  154    |  3     (\w){■}@((■)+)?\.(■){2,3}  Failed dot test or empty set test. 
+  155    |  3     (\w)+@(([a-zA-Z_])+)?(■|(■){■})([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  156    |  3     (\w)+@(([a-zA-Z_])+)?(■|■■)([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  157    |  3     (\w)+@(([a-zA-Z_])+){■}\.((■|■)){2,3}  Failed dot test or empty set test. 
+  158    |  3     (\w)+@((■)+)?\.■          Failed dot test or empty set test. 
+  159    |  3     (\w)+@(([a-zA-Z_])+)?((■|■)|■)([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  160    |  3     (\w)+@(([a-zA-Z_])+)?((■){■}|■)([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  161    |  3     (\w)+@(((■){■})+)?\.(■){2,3}  Failed dot test or empty set test. 
+  162    |  3     (\w)+@(([a-zA-Z_])+)?(■■|■)([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  163    |  3     (\w)+@((■(■){■})+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  164    |  3     (\w)+@(((■){■}){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  165    |  3     (\w)+@((■)+)?\.((■){■}){2,3}  unsatisfiable SAT formula       
+  166    |  3     (\w)+■(([a-zA-Z_])+)?\.((■|■)){2,3}  Failed dot test or empty set test. 
+  167    |  3     (\w)+@((■■)+)?\.(■){2,3}  Failed dot test or empty set test. 
+  168    |  3     (\w)+@(((■){■}■)+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  169    |  3     (\w)+@((■(■|■))+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  170    |  3     (\w)+@(((■|■))+)?\.(■){2,3}  Failed dot test or empty set test. 
+  171    |  3     (\w)+@((■(■■))+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  172    |  3     (\w)+(■){■}(([a-zA-Z_])+)?\.(■){2,3}  Failed dot test or empty set test. 
+  173    |  3     (\w)+@(([a-zA-Z_])+)?■((■|■)){2,3}  Failed dot test or empty set test. 
+  174    |  3     (\w)+@((■)+)?\.(■■){2,3}  Failed dot test or empty set test. 
+  175    |  3     (\w)+((■|■)){■}(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  176    |  3     (\w)+(■■){■}(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  177    |  3     (■){■}@(([a-zA-Z_])+){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  178    |  3     (\w)+(■)(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  179    |  3     (\w)+((■■)■)(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  180    |  3     (\w){■}@(([a-zA-Z_]){■}){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  181    |  3     (\w)+@(([a-zA-Z_]){■})?\.((■|■)){2,3}  Failed dot test or empty set test. 
+  182    |  3     (\w){■}@(([a-zA-Z_])+){■}\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  183    |  3     (\w)+(■(■){■})(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  184    |  3     (\w)+(■(■■))(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  185    |  3     (\w){■}@((■)+){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  186    |  3     (\w)+(■(■|■))(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  187    |  3     (\w)+((■){■}■)(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  188    |  3     (\w)+@((■)+)?\.((■|■)){2,3}  Failed dot test or empty set test. 
+  189    |  3     (\w){■}■(([a-zA-Z_])+){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  190    |  3     (\w)+@((■){■}){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  191    |  3     (\w)+@((■)+)?(■|■)([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  192    |  3     (\w)+@((■)+){■}\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  193    |  3     (\w)+@(([a-zA-Z_])+)?\.((■■){■}){2,3}  Failed dot test or empty set test. 
+  194    |  3     ((■|■))+@(([a-zA-Z_]){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  195    |  3     (■)+@(([a-zA-Z_])+)?\.((■|■)){2,3}  Failed dot test or empty set test. 
+  196    |  3     (\w){■}@((■){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  197    |  3     (■)+@((■){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  198    |  3     (\w)+@(([a-zA-Z_])+)?\.((■|■■)){2,3}  unsatisfiable SAT formula       
+  199    |  3     (\w)+@((■){■})?■([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  200    |  3     (\w)+@((■){■})?\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  201    |  3     (\w)+@(([a-zA-Z_])+)?\.((■|■)■){2,3}  Failed dot test or empty set test. 
+  202    |  3     (\w)+@(([a-zA-Z_])+)?\.((■|(■|■))){2,3}  Failed dot test or empty set test. 
+  203    |  3     (\w)+@((■■){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  204    |  3     (\w)+@(((■|■)){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  205    |  3     (\w)+@(([a-zA-Z_])+)?\.(((■|■)|■)){2,3}  Failed dot test or empty set test. 
+  206    |  3     (\w)+■(([a-zA-Z_])+)?\.(■){■}  unsatisfiable SAT formula       
+  207    |  3     (\w)+@(([a-zA-Z_]){■})?\.(■){■}  unsatisfiable SAT formula       
+  208    |  3     (\w)+@(([a-zA-Z_]){■}){■}\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  209    |  3     (\w)+(■|■■)(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  210    |  3     (\w)+@(([a-zA-Z_])+)?\.((■|(■){■})){2,3}  unsatisfiable SAT formula       
+  211    |  3     (\w){■}@(([a-zA-Z_])+)?\.(■){■}  unsatisfiable SAT formula       
+  212    |  3     (\w)+@(([a-zA-Z_])+)?\.(■■){■}  Failed dot test or empty set test. 
+  213    |  3     (\w)+@(([a-zA-Z_])+)?\.(((■){■}|■)){2,3}  unsatisfiable SAT formula       
+  214    |  3     (\w)+■(([a-zA-Z_])+)?\.■  Failed dot test or empty set test. 
+  215    |  3     (\w)+@(([a-zA-Z_]){■})?\.■  Failed dot test or empty set test. 
+  216    |  3     (\w){■}(■■)(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  217    |  3     (\w)+■(■)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  218    |  3     (\w){■}@(([a-zA-Z_])+)?\.■  Failed dot test or empty set test. 
+  219    |  3     (\w)+@(([a-zA-Z_])+)?\.(■■)  Failed dot test or empty set test. 
+  220    |  3     (\w)+@(■)?\.([a-zA-Z]){■}  Failed dot test or empty set test. 
+  221    |  3     (■)+@(([a-zA-Z_]){■})?\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  222    |  3     (■)+@(([a-zA-Z_]){■})?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  223    |  3     (\w)+@(((■){■})+){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  224    |  3     (\w)+@(((■){■})+)?\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  225    |  3     ((■){■})+@(([a-zA-Z_])+)?\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  226    |  3     (■)+@(■)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  227    |  3     (■)+@(([a-zA-Z_]){■}){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  228    |  3     (■){■}@(([a-zA-Z_]){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  229    |  3     (\w)+@(■)?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  230    |  3     (■■)+@(([a-zA-Z_]){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  231    |  3     ((■){■})+@(([a-zA-Z_]){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  232    |  3     (\w)+@(([a-zA-Z_]){■})?(■|■)([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  233    |  3     (\w){■}@(■)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  234    |  3     (\w)+@(([a-zA-Z_]){■})?\.(■■){2,3}  Failed dot test or empty set test. 
+  235    |  3     (\w)+■(([a-zA-Z_])+)?\.(■■){2,3}  Failed dot test or empty set test. 
+  236    |  3     (\w)+@(■)?\.(■){2,3}      Failed dot test or empty set test. 
+  237    |  3     (\w){■}@(([a-zA-Z_])+)?\.(■■){2,3}  Failed dot test or empty set test. 
+  238    |  3     (\w)+@(([a-zA-Z_])+)?\.(■(■|■)){2,3}  Failed dot test or empty set test. 
+  239    |  3     (■■)+@((■)+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  240    |  3     ((■){■})+@((■)+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  241    |  3     (\w)+@((■|■))?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  242    |  3     (\w)+@(([a-zA-Z_])+)?\.((■){■}■){2,3}  unsatisfiable SAT formula       
+  243    |  3     (\w)+@(([a-zA-Z_])+)?\.((■■)■){2,3}  Failed dot test or empty set test. 
+  244    |  3     ■@(([a-zA-Z_])+){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  245    |  3     (\w)+@(([a-zA-Z_])+)?\.(■(■){■}){2,3}  unsatisfiable SAT formula       
+  246    |  3     (\w)+@(([a-zA-Z_])+)?\.(■(■■)){2,3}  Failed dot test or empty set test. 
+  247    |  3     (\w){■}@(([a-zA-Z_]){■})?\.(■){2,3}  Failed dot test or empty set test. 
+  248    |  3     ■@(([a-zA-Z_]){■})?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  249    |  3     (\w)+■(([a-zA-Z_])+)?\.((■){■}){2,3}  unsatisfiable SAT formula       
+  250    |  3     (\w)+@(([a-zA-Z_]){■})?\.((■){■}){2,3}  unsatisfiable SAT formula       
+  251    |  3     ■@((■)+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  252    |  3     (\w){■}@(([a-zA-Z_])+)?\.((■){■}){2,3}  unsatisfiable SAT formula       
+  253    |  3     (\w)+@(([a-zA-Z_])+)?\.(((■|■)){■}){2,3}  unsatisfiable SAT formula       
+  254    |  3     (\w)+(■■)(([a-zA-Z_])+)?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  255    |  3     (\w)+@(([a-zA-Z_])+){■}(■■)([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  256    |  3     (■■)+@(([a-zA-Z_])+){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  257    |  3     ((■|■■))+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  258    |  3     (\w)+@((((■){■}|■))+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  259    |  3     ■@(([a-zA-Z_])+)?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  260    |  3     (\w)+@(([a-zA-Z_])+)?\.(((■){■}){■}){2,3}  unsatisfiable SAT formula       
+  261    |  3     (\w)+(■|■)(([a-zA-Z_])+)?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  262    |  3     ■@(([a-zA-Z_])+)?\.(■){2,3}  Failed dot test or empty set test. 
+  263    |  3     (\w)+(■|■)(([a-zA-Z_])+){■}\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  264    |  3     (■)+(■|■)(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  265    |  3     (\w)+@(((■■){■})+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  266    |  3     ■■(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  267    |  3     (\w)+(■|■)(([a-zA-Z_])+)?\.(■){2,3}  Failed dot test or empty set test. 
+  268    |  3     (\w){■}(■|■)(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  269    |  3     ■@(([a-zA-Z_])+)?\.([a-zA-Z]){■}  Failed dot test or empty set test. 
+  270    |  3     (\w)+(■|■)(([a-zA-Z_])+)?\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  271    |  3     (\w)+(■|■)((■)+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  272    |  3     (\w)+(■■)(([a-zA-Z_])+)?\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  273    |  3     (\w)+@(([a-zA-Z_])+)?(■|■)([a-zA-Z]){■}  unsatisfiable SAT formula       
+  274    |  3     (■|■)@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  275    |  3     (\w)+(■|(■){■})(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  276    |  3     (\w)+((■){■}|■)(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  277    |  3     (\w){■}@((■)+)?■([a-zA-Z]){2,3}  unsatisfiable SAT formula       
+  278    |  3     (\w)+(■■|■)(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  279    |  3     (\w)+((■|■)|■)(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  280    |  3     (\w){■}@((■■)+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  281    |  3     (■){■}@(([a-zA-Z_])+)?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  282    |  3     (\w)+(■|(■|■))(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  283    |  3     (■){■}■(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  284    |  3     (\w){■}@(([a-zA-Z_])+)?■(■){2,3}  Failed dot test or empty set test. 
+  285    |  3     (\w){■}■(([a-zA-Z_])+)?\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  286    |  3     (\w){■}■((■)+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  287    |  3     (■)+(■■)(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  288    |  3     (■(■){■})+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  289    |  3     ((■){■})+@(([a-zA-Z_])+)?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  290    |  3     (\w){■}@(([a-zA-Z_])+){■}■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  291    |  3     (\w){■}■(([a-zA-Z_])+)?\.(■){2,3}  Failed dot test or empty set test. 
+  292    |  3     (\w){■}(■){■}(([a-zA-Z_])+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  293    |  3     (\w){■}@(([a-zA-Z_]){■})?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  294    |  3     (\w){■}@(([a-zA-Z_]){■})?\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  295    |  3     (\w)+@(([a-zA-Z_]){■})?■([a-zA-Z]){■}  unsatisfiable SAT formula       
+  296    |  3     (\w)+■((■■)+)?\.([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  297    |  3     (\w){■}@(([a-zA-Z_])+)?■([a-zA-Z]){■}  unsatisfiable SAT formula       
+  298    |  3     (■)+@(([a-zA-Z_])+){■}\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  299    |  3     (\w)+■(([a-zA-Z_])+){■}\.([a-zA-Z]){■}  unsatisfiable SAT formula       
+  300    |  3     (\w){■}■(([a-zA-Z_])+)?■([a-zA-Z]){2,3}  Failed dot test or empty set test. 
+  301    |  3     (\w)+@(([a-zA-Z_])+){■}■([a-zA-Z]){■}  unsatisfiable SAT formula       
+  302    |  3     (■)+■(([a-zA-Z_])+)?\.([a-zA-Z]){■}  unsatisfiable SAT formula       

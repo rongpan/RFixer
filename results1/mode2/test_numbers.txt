@@ -1,0 +1,49 @@
+
+Given the regular expression:
+
+  ((((\d){1,3})(,(\d){3})*)|((\d)+))(.(\d)+)?
+
+That that should match the strings:
+
+  ✓ (0:7)    9999999
+  ✓ (7:18)   99999.99999
+  ✓ (18:33)  99,999,999.9999
+  ✓ (33:46)  123,456,789.9
+  ✓ (46:60)  954,652,000.03
+
+And reject the strings:
+
+  ✗ (60:65)  9999.
+  ✗ (65:79)  9,99,99999.999
+  ✗ (79:92)  999.9999.9999
+  ✗ (92:101) 100,000,0
+  ✗ (101:107) 100,00
+  ✗ (107:117) 200,999,00
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     (((\d){1,3})(,(\d){3})*|(\d){■})(.(\d)+)?  2      |  1     (((\d){1,3})(,(\d){3})*|(\d)+)(■(\d)+)?tree is(((\d){1,3})(,(\d){3})*|(\d)+)(■(\d)+)?
+char_0: char0_0
+char_1: char0_1
+char_2: char0_2
+char_3: char0_3
+char_4: char0_4
+char_5: char0_5
+char_6: char0_6
+char_7: char0_7
+char_8: char0_8
+char_9: char0_9
+char_,: false
+char_.: true
+template: (((\d){1,3})(,(\d){3})*|(\d)+)(■(\d)+)? size: 12 holes: 1 time: 18.845288ms
+longest: #mn#(((\d){1,3})(,(\d){3})*|(\d)+)(■(\d)+)?#mn# size: #ms#12#ms# holes: #mh#1#mh# time: #mt#18.845288#mt#ms
+
+Computed in:
+
+  #c#287#c#ms
+
+timeSATSolver time:
+
+  #s#19#s#ms

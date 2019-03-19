@@ -1,0 +1,17 @@
+(a|b)*a{3}
++++
+bbbaaaa
+bbbaaa
+abaaa
+abbabbaaa
+aabbaaa
+aaabaaa
+bbaaa
+babaaa
+aaabbaaa
+abaaaa
+aababaaa
+---
+aaa
+aaaa
+baaa

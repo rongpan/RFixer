@@ -1,0 +1,71 @@
+
+Given the regular expression:
+
+  ([W-ZEA-CGHR-TJ-P]){1}([W-ZEA-CGHR-TJ-NP]){1}([0-9]){6}([FA-DM]){0,1}
+
+That that should match the strings:
+
+  ✓ (0:9)    JG103759A
+  ✓ (9:18)   AP019283D
+  ✓ (18:27)  ZX047829C
+  ✓ (27:35)  KL192845
+
+And reject the strings:
+
+  ✗ (35:44)  AZ106878D
+  ✗ (44:53)  AZ019283D
+  ✗ (53:62)  ZZ047829C
+  ✗ (62:71)  DC135798A
+  ✗ (71:80)  FQ987654C
+  ✗ (80:89)  KL192845T
+  ✗ (89:94)  awdif
+  ✗ (94:99)  DxRsf
+  ✗ (99:106) 0pAbdef
+  ✗ (106:116) xy9D29rwer
+  ✗ (116:119) d9b
+  ✗ (119:128) 29gpwerwr
+  ✗ (128:136) z8fn5wer
+  ✗ (136:146) v9wSnx0wer
+  ✗ (146:154) 2nf9bm4d
+  ✗ (154:163) d9vNUNswe
+  ✗ (163:170) Welcome
+  ✗ (170:180) RegExrv2.1
+  ✗ (180:193) gskinner.com,
+  ✗ (193:201) 2proudly
+  ✗ (201:207) hosted
+  ✗ (207:211) Edit
+  ✗ (211:220) q@12X*567
+  ✗ (220:248) a1#Zv96g@*Yfasd4d#67jhgt@erd
+  ✗ (248:259) Non-Matches
+  ✗ (259:267) $12X*567
+  ✗ (267:274) 1#Zv_96
+  ✗ (274:286) +678jhgt@erd
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     ([W-ZEA-CGHR-TJ-P]){■}([W-ZEA-CGHR-TJ-NP]){1}([0-9]){6}([FA-DM]){0,1}  unsatisfiable SAT formula       
+  2      |  1     ([W-ZEA-CGHR-TJ-P]){1}([W-ZEA-CGHR-TJ-NP]){1}([0-9]){6}(■){0,1}  unsatisfiable SAT formula       
+  3      |  1     ([W-ZEA-CGHR-TJ-P]){1}([W-ZEA-CGHR-TJ-NP]){1}([0-9]){■}([FA-DM]){0,1}  unsatisfiable SAT formula       
+  4      |  1     ([W-ZEA-CGHR-TJ-P]){1}([W-ZEA-CGHR-TJ-NP]){1}(■){6}([FA-DM]){0,1}  unsatisfiable SAT formula       
+  5      |  1     ([W-ZEA-CGHR-TJ-P]){1}([W-ZEA-CGHR-TJ-NP]){1}([0-9]){6}([FA-DM]){■}  unsatisfiable SAT formula       
+  6      |  1     (■){1}([W-ZEA-CGHR-TJ-NP]){1}([0-9]){6}([FA-DM]){0,1}  unsatisfiable SAT formula       
+  7      |  1     ([W-ZEA-CGHR-TJ-P]){1}([W-ZEA-CGHR-TJ-NP]){■}([0-9]){6}([FA-DM]){0,1}  unsatisfiable SAT formula       
+  8      |  1     ([W-ZEA-CGHR-TJ-P]){1}(■){1}([0-9]){6}([FA-DM]){0,1}template: (■){1}([W-ZEA-CGHR-TJ-NP]){1}([0-9]){6}([FA-DM]){0,1} size: 7 holes: 1 time: 0.748508ms
+template: ([W-ZEA-CGHR-TJ-P]){1}(■){1}([0-9]){6}([FA-DM]){0,1} size: 7 holes: 1 time: 106.417431ms
+template: ([W-ZEA-CGHR-TJ-P]){■}([W-ZEA-CGHR-TJ-NP]){1}([0-9]){6}([FA-DM]){0,1} size: 8 holes: 2 time: 2.399292ms
+template: ([W-ZEA-CGHR-TJ-P]){1}([W-ZEA-CGHR-TJ-NP]){1}([0-9]){■}([FA-DM]){0,1} size: 8 holes: 2 time: 0.843417ms
+template: ([W-ZEA-CGHR-TJ-P]){1}([W-ZEA-CGHR-TJ-NP]){■}([0-9]){6}([FA-DM]){0,1} size: 8 holes: 2 time: 72.42902ms
+template: ([W-ZEA-CGHR-TJ-P]){1}([W-ZEA-CGHR-TJ-NP]){1}(■){6}([FA-DM]){0,1} size: 7 holes: 1 time: 1.007921ms
+template: ([W-ZEA-CGHR-TJ-P]){1}([W-ZEA-CGHR-TJ-NP]){1}([0-9]){6}(■){0,1} size: 7 holes: 1 time: 0.745514ms
+template: ([W-ZEA-CGHR-TJ-P]){1}([W-ZEA-CGHR-TJ-NP]){1}([0-9]){6}([FA-DM]){■} size: 8 holes: 2 time: 0.694167ms
+longest: #mn#([W-ZEA-CGHR-TJ-P]){1}(■){1}([0-9]){6}([FA-DM]){0,1}#mn# size: #ms#7#ms# holes: #mh#1#mh# time: #mt#106.417431#mt#ms
+
+Computed in:
+
+  #c#1233#c#ms
+
+timeSATSolver time:
+
+  #s#185#s#ms

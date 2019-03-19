@@ -1,0 +1,17 @@
+(b)*
++++
+bbb
+bb
+bbbbbb
+bbbbb
+bbbb
+a
+aa
+aaa
+abb
+bba
+bbbaa
+bbba
+bbaa
+---
+b

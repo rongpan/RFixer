@@ -1,0 +1,47 @@
+test_byteseq_true.txt: (\d)+ -> ([10]){8} : provided positive examples of 8 bits sequences
+
+test_date_ture.txt: (\d){1,2}\/(\d){1,2}\/(\d){4} -> (\d){1,2}([30]|[12/0][12/])+\/(\d){4} : provided some valid and invalid date.
+
+test_date_2_TO.txt: (((0?[1-9]|1[012])/(0?[1-9]|1\d|2[0-8])|(0?[13456789]|1[012])/(29|30)|(0?[13578]|1[02])/31)/(19|[2-9]\d)\d{2}|0?2/29/((19|[2-9]\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))) : restrict valid date to date after 2010, TO at the 14249th loop
+
+test_date_3_TO.txt: ([2-9]\d{3}((0[1-9]|1[012])(0[1-9]|1\d|2[0-8])|(0[13456789]|1[012])(29|30)|(0[13578]|1[02])31)|(([2-9]\d)(0[48]|[2468][048]|[13579][26])|(([2468][048]|[3579][26])00))0229) : try to extend valid date after 2000 to after 1995
+
+test_commaformat_TO.txt: (\d|,)*\d+ : expect something like ((\d){1,3}(\,(\d){3})*)|(\d){1,2}
+
+test_email_true.txt: (\w)+@(([a-zA-Z_])+)?\.([a-zA-Z]){2,3} -> (\w)+@(([a-zA-Z_])+)?\.([a-z]){2,4} : postfix from 3->4
+
+test_email_2_true.txt: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6} -> (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[e.o]){2,}([a-zA-Z]){2,6} : domainnames gerater should greater than 3 char, e.g., test@t.com is invalid
+
+test_hex_true.txt: (\w){8} -> ([ABCDEF\d]){8} : any string with length 8 to hex number with length 8
+
+test_ip_true.txt: ([0-2])*([0-9])+([0-9])+\.([0-2])*([0-9])+([0-9])+\.([0-2])*([0-9])+([0-9])+\.([0-2])*([0-9])+([0-9])+ -> ([0-2])*([0-9])+([0-9])+\.([0-2])*([0-9])+([0-9])+\.([0-2])*([0-9])+([80])+\.([0-2])*([0-9])+([0-9])+ : ip address exclude 111.222.333.444 299.299.299.299
+
+test_url_false.txt: [a-zA-Z0-9\-\.]+\.(com|org|net|mil|edu|COM|ORG|NET|MIL|EDU) -> ([\-\.0-9a-zA-Z])+\.([dm.o]([a-z])?)+|EDU : new neg example domain-.com
+
+test_url_3_false.txt: [a-zA-Z]{3,}://[a-zA-Z0-9\.]+/*[a-zA-Z0-9/\\%_.]*\?*[a-zA-Z0-9/\\%_.=&amp;]* -> ([a-zA-Z]){3,}[:.][dy/](/)*([%0-9a-zA-Z./_\\])*(\?)*([a%&a-zmA-Z./p;0-9=_\\])* : new match www.test.com www.domain.com
+
+test_url_4_bug.txt: buggy. fix this
+
+test_url_5_true.txt: buggy? (http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])? -> ([a-z])+:([\-\w_])+(\.([\-\w_])+)+(([a#%&,m/\+p\-\.:\w;=^~?@])*[a#\@%&m/\+p\-\w;=^~?])? : two bad matches http://www.yahoo http://www.textlink
+
+test_state_true.txt: A[ARSZKLP]|C[ATO]|D[CE]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ASDTEHINOP]|N[CDEVHYJM]|O[RHK]|P[ARW]|RI|S[CD]|T[XN]|UT|V[ATI]|W[AVIY] -> A[ARSZKLP]|C[ATO]|(A)+[CE]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ASDTEHINOP]|N[CDEVHYJM]|O[RHK]|P[ARW]|RI|S[CD]|T[XN]|UT|V[ATI]|W[AVIY] : new positive example AE
+
+test_time_TO.txt: (([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])(:([0-5]?[0-9]))? : want format XX:YY(:ZZ)?
+
+test_password_TO.txt: [a-zA-Z0-9@*#]{8,15} : new spec = starting with [a-zA-Z]
+
+test_UKnino_TO.txt: [A-CEGHJ-PR-TW-Z]{1}[A-CEGHJ-NPR-TW-Z]{1}[0-9]{6}[A-DFM]{0,1} : the second letter can not be Z
+
+test_MC_true.txt: ([51|52|53|54|55]{2})([0-9]{14}) -> 5[125]([0-9]){14} : should start with 51 52 53 54 or 55. false positive 15x 25x 35x 45x
+
+
+
+
+
+
+
+
+
+
+
+

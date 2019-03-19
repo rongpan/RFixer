@@ -1,0 +1,15 @@
+(b*bb*)|a
++++
+a
+bbb
+bb
+bbbbbb
+bbbbb
+bbbb
+aa
+aaa
+abb
+bba
+bbba
+---
+b

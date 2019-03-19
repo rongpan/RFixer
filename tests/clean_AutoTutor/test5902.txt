@@ -1,0 +1,24 @@
+((a)*(baa)*)*
++++
+a
+baa
+aa
+aaa
+baaa
+abaaaa
+a
+abaa
+aabaa
+abaaa
+aaaaa
+aabaaa
+baaaa
+baabaaa
+baabaa
+baaaaa
+aaaa
+baaa
+aaa
+baa
+---
+ aa

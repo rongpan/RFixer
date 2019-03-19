@@ -1,0 +1,104 @@
+
+Given the regular expression:
+
+  ((\d|,))*(\d)+
+
+That that should match the strings:
+
+  ✓ (0:3)    123
+  ✓ (3:4)    4
+  ✓ (4:9)    1,234
+  ✓ (9:18)   1,234,567
+  ✓ (18:24)  23,456
+  ✓ (24:31)  789,456
+  ✓ (31:42)  456,789,123
+  ✓ (42:56)  21,654,879,213
+  ✓ (56:65)  3,546,799
+  ✓ (65:72)  333,333
+
+And reject the strings:
+
+  ✗ (72:76)  1234
+  ✗ (76:82)  1234.0
+  ✗ (82:87)  -1234
+  ✗ (87:92)  $1234
+  ✗ (92:96)  3333
+  ✗ (96:104) 1,2,3,45
+  ✗ (104:116) 12345,6789,0
+  ✗ (116:126) 12345,6789
+  ✗ (126:135) 19,24,358
+  ✗ (135:143) 1,87,865
+  ✗ (143:154) 35,8786,897
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     ((\d|,))*(■)+             unsatisfiable SAT formula       
+  2      |  1     ((\d|,))*(\d){■}          unsatisfiable SAT formula       
+  3      |  1     ((■|,))*(\d)+             4      |  1     ((\d|■))*(\d)+            5      |  1     ((\d|,)){■}(\d)+          unsatisfiable SAT formula       
+  6      |  2     ((\d|■))*(■)+             unsatisfiable SAT formula       
+  7      |  2     ((■|,))*(■)+              unsatisfiable SAT formula       
+  8      |  2     ((\d|,)){■}(■)+           unsatisfiable SAT formula       
+  9      |  2     ((\d|,))*(■){■}           unsatisfiable SAT formula       
+  10     |  2     ((\d|,))*((■|■))+         11     |  2     ((\d|,))*((■){■})+        12     |  2     ((\d|,))*(■■)+            13     |  2     ((\d|,)){■}(\d){■}        unsatisfiable SAT formula       
+  14     |  2     ((\d|■))*(\d){■}          unsatisfiable SAT formula       
+  15     |  2     ((■|,))*(\d){■}           unsatisfiable SAT formula       
+  16     |  2     ((\d|,))*■                unsatisfiable SAT formula       
+  17     |  2     ((■|■))*(\d)+             18     |  2     ((■|,)){■}(\d)+           unsatisfiable SAT formula       
+  19     |  2     (((■){■}|,))*(\d)+        20     |  2     (((■|■)|,))*(\d)+         21     |  2     ((■■|,))*(\d)+            22     |  2     ((\d|■)){■}(\d)+          unsatisfiable SAT formula       
+  23     |  2     ((\d|(■){■}))*(\d)+       24     |  2     ((\d|(■|■)))*(\d)+        25     |  2     ((\d|■■))*(\d)+           26     |  2     ■(\d)+                    27     |  3     ((\d|■))*(■){■}           unsatisfiable SAT formula       
+  28     |  3     ((\d|■)){■}(■)+           unsatisfiable SAT formula       
+  29     |  3     ((■|■))*(■)+              unsatisfiable SAT formula       
+  30     |  3     ((\d|(■){■}))*(■)+        unsatisfiable SAT formula       
+  31     |  3     ((\d|■))*((■){■})+        32     |  3     ((\d|(■|■)))*(■)+         33     |  3     ((\d|■■))*(■)+            unsatisfiable SAT formula       
+  34     |  3     ((\d|■))*(■■)+            35     |  3     ((\d|■))*((■|■))+         36     |  3     ((■|,)){■}(■)+            unsatisfiable SAT formula       
+  37     |  3     ((■|,))*(■){■}            unsatisfiable SAT formula       
+  38     |  3     (((■|■)|,))*(■)+          39     |  3     ((■|,))*((■|■))+          40     |  3     ((■|,))*((■){■})+         unsatisfiable SAT formula       
+  41     |  3     (((■){■}|,))*(■)+         unsatisfiable SAT formula       
+  42     |  3     ((■|,))*(■■)+             43     |  3     ((■■|,))*(■)+             unsatisfiable SAT formula       
+  44     |  3     ((\d|,)){■}(■){■}         unsatisfiable SAT formula       
+  45     |  3     ■(■)+                     46     |  3     ((\d|,)){■}((■){■})+      unsatisfiable SAT formula       
+  47     |  3     ((\d|,)){■}(■■)+          48     |  3     ((\d|,)){■}((■|■))+       49     |  3     ((\d|,))*((■){■}){■}      unsatisfiable SAT formula       
+  50     |  3     ((\d|,))*((■|■)){■}       51     |  3     ((\d|,))*(■■){■}          unsatisfiable SAT formula       
+  52     |  3     ((\d|,))*((■|(■){■}))+    53     |  3     ((\d|,))*((■|■■))+        unsatisfiable SAT formula       
+  54     |  3     ((\d|,))*((■■|■))+        unsatisfiable SAT formula       
+  55     |  3     ((\d|,))*(((■){■}|■))+    56     |  3     ((\d|,))*(((■|■)|■))+     57     |  3     ((\d|,))*((■|(■|■)))+     58     |  3     ((\d|,))*((■■){■})+       59     |  3     ((\d|,))*(((■){■}){■})+   60     |  3     ((\d|,))*(((■|■)){■})+    61     |  3     ((\d|,))*(■(■){■})+       unsatisfiable SAT formula       
+  62     |  3     ((\d|,))*((■■)■)+         63     |  3     ((\d|,))*((■|■)■)+        64     |  3     ((\d|,))*((■){■}■)+       unsatisfiable SAT formula       
+  65     |  3     ((\d|,))*(■(■|■))+        66     |  3     ((\d|,))*(■(■■))+         67     |  3     ((\d|■)){■}(\d){■}        unsatisfiable SAT formula       
+  68     |  3     ((■|,)){■}(\d){■}         unsatisfiable SAT formula       
+  69     |  3     ((\d|,)){■}■              unsatisfiable SAT formula       
+  70     |  3     ■(\d){■}                  71     |  3     ((■|■))*(\d){■}           unsatisfiable SAT formula       
+  72     |  3     ((\d|■))*■                unsatisfiable SAT formula       
+  73     |  3     ((\d|(■|■)))*(\d){■}      74     |  3     ((\d|■■))*(\d){■}         unsatisfiable SAT formula       
+  75     |  3     ((\d|(■){■}))*(\d){■}     unsatisfiable SAT formula       
+  76     |  3     ((■|,))*■                 unsatisfiable SAT formula       
+  77     |  3     (((■){■}|,))*(\d){■}      unsatisfiable SAT formula       
+  78     |  3     (((■|■)|,))*(\d){■}       79     |  3     ((■■|,))*(\d){■}          unsatisfiable SAT formula       
+  80     |  3     ((\d|,))*(■|■)            81     |  3     ((\d|,))*(■■)             82     |  3     ((■|■)){■}(\d)+           unsatisfiable SAT formula       
+  83     |  3     (■)*(\d)+                 84     |  3     ((■|(■|■)))*(\d)+         85     |  3     ((■■|■))*(\d)+            86     |  3     (((■){■}|■))*(\d)+        87     |  3     (((■|■)|■))*(\d)+         88     |  3     ((■|■■))*(\d)+            89     |  3     ((■|(■){■}))*(\d)+        90     |  3     (((■){■}|,)){■}(\d)+      unsatisfiable SAT formula       
+  91     |  3     ((■■|,)){■}(\d)+          unsatisfiable SAT formula       
+  92     |  3     (((■|■)|,)){■}(\d)+       93     |  3     ((((■|■)){■}|,))*(\d)+    94     |  3     ((((■){■}){■}|,))*(\d)+   95     |  3     (((■■){■}|,))*(\d)+       96     |  3     ((((■){■}|■)|,))*(\d)+    97     |  3     (((■|(■|■))|,))*(\d)+     98     |  3     (((■|(■){■})|,))*(\d)+    99     |  3     (((■■|■)|,))*(\d)+        100    |  3     (((■|■■)|,))*(\d)+        101    |  3     ((((■|■)|■)|,))*(\d)+     102    |  3     ((■(■){■}|,))*(\d)+       103    |  3     (((■|■)■|,))*(\d)+        104    |  3     ((■(■|■)|,))*(\d)+        105    |  3     (((■■)■|,))*(\d)+         106    |  3     ((■(■■)|,))*(\d)+         107    |  3     (((■){■}■|,))*(\d)+       108    |  3     ((\d|■■)){■}(\d)+         unsatisfiable SAT formula       
+  109    |  3     ((\d|(■|■))){■}(\d)+      110    |  3     ((\d|(■){■})){■}(\d)+     unsatisfiable SAT formula       
+  111    |  3     ((\d|((■){■}){■}))*(\d)+  112    |  3     ((\d|(■■){■}))*(\d)+      113    |  3     ((\d|((■|■)){■}))*(\d)+   114    |  3     ((\d|((■|■)|■)))*(\d)+    115    |  3     ((\d|((■){■}|■)))*(\d)+   116    |  3     ((\d|(■|■■)))*(\d)+       117    |  3     ((\d|(■|(■|■))))*(\d)+    118    |  3     ((\d|(■|(■){■})))*(\d)+   119    |  3     ((\d|(■■|■)))*(\d)+       120    |  3     ((\d|■(■|■)))*(\d)+       121    |  3     ((\d|■(■){■}))*(\d)+      122    |  3     ((\d|■(■■)))*(\d)+        123    |  3     ((\d|(■■)■))*(\d)+        124    |  3     ((\d|(■){■}■))*(\d)+      125    |  3     ((\d|(■|■)■))*(\d)+       126    |  3     (■■)(\d)+                 127    |  3     (■){■}(\d)+               unsatisfiable SAT formula       
+  128    |  3     (■|■)(\d)+                129    |  4     ((■|■))*(■){■}            unsatisfiable SAT formula       
+  130    |  4     ((\d|■)){■}(■){■}         unsatisfiable SAT formula       
+  131    |  4     ((\d|(■|■)))*(■){■}       132    |  4     ((\d|■))*(■■){■}          unsatisfiable SAT formula       
+  133    |  4     ((\d|■))*((■){■}){■}      unsatisfiable SAT formula       
+  134    |  4     ((\d|■))*((■|■)){■}       135    |  4     ((\d|■■))*(■){■}          unsatisfiable SAT formula       
+  136    |  4     ((\d|(■){■}))*(■){■}      unsatisfiable SAT formula       
+  137    |  4     ((■|■)){■}(■)+            unsatisfiable SAT formula       
+  138    |  4     ((\d|(■){■})){■}(■)+      unsatisfiable SAT formula       
+  139    |  4     ((\d|■)){■}((■|■))+       140    |  4     ((\d|■)){■}(■■)+          141    |  4     ((\d|(■|■))){■}(■)+       142    |  4     ((\d|■)){■}((■){■})+      unsatisfiable SAT formula       
+  143    |  4     ((\d|■■)){■}(■)+          unsatisfiable SAT formula       
+  144    |  4     (■)*(■)+                  unsatisfiable SAT formula       
+  145    |  4     ((■■|■))*(■)+             unsatisfiable SAT formula       
+  146    |  4     ((■|■))*((■|■))+          147    |  4     ((■|(■|■)))*(■)+          148    |  4     ((■|■))*((■){■})+         unsatisfiable SAT formula       
+  149    |  4     ((■|(■){■}))*(■)+         unsatisfiable SAT formula       
+  150    |  4     ((■|■))*(■■)+             151    |  4     (((■){■}|■))*(■)+         unsatisfiable SAT formula       
+  152    |  4     ((■|■■))*(■)+             unsatisfiable SAT formula       
+  153    |  4     (((■|■)|■))*(■)+          154    |  4     ((\d|(■■){■}))*(■)+       unsatisfiable SAT formula       
+  155    |  4     ((\d|(■){■}))*((■){■})+   156    |  4     ((\d|((■|■)){■}))*(■)+    157    |  4     ((\d|(■){■}))*(■■)+       158    |  4     ((\d|((■){■}){■}))*(■)+   unsatisfiable SAT formula       
+  159    |  4     ((\d|(■){■}))*((■|■))+    160    |  4     ((\d|■))*(((■|■)){■})+    161    |  4     ((\d|■■))*((■){■})+       162    |  4     ((\d|■))*((■■){■})+       163    |  4     ((\d|(■|■)))*((■){■})+    164    |  4     ((\d|■))*(((■){■}){■})+   165    |  4     ((\d|(■|■■)))*(■)+        unsatisfiable SAT formula       
+  166    |  4     ((\d|(■|■)))*(■■)+        167    |  4     ((\d|(■|(■){■})))*(■)+    unsatisfiable SAT formula       
+  168    |  4     ((\d|(■|■)))*((■|■))+     169    |  4     ((\d|((■){■}|■)))*(■)+  

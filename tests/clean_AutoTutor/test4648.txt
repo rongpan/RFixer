@@ -1,0 +1,17 @@
+bab*
++++
+babbbbbb
+bab
+babbb
+babbbb
+babb
+babbbbb
+aabbab
+baba
+bbbab
+abab
+abbab
+aabab
+bbab
+---
+ba

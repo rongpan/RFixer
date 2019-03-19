@@ -1,0 +1,18 @@
+<\w+>
+---
+(0:6)
+(9:19)
+(23:30)
+(55:61)
+(65:77)
+(95:105)
+---
+<html>
+  <head-tag>
+  	<title></title>
+  </head-tag>
+  <body>
+  	<para-graph></para-graph>
+    <ng-input></ng-input
+  </body>
+</html>

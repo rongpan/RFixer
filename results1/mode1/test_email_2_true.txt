@@ -1,0 +1,150 @@
+
+Given the regular expression:
+
+  (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}
+
+That that should match the strings:
+
+  ✓ (0:12)   foo@demo.net
+  ✓ (12:29)  bar.ba@test.co.uk
+  ✓ (29:46)  bob-smith@foo.com
+  ✓ (46:63)  bob.smith@foo.com
+  ✓ (63:80)  bob_smith@foo.com
+  ✓ (80:97)  me.you@home.co.uk
+  ✓ (97:123) fred&barney@stonehenge.com
+  ✓ (123:150) king-bart@home.simpsons.com
+  ✓ (150:168) bart@simpsons.info
+  ✓ (168:180) test@cde.com
+
+And reject the strings:
+
+  ✗ (180:190) test@t.com
+  ✗ (190:201) test@ab.com
+  ✗ (201:211) test@f.com
+  ✗ (211:222) test@gh.com
+  ✗ (222:237) .test.@test.com
+  ✗ (237:260) spammer@[203.12.145.68]
+  ✗ (260:267) bla@bla
+  ✗ (267:268) A
+  ✗ (268:278) foo@do.net
+  ✗ (278:293) bar.ba@te.co.uk
+  ✗ (293:309) bob-smith@fo.com
+  ✗ (309:324) bob.smith@o.com
+  ✗ (324:333) (namely-,
+  ✗ (333:339) .,(2-6
+  ✗ (339:346) Some;-)
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     ((■)+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  2      |  1     (([0-9a-zA-Z])+[\-a&+;m._p]){■}([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  3      |  1     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+■)+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  4      |  1     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z]){■}[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  5      |  1     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.]){■}([a-zA-Z]){2,6}  6      |  1     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@((■)+[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  7      |  1     (([0-9a-zA-Z]){■}[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  8      |  1     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+(■){2,6}  unsatisfiable SAT formula       
+  9      |  1     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+■(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  10     |  1     (([0-9a-zA-Z])+■)*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  11     |  1     (([0-9a-zA-Z])+[\-a&+;m._p])*(■)+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  12     |  1     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z]){■}@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  13     |  1     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){■}  unsatisfiable SAT formula       
+  14     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*■@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  15     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z]){■}@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){■}  unsatisfiable SAT formula       
+  16     |  2     (■[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  17     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+(■■))+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  18     |  2     (((■|■))+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  19     |  2     ((■)+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+■)+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  20     |  2     (([0-9a-zA-Z])+[\-a&+;m._p]){■}(■)+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  21     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@((■)+[.]){■}([a-zA-Z]){2,6}  22     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.]){■}(■){2,6}  unsatisfiable SAT formula       
+  23     |  2     (([0-9a-zA-Z])+■){■}([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  24     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*(■)+@(([\-0-9a-zA-Z])+[.]){■}([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  25     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+■((■)+[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  26     |  2     ((■){■}[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  27     |  2     (([0-9a-zA-Z])+[\-a&+;m._p]){■}([0-9a-zA-Z])+@(([\-0-9a-zA-Z]){■}[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  28     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@((■)+[.])+([a-zA-Z]){■}  unsatisfiable SAT formula       
+  29     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z]){■}@((■)+[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  30     |  2     (([0-9a-zA-Z])+[\-a&+;m._p]){■}([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+■)+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  31     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*(■)+@((■)+[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  32     |  2     (([0-9a-zA-Z])+■)*([0-9a-zA-Z])+@((■)+[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  33     |  2     ■([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  34     |  2     ((■)+[\-a&+;m._p]){■}([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  35     |  2     (([0-9a-zA-Z]){■}[\-a&+;m._p]){■}([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  36     |  2     (([0-9a-zA-Z]){■}[\-a&+;m._p])*([0-9a-zA-Z])+@((■)+[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  37     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@((■)+[.])+(■){2,6}  unsatisfiable SAT formula       
+  38     |  2     (([0-9a-zA-Z])+[\-a&+;m._p]){■}([0-9a-zA-Z])+@((■)+[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  39     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@((■■)+[.])+([a-zA-Z]){2,6}  40     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(((■|■))+[.])+([a-zA-Z]){2,6}  41     |  2     ((■)+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){■}  unsatisfiable SAT formula       
+  42     |  2     (([0-9a-zA-Z]){■}[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+■)+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  43     |  2     (([0-9a-zA-Z]){■}[\-a&+;m._p])*([0-9a-zA-Z]){■}@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  44     |  2     (([0-9a-zA-Z]){■}[\-a&+;m._p])*(■)+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  45     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+■(([\-0-9a-zA-Z])+■)+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  46     |  2     (([0-9a-zA-Z]){■}[\-a&+;m._p])*([0-9a-zA-Z])+■(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  47     |  2     (([0-9a-zA-Z]){■}[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+(■){2,6}  unsatisfiable SAT formula       
+  48     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(((■){■})+[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  49     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(■[.])+([a-zA-Z]){2,6}  50     |  2     ((■)+[\-a&+;m._p])*(■)+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  51     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+■){■}([a-zA-Z]){2,6}  52     |  2     (([0-9a-zA-Z]){■}[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){■}  unsatisfiable SAT formula       
+  53     |  2     (([0-9a-zA-Z]){■}■)*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  54     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@((■)+■)+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  55     |  2     (([0-9a-zA-Z])+■)*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+(■){2,6}  unsatisfiable SAT formula       
+  56     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*(■)+@(([\-0-9a-zA-Z])+[.])+(■){2,6}  unsatisfiable SAT formula       
+  57     |  2     ((■)+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+(■){2,6}  unsatisfiable SAT formula       
+  58     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z]){■}@(([\-0-9a-zA-Z])+■)+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  59     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+(■){■}  unsatisfiable SAT formula       
+  60     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+■(([\-0-9a-zA-Z])+[.])+(■){2,6}  unsatisfiable SAT formula       
+  61     |  2     (([0-9a-zA-Z])+■)*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+■)+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  62     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z]){■}@(([\-0-9a-zA-Z])+[.])+(■){2,6}  unsatisfiable SAT formula       
+  63     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+■  64     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@■([a-zA-Z]){2,6}  65     |  2     ((■)+[\-a&+;m._p])*([0-9a-zA-Z])+@((■)+[.])+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  66     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z]){■}■)+([a-zA-Z]){2,6}  unsatisfiable SAT formula       
+  67     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+(■■){2,6}  68     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+((■|■)){2,6}  69     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+■)+([a-zA-Z]){■}  unsatisfiable SAT formula       
+  70     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+■(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){■}  unsatisfiable SAT formula       
+  71     |  2     (([0-9a-zA-Z])+[\-a&+;m._p])*(■)+■(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}  (([0-9a-zA-Z])+[\-a&+;m._p])*([bdefhimno\-rstuy@])+[csehimnop](([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@((■)+■)+([a-zA-Z]){2,6} size: 11 holes: 2 time: 8.229809ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+■(([\-0-9a-zA-Z])+[.])+(■){2,6} size: 11 holes: 2 time: 0.468432ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+■((■)+[.])+([a-zA-Z]){2,6} size: 11 holes: 2 time: 4.439017ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z]){■}@(([\-0-9a-zA-Z])+[.])+(■){2,6} size: 12 holes: 3 time: 0.772688ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+(■){■} size: 12 holes: 3 time: 0.736207ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@((■)+[.])+(■){2,6} size: 11 holes: 2 time: 0.999553ms
+template: ((■)+[\-a&+;m._p])*([0-9a-zA-Z])+@((■)+[.])+([a-zA-Z]){2,6} size: 11 holes: 2 time: 0.597723ms
+template: ((■)+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){■} size: 12 holes: 3 time: 1.521561ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*(■)+■(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6} size: 11 holes: 2 time: 2.826148ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.]){■}(■){2,6} size: 12 holes: 3 time: 1.547064ms
+template: (([0-9a-zA-Z]){■}[\-a&+;m._p])*([0-9a-zA-Z]){■}@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6} size: 13 holes: 4 time: 0.991561ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@((■)+[.])+([a-zA-Z]){■} size: 12 holes: 3 time: 1.426006ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+(■■))+([a-zA-Z]){2,6} size: 12 holes: 2 time: 1.415482ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+■(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6} size: 12 holes: 1 time: 0.774869ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*(■)+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6} size: 12 holes: 1 time: 1.020771ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z]){■}@((■)+[.])+([a-zA-Z]){2,6} size: 12 holes: 3 time: 2.183896ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z]){■}@(([\-0-9a-zA-Z])+■)+([a-zA-Z]){2,6} size: 12 holes: 3 time: 1.995334ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+■)+([a-zA-Z]){■} size: 12 holes: 3 time: 2.821869ms
+template: (([0-9a-zA-Z]){■}[\-a&+;m._p])*([0-9a-zA-Z])+@((■)+[.])+([a-zA-Z]){2,6} size: 12 holes: 3 time: 1.683847ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z]){■}[.])+([a-zA-Z]){2,6} size: 13 holes: 2 time: 1.05047ms
+template: (([0-9a-zA-Z])+■)*([0-9a-zA-Z])+@((■)+[.])+([a-zA-Z]){2,6} size: 11 holes: 2 time: 1.252418ms
+template: (([0-9a-zA-Z]){■}[\-a&+;m._p])*(■)+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6} size: 12 holes: 3 time: 1.920233ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p]){■}([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+■)+([a-zA-Z]){2,6} size: 12 holes: 3 time: 4.151437ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(((■){■})+[.])+([a-zA-Z]){2,6} size: 13 holes: 3 time: 1.249151ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p]){■}([0-9a-zA-Z])+@((■)+[.])+([a-zA-Z]){2,6} size: 12 holes: 3 time: 1.434328ms
+template: ((■)+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+■)+([a-zA-Z]){2,6} size: 11 holes: 2 time: 2.634627ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z]){■}■)+([a-zA-Z]){2,6} size: 12 holes: 3 time: 96.083785ms
+template: (([0-9a-zA-Z]){■}[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+(■){2,6} size: 12 holes: 3 time: 1.262721ms
+template: (([0-9a-zA-Z]){■}[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+■)+([a-zA-Z]){2,6} size: 12 holes: 3 time: 4.600884ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+■)+([a-zA-Z]){2,6} size: 12 holes: 1 time: 2.465532ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+(■){2,6} size: 12 holes: 1 time: 0.887569ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*(■)+@(([\-0-9a-zA-Z])+[.])+(■){2,6} size: 11 holes: 2 time: 0.55998ms
+template: ((■)+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+(■){2,6} size: 11 holes: 2 time: 0.436913ms
+template: (([0-9a-zA-Z]){■}[\-a&+;m._p])*([0-9a-zA-Z])+■(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6} size: 12 holes: 3 time: 0.529133ms
+template: (([0-9a-zA-Z]){■}[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){■} size: 13 holes: 4 time: 1.109324ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+■(([\-0-9a-zA-Z])+■)+([a-zA-Z]){2,6} size: 11 holes: 2 time: 47.61765ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*(■)+@(([\-0-9a-zA-Z])+[.]){■}([a-zA-Z]){2,6} size: 12 holes: 3 time: 1.832412ms
+template: (([0-9a-zA-Z])+■)*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+■)+([a-zA-Z]){2,6} size: 11 holes: 2 time: 6.514957ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+■(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){■} size: 12 holes: 3 time: 0.369198ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){■} size: 13 holes: 2 time: 1.076579ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z]){■}@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){■} size: 13 holes: 4 time: 1.394974ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*(■)+@((■)+[.])+([a-zA-Z]){2,6} size: 11 holes: 2 time: 1.182504ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p]){■}([0-9a-zA-Z])+@(([\-0-9a-zA-Z]){■}[.])+([a-zA-Z]){2,6} size: 13 holes: 4 time: 1.356484ms
+template: ((■)+[\-a&+;m._p])*(■)+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6} size: 11 holes: 2 time: 0.919367ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@((■)+[.])+([a-zA-Z]){2,6} size: 12 holes: 1 time: 0.850541ms
+template: (([0-9a-zA-Z])+[\-a&+;m._p]){■}(■)+@(([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6} size: 12 holes: 3 time: 1.887517ms
+template: (([0-9a-zA-Z])+■)*([0-9a-zA-Z])+@(([\-0-9a-zA-Z])+[.])+(■){2,6} size: 11 holes: 2 time: 1.344669ms
+longest: #mn#(([0-9a-zA-Z])+[\-a&+;m._p])*([0-9a-zA-Z])+@(([\-0-9a-zA-Z]){■}■)+([a-zA-Z]){2,6}#mn# size: #ms#12#ms# holes: #mh#3#mh# time: #mt#96.083785#mt#ms
+
+Computed in:
+
+  #c#2209#c#ms
+
+timeSATSolver time:
+
+  #s#224#s#ms
+
+Finds the following solutions (and the corresponding fitness):
+
+  25   (([0-9a-zA-Z])+[\-a&+;m._p])*([bdefhimno\-rstuy@])+[csehimnop](([\-0-9a-zA-Z])+[.])+([a-zA-Z]){2,6}
+
+All done
+

@@ -1,0 +1,48 @@
+
+Given the regular expression:
+
+  ((((\d){1,3})(,(\d){3})*)|((\d)+))(.(\d)+)?
+
+That that should match the strings:
+
+  ✓ (0:7)    9999999
+  ✓ (7:18)   99999.99999
+  ✓ (18:33)  99,999,999.9999
+  ✓ (33:46)  123,456,789.9
+  ✓ (46:60)  954,652,000.03
+
+And reject the strings:
+
+  ✗ (60:65)  9999.
+  ✗ (65:79)  9,99,99999.999
+  ✗ (79:92)  999.9999.9999
+  ✗ (92:101) 100,000,0
+  ✗ (101:107) 100,00
+  ✗ (107:117) 200,999,00
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     (((\d){1,3})(,(\d){3})*|(\d)+)(.(■)+)?  unsatisfiable SAT formula       
+  2      |  1     (((\d){■})(,(\d){3})*|(\d)+)(.(\d)+)?  3      |  1     (((■){1,3})(,(\d){3})*|(\d)+)(.(\d)+)?  4      |  1     (((\d){1,3})(,(\d){3})*|(\d)+)(.(\d){■})?  unsatisfiable SAT formula       
+  5      |  1     (((\d){1,3})(,(\d){■})*|(\d)+)(.(\d)+)?  6      |  1     (((\d){1,3})(,(\d){3}){■}|(\d)+)(.(\d)+)?  7      |  1     (((\d){1,3})(,(\d){3})*|(\d)+)(■(\d)+)?  (((\d){1,3})(,(\d){3})*|(\d)+)(.(\d)+)?
+template: (((\d){1,3})(,(\d){3})*|(\d)+)(■(\d)+)? size: 12 holes: 1 time: 0.78959ms
+template: (((\d){1,3})(,(\d){3})*|(\d)+)(.(\d){■})? size: 13 holes: 2 time: 1.024913ms
+template: (((\d){1,3})(,(\d){3})*|(\d)+)(.(■)+)? size: 12 holes: 1 time: 2.917361ms
+longest: #mn#(((\d){1,3})(,(\d){3})*|(\d)+)(.(■)+)?#mn# size: #ms#12#ms# holes: #mh#1#mh# time: #mt#2.917361#mt#ms
+
+Computed in:
+
+  #c#173#c#ms
+
+timeSATSolver time:
+
+  #s#5#s#ms
+
+Finds the following solutions (and the corresponding fitness):
+
+  1    (((\d){1,3})(,(\d){3})*|(\d)+)(.(\d)+)?
+
+All done
+

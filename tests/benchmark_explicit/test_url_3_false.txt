@@ -1,0 +1,26 @@
+[a-zA-Z]{3,}://[a-zA-Z0-9\.]+/*[a-zA-Z0-9/\\%_.]*\?*[a-zA-Z0-9/\\%_.=&amp;]*
++++
+http://someserver
+http://www.someserver.com/
+http://www.someserver.com/somefile.txt
+http://foo.co.uk/
+http://regexr.com/foo.html?q=bar
+https://mediatemple.net
+www.someserver.com/
+www.someserver.com/somefile.txt
+foo.co.uk/
+regexr.com/foo.html?q=bar
+mediatemple.net
+www.co.uk/
+www.test.com
+www.domain.com
+http://regexr.com/foo.html?q=bar
+https://mediatemple.net
+---
+-domain.com domain-.com
+3SquareBand.com
+asp.net
+army.mil
+$SquareBand.com
+asp/dot.net
+army.military

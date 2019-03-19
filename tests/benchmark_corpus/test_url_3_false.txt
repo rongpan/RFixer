@@ -1,0 +1,42 @@
+[a-zA-Z]{3,}://[a-zA-Z0-9\.]+/*[a-zA-Z0-9/\\%_.]*\?*[a-zA-Z0-9/\\%_.=&amp;]*
+---
+(0:17)
+(20:46)
+(49:87)
+(88:108)
+(109:126)
+(127:159)
+(160:183)
+(216:228)
+(229:246)
+(247:279)
+(280:303)
+---
+http://someserver | http://www.someserver.com/ | http://www.someserver.com/somefile.txt
+www.yahoo.com/period	http://foo.co.uk/
+http://regexr.com/foo.html?q=bar
+https://mediatemple.net
+
+foo@demo.net	bar.ba@test.co.uk
+www.demo.com	http://foo.co.uk/
+http://regexr.com/foo.html?q=bar
+https://mediatemple.net
+-domain.com domain-.com
+Welcome to RegExr v2.1 by gskinner.com, proudly hosted by Media Temple!
+
+Edit the Expression & Text to see matches. Roll over matches or the expression for details. Undo mistakes with ctrl-z. Save Favorites & Share expressions with friends or the Community. Explore your results with Tools. A full Reference & Help is available in the Library, or watch the video Tutorial.
+
+Sample text for testing:
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ
+0123456789 _+-.,!@#$%^&*();\/|<>"'
+12345 -98.7 3.141 .6180 9,000 +42
+555.123.4567	+1-(800)-555-2468
+foo@demo.net	bar.ba@test.co.uk
+3SquareBand.com | asp.net | army.mil
+$SquareBand.com | asp/dot.net | army.military
+Welcome to RegExr v2.1 by gskinner.com, proudly hosted by Media Temple!
+
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ
+0123456789 _+-.,!@#$%^&*();\/|<>"'
+12345 -98.7 3.141 .6180 9,000 +42
+555.123.4567	+1-(800)-555-2468

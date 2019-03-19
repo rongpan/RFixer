@@ -1,0 +1,59 @@
+
+Given the regular expression:
+
+  ((((mailto\:|news)|ht)|ftp\:)){1}(\S)+
+
+That that should match the strings:
+
+  ✓ (0:17)   http://someserver
+  ✓ (17:43)  http://www.someserver.com/
+  ✓ (43:81)  http://www.someserver.com/somefile.txt
+  ✓ (81:98)  http://foo.co.uk/
+  ✓ (98:130) http://regexr.com/foo.html?q=bar
+  ✓ (130:153) https://mediatemple.net
+  ✓ (153:187) http://foo.co.uk/http://someserver
+  ✓ (187:213) ftps://www.someserver.com/
+  ✓ (213:251) ftps://www.someserver.com/somefile.txt
+  ✓ (251:268) ftps://foo.co.uk/
+  ✓ (268:299) ftp://regexr.com/foo.html?q=bar
+  ✓ (299:321) ftps://mediatemple.net
+  ✓ (321:353) ftps://regexr.com/foo.html?q=bar
+  ✓ (353:376) https://mediatemple.net
+  ✓ (376:391) http://yourmoma
+  ✓ (391:417) http://www.aspemporium.com
+  ✓ (417:445) mailto:dominionx@hotmail.com
+  ✓ (445:463) ftp://ftp.test.com
+  ✓ (463:510) http://regexlib.com/REDetails.aspx?regexp_id=37
+
+And reject the strings:
+
+  ✗ (510:530) www.yahoo.com/period
+  ✗ (530:542) foo@demo.net
+  ✗ (542:559) bar.ba@test.co.uk
+  ✗ (559:571) www.demo.com
+  ✗ (571:584) www.abc.co.il
+  ✗ (584:595) -domain.com
+  ✗ (595:607) domain-.com 
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     ((((mailto\:|news)|ht)|ftp\:)){■}(\S)+  unsatisfiable SAT formula       
+  2      |  1     (((((((((ma)i)l)t)o)\:|((ne)w)s)|ht)|f■p\:)){1}(\S)+  3      |  1     ((((mai■to\:|((ne)w)s)|ht)|((ft)p)\:)){1}(\S)+  4      |  1     (((((((((ma)i)l)t)o)\:|((ne)w)s)|ht)|ft■\:)){1}(\S)+  5      |  1     (((((((((ma)i)l)t)o)\:|n■ws)|ht)|((ft)p)\:)){1}(\S)+  6      |  1     (((((((((ma)i)l)t)o)\:|■ews)|ht)|((ft)p)\:)){1}(\S)+  7      |  1     ((((ma■lto\:|((ne)w)s)|ht)|((ft)p)\:)){1}(\S)+  8      |  1     (((((((((ma)i)l)t)o)\:|new■)|ht)|((ft)p)\:)){1}(\S)+  9      |  1     (((((((((ma)i)l)t)o)\:|((ne)w)s)|■t)|((ft)p)\:)){1}(\S)+  unsatisfiable SAT formula       
+  10     |  1     (((((((((ma)i)l)t)o)\:|((ne)w)s)|ht)|■tp\:)){1}(\S)+  11     |  1     (((((((((ma)i)l)t)o)\:|((ne)w)s)|ht)|ftp■)){1}(\S)+  unsatisfiable SAT formula       
+  12     |  1     (((((((((ma)i)l)t)o)\:|((ne)w)s)|ht)|((ft)p)\:)){1}(\S){■}  13     |  1     (((((((((ma)i)l)t)o)\:|ne■s)|ht)|((ft)p)\:)){1}(\S)+  14     |  1     ((((mailto■|((ne)w)s)|ht)|((ft)p)\:)){1}(\S)+  15     |  1     ((((mail■o\:|((ne)w)s)|ht)|((ft)p)\:)){1}(\S)+  16     |  1     ((((■ailto\:|((ne)w)s)|ht)|((ft)p)\:)){1}(\S)+  17     |  1     ((((m■ilto\:|((ne)w)s)|ht)|((ft)p)\:)){1}(\S)+  18     |  1     (((((((((ma)i)l)t)o)\:|((ne)w)s)|ht)|((ft)p)\:)){1}(■)+  19     |  1     ((((mailt■\:|((ne)w)s)|ht)|((ft)p)\:)){1}(\S)+  20     |  1     (((((((((ma)i)l)t)o)\:|((ne)w)s)|h■)|((ft)p)\:)){1}(\S)+  21     |  2     (((((((((ma)i)l)t)o)\:|((ne)w)s)|ht)|((ft)p)\:)){■}(\S){■}  unsatisfiable SAT formula       
+  22     |  2     (((((((((ma)i)l)t)o)\:|((ne)w)s)|ht)|ft■\:)){■}(\S)+  unsatisfiable SAT formula       
+  23     |  2     ((((mail■o\:|((ne)w)s)|ht)|((ft)p)\:)){■}(\S)+  unsatisfiable SAT formula       
+  24     |  2     ((((mailt■\:|((ne)w)s)|ht)|((ft)p)\:)){■}(\S)+  unsatisfiable SAT formula       
+  25     |  2     (((((((((ma)i)l)t)o)\:|n■ws)|ht)|((ft)p)\:)){■}(\S)+  unsatisfiable SAT formula       
+  26     |  2     ((((■ailto\:|((ne)w)s)|ht)|((ft)p)\:)){■}(\S)+  unsatisfiable SAT formula       
+  27     |  2     ((((mailto■|((ne)w)s)|ht)|((ft)p)\:)){■}(\S)+  unsatisfiable SAT formula       
+  28     |  2     ((((ma■lto\:|((ne)w)s)|ht)|((ft)p)\:)){■}(\S)+  unsatisfiable SAT formula       
+  29     |  2     (((((((((ma)i)l)t)o)\:|((ne)w)s)|ht)|((ft)p)\:)){■}(■)+  unsatisfiable SAT formula       
+  30     |  2     (((((((((ma)i)l)t)o)\:|((ne)w)s)|■t)|((ft)p)\:)){■}(\S)+  unsatisfiable SAT formula       
+  31     |  2     (((((((((ma)i)l)t)o)\:|((ne)w)s)|ht)|ftp■)){■}(\S)+  unsatisfiable SAT formula       
+  32     |  2     (((((((((ma)i)l)t)o)\:|((ne)w)s)|ht)|■tp\:)){■}(\S)+  unsatisfiable SAT formula       
+  33     |  2     (((((((((ma)i)l)t)o)\:|■ews)|ht)|((ft)p)\:)){■}(\S)+  unsatisfiable SAT formula       
+  34     |  2     (((((((((ma)i)l)t)o)\:|new■)|ht)|((ft)p)\:)){■}(\S)+  unsatisfiable SAT formula       
+  35     |  2     (((((((((ma)i)l)t)o)\:|((ne)w)s)|h■)|((ft)p)\:)){■}(\S)+

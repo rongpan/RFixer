@@ -1,0 +1,6 @@
+a\w+
+---
+(0:4)
+(5:12)
+---
+axyz axyzxyz azzxyxy axxx

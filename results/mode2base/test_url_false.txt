@@ -1,0 +1,88 @@
+
+Given the regular expression:
+
+  ([\-\.0-9a-zA-Z])+\.(((((((((com|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU)
+
+That that should match the strings:
+
+  ✓ (0:15)   3SquareBand.com
+  ✓ (15:22)  asp.net
+  ✓ (22:30)  army.mil
+  ✓ (30:42)  gskinner.com
+  ✓ (42:50)  demo.net
+  ✓ (50:60)  regexr.com
+  ✓ (60:75)  mediatemple.net
+  ✓ (75:87)  www.demo.com
+
+And reject the strings:
+
+  ✗ (87:102) $SquareBand.com
+  ✗ (102:113) asp/dot.net
+  ✗ (113:126) army.military
+  ✗ (126:132) Welcom
+  ✗ (132:139) Temple!
+  ✗ (139:144) Edit&
+  ✗ (144:152) matches.
+  ✗ (152:159) ctrl-z.
+  ✗ (159:167) utorial.
+  ✗ (167:193) abcdefghijklmnopqrstuvwxyz
+  ✗ (193:219) ABCDEFGHIJKLMNOPQRSTUVWXYZ
+  ✗ (219:229) 0123456789
+  ✗ (229:252) _+-.,!@#$%^&*();\/|<>"'
+  ✗ (252:256) foo@
+  ✗ (256:273) bar.ba@test.co.uk
+  ✗ (273:290) http://foo.co.uk/
+  ✗ (290:322) http://regexr.com/foo.html?q=bar
+  ✗ (322:345) https://mediatemple.net
+  ✗ (345:356) -domain.com
+  ✗ (356:367) domain-.com
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     ([\-\.0-9a-zA-Z])+\.(((((((((co■|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU)  unsatisfiable SAT formula       
+  2      |  1     ([\-\.0-9a-zA-Z]){■}\.(((((((((com|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  3      |  1     ([\-\.0-9a-zA-Z])+■((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  4      |  1     ([\-\.0-9a-zA-Z])+\.(((((((((c■m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  5      |  1     ([\-\.0-9a-zA-Z])+\.(((((((((■om|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  6      |  1     (■)+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)tree is((■)+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)
+char_a: true
+char_B: true
+char_c: char0_c
+char_d: true
+char_e: true
+char_g: true
+char_i: true
+char_k: true
+char_l: true
+char_m: true
+char_n: true
+char_.: true
+char_o: true
+char_p: true
+char_q: true
+char_r: true
+char_3: true
+char_S: true
+char_s: true
+char_t: true
+char_u: true
+char_w: true
+char_x: true
+char_y: true
+template: ((■)+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 24.737631ms
+template: (([\-\.0-9a-zA-Z])+■)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 16.810699ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((■o)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 16.224183ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)■|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 17.978015ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((c■)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 16.78147ms
+template: (([\-\.0-9a-zA-Z]){■}\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 42 holes: 2 time: 19.206925ms
+longest: #mn#((■)+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)#mn# size: #ms#41#ms# holes: #mh#1#mh# time: #mt#24.737631#mt#ms
+
+Computed in:
+
+  #c#21035#c#ms
+
+timeSATSolver time:
+
+  #s#112#s#ms

@@ -1,0 +1,10 @@
+(ab)*
++++
+abb
+abbabb
+abbabbabbabb
+abbabbabbabbabb
+---
+acb
+abab
+aaabbb

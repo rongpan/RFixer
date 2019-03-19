@@ -1,0 +1,316 @@
+
+Given the regular expression:
+
+  ((\d|,))*(\d)+
+
+That that should match the strings:
+
+  ✓ (0:3)    123
+  ✓ (3:4)    4
+  ✓ (4:9)    1,234
+  ✓ (9:18)   1,234,567
+  ✓ (18:24)  23,456
+  ✓ (24:31)  789,456
+  ✓ (31:42)  456,789,123
+  ✓ (42:56)  21,654,879,213
+  ✓ (56:65)  3,546,799
+  ✓ (65:72)  333,333
+
+And reject the strings:
+
+  ✗ (72:76)  1234
+  ✗ (76:82)  1234.0
+  ✗ (82:87)  -1234
+  ✗ (87:92)  $1234
+  ✗ (92:96)  3333
+  ✗ (96:104) 1,2,3,45
+  ✗ (104:116) 12345,6789,0
+  ✗ (116:126) 12345,6789
+  ✗ (126:135) 19,24,358
+  ✗ (135:143) 1,87,865
+  ✗ (143:154) 35,8786,897
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     ((\d|,))*(\d){■}          unsatisfiable SAT formula       
+  2      |  1     ((\d|,)){■}(\d)+          unsatisfiable SAT formula       
+  3      |  1     ((\d|,))*(■)+             unsatisfiable SAT formula       
+  4      |  2     ((\d|,))*(■■)+            Failed dot test or empty set test. 
+  5      |  2     ((\d|,))*■                unsatisfiable SAT formula       
+  6      |  2     ((■|,))*(\d){■}           unsatisfiable SAT formula       
+  7      |  2     ((\d|■))*(■)+             unsatisfiable SAT formula       
+  8      |  2     ((\d|,))*((■){■})+        unsatisfiable SAT formula       
+  9      |  2     ((\d|,))*((■|■))+         unsatisfiable SAT formula       
+  10     |  2     ((\d|,))*(■){■}           unsatisfiable SAT formula       
+  11     |  2     ■(\d)+                    Failed dot test or empty set test. 
+  12     |  2     ((■|,)){■}(\d)+           unsatisfiable SAT formula       
+  13     |  2     ((\d|■))*(\d){■}          unsatisfiable SAT formula       
+  14     |  2     ((\d|,)){■}(\d){■}        unsatisfiable SAT formula       
+  15     |  2     ((■|,))*(■)+              unsatisfiable SAT formula       
+  16     |  2     ((\d|■)){■}(\d)+          unsatisfiable SAT formula       
+  17     |  2     ((\d|,)){■}(■)+           unsatisfiable SAT formula       
+  18     |  3     ■(\d){■}                  Failed dot test or empty set test. 
+  19     |  3     ■(■)+                     Failed dot test or empty set test. 
+  20     |  3     ((\d|,))*(■■)             Failed dot test or empty set test. 
+  21     |  3     ((\d|,))*(■■){■}          unsatisfiable SAT formula       
+  22     |  3     ((\d|(■|■))){■}(\d)+      unsatisfiable SAT formula       
+  23     |  3     ((\d|,)){■}(■■)+          Failed dot test or empty set test. 
+  24     |  3     ((\d|,))*(■(■){■})+       unsatisfiable SAT formula       
+  25     |  3     ((\d|,))*(■(■|■))+        Failed dot test or empty set test. 
+  26     |  3     ((\d|,))*((■■)■)+         Failed dot test or empty set test. 
+  27     |  3     ((■■|,))*(■)+             unsatisfiable SAT formula       
+  28     |  3     ((\d|(■){■}))*(■)+        unsatisfiable SAT formula       
+  29     |  3     ((\d|,))*(■(■■))+         Failed dot test or empty set test. 
+  30     |  3     ((■■|,)){■}(\d)+          unsatisfiable SAT formula       
+  31     |  3     ((\d|,))*((■){■}■)+       unsatisfiable SAT formula       
+  32     |  3     (((■){■}|,))*(\d){■}      unsatisfiable SAT formula       
+  33     |  3     ((\d|,))*((■|■)■)+        Failed dot test or empty set test. 
+  34     |  3     ((■|,))*■                 unsatisfiable SAT formula       
+  35     |  3     ((\d|(■){■})){■}(\d)+     unsatisfiable SAT formula       
+  36     |  3     ((\d|,)){■}■              unsatisfiable SAT formula       
+  37     |  3     ((\d|(■){■}))*(\d){■}     unsatisfiable SAT formula       
+  38     |  3     ((\d|■))*■                unsatisfiable SAT formula       
+  39     |  3     ((■|,))*((■){■})+         unsatisfiable SAT formula       
+  40     |  3     ((\d|,))*(■|■)            unsatisfiable SAT formula       
+  41     |  3     ((\d|,)){■}((■){■})+      unsatisfiable SAT formula       
+  42     |  3     ((\d|,))*((■){■}){■}      unsatisfiable SAT formula       
+  43     |  3     (((■|■)|,))*(■)+          unsatisfiable SAT formula       
+  44     |  3     ((\d|,))*((■■){■})+       unsatisfiable SAT formula       
+  45     |  3     ((\d|,))*(((■|■)){■})+    unsatisfiable SAT formula       
+  46     |  3     ((\d|,))*(((■){■}){■})+   unsatisfiable SAT formula       
+  47     |  3     ((\d|■■))*(\d){■}         unsatisfiable SAT formula       
+  48     |  3     (((■|■)|,))*(\d){■}       unsatisfiable SAT formula       
+  49     |  3     ((■|■)){■}(\d)+           unsatisfiable SAT formula       
+  50     |  3     (((■){■}|,))*(■)+         unsatisfiable SAT formula       
+  51     |  3     (((■){■}|,)){■}(\d)+      unsatisfiable SAT formula       
+  52     |  3     ((\d|■■)){■}(\d)+         unsatisfiable SAT formula       
+  53     |  3     (((■|■)|,)){■}(\d)+       unsatisfiable SAT formula       
+  54     |  3     ((\d|,)){■}((■|■))+       unsatisfiable SAT formula       
+  55     |  3     ((\d|,))*((■|■)){■}       unsatisfiable SAT formula       
+  56     |  3     (■|■)(\d)+                Failed dot test or empty set test. 
+  57     |  3     (■){■}(\d)+               unsatisfiable SAT formula       
+  58     |  3     ((\d|,))*(((■){■}|■))+    unsatisfiable SAT formula       
+  59     |  3     ((\d|■■))*(■)+            unsatisfiable SAT formula       
+  60     |  3     ((■|,))*((■|■))+          unsatisfiable SAT formula       
+  61     |  3     ((\d|,))*((■|■■))+        unsatisfiable SAT formula       
+  62     |  3     ((\d|,))*((■■|■))+        unsatisfiable SAT formula       
+  63     |  3     ((\d|,))*((■|(■|■)))+     unsatisfiable SAT formula       
+  64     |  3     ((\d|,))*(((■|■)|■))+     unsatisfiable SAT formula       
+  65     |  3     ((\d|,))*((■|(■){■}))+    unsatisfiable SAT formula       
+  66     |  3     ((\d|,)){■}(■){■}         unsatisfiable SAT formula       
+  67     |  3     ((■|,)){■}(\d){■}         unsatisfiable SAT formula       
+  68     |  3     ((■|■))*(\d){■}           unsatisfiable SAT formula       
+  69     |  3     ((■|,))*(■){■}            unsatisfiable SAT formula       
+  70     |  3     ((■■|,))*(\d){■}          unsatisfiable SAT formula       
+  71     |  3     (■■)(\d)+                 Failed dot test or empty set test. 
+  72     |  3     ((■|,)){■}(■)+            unsatisfiable SAT formula       
+  73     |  3     ((\d|■)){■}(■)+           unsatisfiable SAT formula       
+  74     |  3     ((\d|■))*(■){■}           unsatisfiable SAT formula       
+  75     |  3     ((■|■))*(■)+              unsatisfiable SAT formula       
+  76     |  3     ((\d|(■|■)))*(■)+         unsatisfiable SAT formula       
+  77     |  3     ((\d|■)){■}(\d){■}        unsatisfiable SAT formula       
+  78     |  3     ((\d|■))*(■■)+            Failed dot test or empty set test. 
+  79     |  3     ((\d|■))*((■|■))+         unsatisfiable SAT formula       
+  80     |  3     ((\d|■))*((■){■})+        unsatisfiable SAT formula       
+  81     |  3     ((■|,))*(■■)+             Failed dot test or empty set test. 
+  82     |  3     ((\d|(■|■)))*(\d){■}      unsatisfiable SAT formula       
+  83     |  4     ((\d|,))*(■(■■)){■}       unsatisfiable SAT formula       
+  84     |  4     (■){■}(\d){■}             unsatisfiable SAT formula       
+  85     |  4     ((■|,))*(■■)              Failed dot test or empty set test. 
+  86     |  4     ((■|,))*(((■){■}|■))+     unsatisfiable SAT formula       
+  87     |  4     ((\d|,))*((((■|■)){■}|■))+  unsatisfiable SAT formula       
+  88     |  4     ((\d|,))*(((■){■}|(■){■}))+  unsatisfiable SAT formula       
+  89     |  4     ((\d|,))*(((■){■}|(■|■)))+  unsatisfiable SAT formula       
+  90     |  4     ((\d|,))*(■)              unsatisfiable SAT formula       
+  91     |  4     ((\d|,))*((((■){■}){■}|■))+  unsatisfiable SAT formula       
+  92     |  4     ((\d|,))*(((■){■}|■■))+   unsatisfiable SAT formula       
+  93     |  4     ((\d|(■){■}))*(■){■}      unsatisfiable SAT formula       
+  94     |  4     ((\d|■■))*((■){■})+       unsatisfiable SAT formula       
+  95     |  4     ((\d|■■))*(■■)+           Failed dot test or empty set test. 
+  96     |  4     ■(■■)+                    Failed dot test or empty set test. 
+  97     |  4     ((\d|,))*(■(■■))          Failed dot test or empty set test. 
+  98     |  4     ((\d|(■){■})){■}(■)+      unsatisfiable SAT formula       
+  99     |  4     ((\d|(■){■}■))*(■)+       unsatisfiable SAT formula       
+  100    |  4     ((\d|■(■■)))*(■)+         unsatisfiable SAT formula       
+  101    |  4     ((■|(■){■}))*(■)+         unsatisfiable SAT formula       
+  102    |  4     ((\d|■(■){■}))*(■)+       unsatisfiable SAT formula       
+  103    |  4     ((\d|(■|■)■))*(■)+        unsatisfiable SAT formula       
+  104    |  4     ((\d|,))*((■■)■)          Failed dot test or empty set test. 
+  105    |  4     ((\d|((■|■)){■}))*(■)+    unsatisfiable SAT formula       
+  106    |  4     ((\d|(■■)■))*(■)+         unsatisfiable SAT formula       
+  107    |  4     ((\d|(■){■}))*((■|■))+    unsatisfiable SAT formula       
+  108    |  4     ((\d|,))*(■(■){■})        unsatisfiable SAT formula       
+  109    |  4     ((\d|(■■){■}))*(■)+       unsatisfiable SAT formula       
+  110    |  4     ((■|■))*((■|■))+          unsatisfiable SAT formula       
+  111    |  4     ((■|,))*((■|■■))+         unsatisfiable SAT formula       
+  112    |  4     ((\d|((■){■}){■}))*(■)+   unsatisfiable SAT formula       
+  113    |  4     ((■|,))*(((■|■)|■))+      unsatisfiable SAT formula       
+  114    |  4     ((■|,))*((■■|■))+         unsatisfiable SAT formula       
+  115    |  4     ((\d|,))*(■(■|■))         Failed dot test or empty set test. 
+  116    |  4     ((\d|(■){■}))*(■■)+       Failed dot test or empty set test. 
+  117    |  4     ((■|,))*((■|(■|■)))+      unsatisfiable SAT formula       
+  118    |  4     ((\d|■))*((■|■■))+        unsatisfiable SAT formula       
+  119    |  4     ((\d|,))*((■■|■■))+       Failed dot test or empty set test. 
+  120    |  4     ((\d|,))*((■|■(■){■}))+   unsatisfiable SAT formula       
+  121    |  4     ((\d|,))*((■){■}■)        unsatisfiable SAT formula       
+  122    |  4     ((\d|,))*((■|■)■)         Failed dot test or empty set test. 
+  123    |  4     (((■■|■)|,))*(■)+         unsatisfiable SAT formula       
+  124    |  4     ((\d|,))*(((■|■)|■■))+    unsatisfiable SAT formula       
+  125    |  4     ((\d|,))*((■|(■■)■))+     unsatisfiable SAT formula       
+  126    |  4     (((■■|■)|,)){■}(\d)+      unsatisfiable SAT formula       
+  127    |  4     ((\d|,))*((■|■(■■)))+     unsatisfiable SAT formula       
+  128    |  4     ((\d|,))*((■|■(■|■)))+    unsatisfiable SAT formula       
+  129    |  4     ((\d|■(■|■)))*(■)+        unsatisfiable SAT formula       
+  130    |  4     (((■■|■)|,))*(\d){■}    tree is(((■■|■)|,))*(\d){■}
+char_1: true
+char_2: true
+char_3: true
+char_4: true
+char_5: true
+char_6: true
+char_7: true
+char_8: false
+char_9: false
+char_,: true
+char_1: true
+char_2: true
+char_3: true
+char_4: true
+char_5: true
+char_6: true
+char_7: false
+char_8: true
+char_9: false
+char_,: true
+char_1: false
+char_2: false
+char_3: false
+char_4: false
+char_5: false
+char_6: false
+char_7: true
+char_8: false
+char_9: true
+char_,: |char2_,|
+bound0
+bound is bound0_1
+bound1
+bound is bound1_1
+template: ((■|,)){■}(\d)+ size: 5 holes: 3 time: 8.691366ms
+template: ((■|■))*(■)+ size: 3 holes: 3 time: 14.746977ms
+template: ((\d|,))*((■|(■){■}))+ size: 7 holes: 4 time: 55.834326ms
+template: ((\d|,))*((■){■})+ size: 6 holes: 3 time: 66.296422ms
+template: ((\d|■))*((■|■■))+ size: 5 holes: 4 time: 16.971254ms
+template: (((■|■)|,)){■}(\d)+ size: 6 holes: 4 time: 8.78931ms
+template: ((\d|(■){■}■))*(■)+ size: 5 holes: 5 time: 30.658907ms
+template: ((\d|■(■■)))*(■)+ size: 4 holes: 4 time: 15.122215ms
+template: (((■■|■)|,))*(\d){■} size: 6 holes: 5 time: 261.601535ms
+template: ((\d|■■))*(\d){■} size: 5 holes: 4 time: 10.550399ms
+template: ((\d|,)){■}(■)+ size: 5 holes: 3 time: 10.700342ms
+template: ((■■|,))*(\d){■} size: 5 holes: 4 time: 12.157011ms
+template: ((\d|,))*((■){■}■)+ size: 6 holes: 4 time: 63.793978ms
+template: ((\d|,))*(■){■} size: 5 holes: 3 time: 13.881073ms
+template: ((\d|■))*((■){■})+ size: 5 holes: 4 time: 84.906717ms
+template: ((■|(■){■}))*(■)+ size: 4 holes: 5 time: 32.246584ms
+template: (((■){■}|,))*(\d){■} size: 6 holes: 5 time: 397.761343ms
+template: ((■|■)){■}(\d)+ size: 4 holes: 4 time: 9.019371ms
+template: ((\d|,))*((■|(■■)■))+ size: 6 holes: 4 time: 24.890666ms
+template: ((\d|,))*(((■){■}|■■))+ size: 7 holes: 5 time: 70.446181ms
+template: ((\d|(■){■}))*(■){■} size: 5 holes: 6 time: 37.754831ms
+template: ((\d|,))*((■|■(■){■}))+ size: 7 holes: 5 time: 68.050399ms
+template: (((■|■)|,))*(■)+ size: 5 holes: 3 time: 11.62112ms
+template: ((\d|,))*((■|■))+ size: 6 holes: 2 time: 12.492908ms
+template: ((\d|■■)){■}(\d)+ size: 5 holes: 4 time: 11.171756ms
+template: ((\d|(■|■))){■}(\d)+ size: 6 holes: 4 time: 8.682544ms
+template: ((\d|,)){■}((■|■))+ size: 6 holes: 4 time: 13.05244ms
+template: ((\d|,))*((((■){■}){■}|■))+ size: 8 holes: 6 time: 211.704504ms
+template: ((\d|,)){■}(\d)+ size: 6 holes: 2 time: 9.538919ms
+template: ((\d|,)){■}(■){■} size: 5 holes: 5 time: 23.837574ms
+template: ((\d|(■■){■}))*(■)+ size: 5 holes: 5 time: 40.766822ms
+template: ((\d|,))*(((■|■)|■■))+ size: 7 holes: 4 time: 24.812603ms
+template: ((\d|■)){■}(\d)+ size: 5 holes: 3 time: 8.490564ms
+template: ((\d|,))*((■|■■))+ size: 6 holes: 3 time: 20.310966ms
+template: ((\d|,))*(■)+ size: 5 holes: 1 time: 11.451576ms
+template: ((\d|■)){■}(\d){■} size: 5 holes: 5 time: 11.232265ms
+template: ((\d|(■|■)■))*(■)+ size: 5 holes: 4 time: 14.155618ms
+template: ((■|,))*(\d){■} size: 5 holes: 3 time: 9.990447ms
+template: ((■|,))*((■|■))+ size: 5 holes: 3 time: 12.106019ms
+template: (((■■|■)|,))*(■)+ size: 5 holes: 4 time: 14.866462ms
+template: ((\d|,))*(\d){■} size: 6 holes: 2 time: 10.663426ms
+template: ((\d|,))*(■(■){■})+ size: 6 holes: 4 time: 55.824678ms
+template: ((\d|■))*(\d){■} size: 5 holes: 3 time: 8.016759ms
+template: ((\d|,))*(((■|■)){■})+ size: 7 holes: 4 time: 63.706294ms
+template: ((\d|(■|■)))*(■)+ size: 5 holes: 3 time: 15.053825ms
+template: ((\d|,))*((■|■(■■)))+ size: 6 holes: 4 time: 25.203436ms
+template: ((\d|■■))*((■){■})+ size: 5 holes: 5 time: 62.408849ms
+template: ((■|,))*((■■|■))+ size: 5 holes: 4 time: 56.511634ms
+template: ((\d|(■){■}))*((■|■))+ size: 6 holes: 5 time: 37.084308ms
+template: (((■■|■)|,)){■}(\d)+ size: 6 holes: 5 time: 11.949433ms
+template: ((\d|,))*((■■){■})+ size: 6 holes: 4 time: 36.360908ms
+template: ((\d|■(■){■}))*(■)+ size: 5 holes: 5 time: 30.882026ms
+template: ((■|,))*(■)+ size: 4 holes: 2 time: 11.699252ms
+template: ((\d|,))*((((■|■)){■}|■))+ size: 8 holes: 5 time: 66.599605ms
+template: ((\d|■)){■}(■)+ size: 4 holes: 4 time: 15.893948ms
+template: ((\d|,))*(■) size: 4 holes: 1 time: 6.058038ms
+template: ((\d|,))*■ size: 4 holes: 1 time: 6.538759ms
+template: ((■|,))*((■|■■))+ size: 5 holes: 4 time: 56.599165ms
+template: ((\d|,))*((■){■}){■} size: 6 holes: 5 time: 64.537257ms
+template: ((\d|,))*(((■){■}|(■){■}))+ size: 8 holes: 6 time: 59.516019ms
+template: ((■■|,)){■}(\d)+ size: 5 holes: 4 time: 12.352218ms
+template: ((■|,))*(((■){■}|■))+ size: 6 holes: 5 time: 405.894774ms
+template: ((\d|,))*((■){■}■) size: 5 holes: 4 time: 14.388015ms
+template: ((\d|■■))*(■)+ size: 4 holes: 3 time: 12.955615ms
+template: ((\d|,)){■}(\d){■} size: 6 holes: 4 time: 8.128735ms
+template: ((\d|(■|■)))*(\d){■} size: 6 holes: 4 time: 9.745171ms
+template: ((■■|,))*(■)+ size: 4 holes: 3 time: 26.247166ms
+template: ((\d|,)){■}((■){■})+ size: 6 holes: 5 time: 635.515319ms
+template: ((■|■))*(\d){■} size: 4 holes: 4 time: 12.05897ms
+template: (■){■}(\d)+ size: 3 holes: 3 time: 8.690635ms
+template: ((■|,)){■}(\d){■} size: 5 holes: 5 time: 15.844528ms
+template: (((■){■}|,)){■}(\d)+ size: 6 holes: 5 time: 25.917036ms
+template: ((■|,)){■}(■)+ size: 4 holes: 4 time: 22.170256ms
+template: ((\d|(■){■}))*(■)+ size: 5 holes: 4 time: 31.395644ms
+template: ((\d|,))*((■|■(■|■)))+ size: 7 holes: 4 time: 24.840105ms
+template: ((\d|((■){■}){■}))*(■)+ size: 6 holes: 6 time: 60.636274ms
+template: (((■|■)|,))*(\d){■} size: 6 holes: 4 time: 8.619699ms
+template: ((\d|,))*(((■){■}|■))+ size: 7 holes: 4 time: 55.719158ms
+template: ((\d|(■){■})){■}(\d)+ size: 6 holes: 5 time: 28.269233ms
+template: ((■|,))*((■){■})+ size: 5 holes: 4 time: 729.667212ms
+template: ((\d|■))*(■)+ size: 4 holes: 2 time: 13.131938ms
+template: ((\d|,))*(((■){■}|(■|■)))+ size: 8 holes: 5 time: 58.917094ms
+template: ((■|,))*■ size: 3 holes: 2 time: 7.477263ms
+template: ((■|■))*((■|■))+ size: 4 holes: 4 time: 15.243974ms
+template: ((\d|,))*(((■){■}){■})+ size: 7 holes: 5 time: 117.222108ms
+template: ((■|,))*(■){■} size: 4 holes: 4 time: 19.808865ms
+template: ((■|,))*(((■|■)|■))+ size: 6 holes: 4 time: 12.079082ms
+template: ((\d|,))*(((■|■)|■))+ size: 7 holes: 3 time: 10.9065ms
+template: ((\d|((■|■)){■}))*(■)+ size: 6 holes: 5 time: 36.171319ms
+template: ((\d|■(■|■)))*(■)+ size: 5 holes: 4 time: 13.939957ms
+template: ((■|,))*((■|(■|■)))+ size: 6 holes: 4 time: 12.05492ms
+template: ((\d|,))*((■|(■|■)))+ size: 7 holes: 3 time: 10.677444ms
+template: ((\d|,)){■}■ size: 4 holes: 3 time: 6.949416ms
+template: ((\d|(■){■})){■}(■)+ size: 5 holes: 6 time: 32.750269ms
+template: ((\d|,))*((■|■)){■} size: 6 holes: 4 time: 14.004694ms
+template: ((\d|■))*■ size: 3 holes: 2 time: 7.188603ms
+template: ((\d|■))*((■|■))+ size: 5 holes: 3 time: 14.527312ms
+template: ((\d|,))*(■|■) size: 5 holes: 2 time: 6.44326ms
+template: ((\d|■))*(■){■} size: 4 holes: 4 time: 16.019939ms
+template: ((\d|,))*((■■|■))+ size: 6 holes: 3 time: 17.398462ms
+template: ((\d|,))*(■(■■)){■} size: 5 holes: 5 time: 26.046073ms
+template: ((\d|,))*(■(■){■}) size: 5 holes: 4 time: 14.1732ms
+template: ((\d|(■){■}))*(\d){■} size: 6 holes: 5 time: 39.472239ms
+template: (((■){■}|,))*(■)+ size: 5 holes: 4 time: 29.466618ms
+template: ((\d|,))*(■■){■} size: 5 holes: 4 time: 13.907386ms
+template: (■){■}(\d){■} size: 3 holes: 5 time: 11.854023ms
+template: ((\d|(■■)■))*(■)+ size: 4 holes: 4 time: 14.807806ms
+longest: #mn#((■|,))*((■){■})+#mn# size: #ms#5#ms# holes: #mh#4#mh# time: #mt#729.667212#mt#ms
+
+Computed in:
+
+  #c#23583#c#ms
+
+timeSATSolver time:
+
+  #s#5228#s#ms

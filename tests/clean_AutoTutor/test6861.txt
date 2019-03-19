@@ -1,0 +1,12 @@
+[ab]|[ab]+a{3}
++++
+baaaaa
+baaaa
+abaaa
+babaaa
+aaaaa
+baabaaa
+---
+a
+b
+aaaa

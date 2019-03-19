@@ -1,0 +1,61 @@
+
+Given the regular expression:
+
+  ((((((((((((((((((A[ARSZKLP]|C[ATO])|D[CE])|F[LM])|G[AU])|HI)|I[ADLN])|K[SY])|LA)|M[ASDTEHINOP])|N[CDEVHYJM])|O[RHK])|P[ARW])|RI)|S[CD])|T[XN])|UT)|V[ATI])|W[AVIY])
+
+That that should match the strings:
+
+  ✓ (0:2)    AL
+  ✓ (2:4)    CA
+  ✓ (4:6)    AA
+  ✓ (6:8)    AE
+  ✓ (8:10)   OK
+  ✓ (10:12)  NV
+
+And reject the strings:
+
+  ✗ (12:23)  Non-Matches
+  ✗ (23:31)  New York
+  ✗ (31:41)  California
+  ✗ (41:43)  ny
+  ✗ (43:44)  S
+  ✗ (44:46)  SD
+  ✗ (46:48)  KJ
+  ✗ (48:50)  JO
+  ✗ (50:52)  DS
+  ✗ (52:54)  JO
+  ✗ (54:56)  PR
+  ✗ (56:83)  LSPWERLKJLKWEQJRPOJKLNK<ZMC
+  ✗ (83:88)  awdif
+  ✗ (88:93)  DxRsf
+  ✗ (93:100) 0pAbdef
+  ✗ (100:107) xy9D29r
+  ✗ (107:108) r
+  ✗ (108:110) t5
+  ✗ (110:113) d9b
+  ✗ (113:117) 29gp
+  ✗ (117:124) 2nf9bm4
+  ✗ (124:129) d9vNU
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  2     ((((((((((((((((((A[ARSZKLP]|C[ATO])|D[CE])|F[LM])|G[AU])|HI)|I[ADLN])|K[SY])|LA)|M[ASDTEHINOP])|N[CDEVHYJM])|O[RHK])|P■)|RI)|S■)|T[XN])|UT)|V[ATI])|W[AVIY])  Failed dot test or empty set test. 
+  2      |  2     ((((((((((((((((((A[ARSZKLP]|C[ATO])|D[CE])|F[LM])|G[AU])|HI)|I[ADLN])|K[SY])|LA)|M[ASDTEHINOP])|N[CDEVHYJM])|O[RHK])|■[ARW])|RI)|■[CD])|T[XN])|UT)|V[ATI])|W[AVIY])  Failed dot test or empty set test. 
+  3      |  2     ((((((((((((((((((A[ARSZKLP]|C[ATO])|D[CE])|F[LM])|G[AU])|HI)|I[ADLN])|K[SY])|LA)|M[ASDTEHINOP])|N[CDEVHYJM])|O[RHK])|P■)|RI)|■[CD])|T[XN])|UT)|V[ATI])|W[AVIY])  Failed dot test or empty set test. 
+  4      |  2     ((((((((((((((((((A[ARSZKLP]|C[ATO])|D[CE])|F[LM])|G[AU])|HI)|I[ADLN])|K[SY])|LA)|M[ASDTEHINOP])|N[CDEVHYJM])|O[RHK])|■[ARW])|RI)|S■)|T[XN])|UT)|V[ATI])|W[AVIY])  Failed dot test or empty set test. 
+  5      |  3     ((((((((((((((((((A[ARSZKLP]|C[ATO])|D[CE])|F[LM])|G[AU])|HI)|I[ADLN])|K[SY])|LA)|M[ASDTEHINOP])|N[CDEVHYJM])|O[RHK])|■[ARW])|RI)|S■)|T[XN])|UT)|V[ATI])|W■)  Failed dot test or empty set test. 
+  6      |  3     ((((((((((((((((((A[ARSZKLP]|C[ATO])|D[CE])|F[LM])|G[AU])|HI)|I[ADLN])|K[SY])|LA)|M[ASDTEHINOP])|N[CDEVHYJM])|O[RHK])|■[ARW])|R■)|■[CD])|T[XN])|UT)|V[ATI])|W[AVIY])  Failed dot test or empty set test. 
+  7      |  3     ((((((((((((((((((A[ARSZKLP]|C[ATO])|D[CE])|F[LM])|G[AU])|HI)|I[ADLN])|K[SY])|LA)|M[ASDTEHINOP])|N[CDEVHYJM])|O[RHK])|P(■|■))|RI)|S■)|T[XN])|UT)|V[ATI])|W[AVIY])  Failed dot test or empty set test. 
+  8      |  3     ((((((((((((((((((A[ARSZKLP]|C[ATO])|D■)|F[LM])|G[AU])|HI)|I[ADLN])|K[SY])|LA)|M[ASDTEHINOP])|N[CDEVHYJM])|O[RHK])|■[ARW])|RI)|S■)|T[XN])|UT)|V[ATI])|W[AVIY])  Failed dot test or empty set test. 
+  9      |  3     ((((((((((((((((((A[ARSZKLP]|C[ATO])|D[CE])|F[LM])|G[AU])|HI)|I[ADLN])|K[SY])|LA)|M[ASDTEHINOP])|N[CDEVHYJM])|O[RHK])|■■)|RI)|■[CD])|T[XN])|UT)|V[ATI])|W[AVIY])template: ((((((((((((((((((A[ARSZKLP]|C[ATO])|D[CE])|F[LM])|G[AU])|HI)|I[ADLN])|K[SY])|LA)|M[ASDTEHINOP])|N[CDEVHYJM])|O[RHK])|■■)|RI)|■[CD])|T[XN])|UT)|V[ATI])|W[AVIY]) size: 53 holes: 3 time: 3.980849ms
+longest: #mn#((((((((((((((((((A[ARSZKLP]|C[ATO])|D[CE])|F[LM])|G[AU])|HI)|I[ADLN])|K[SY])|LA)|M[ASDTEHINOP])|N[CDEVHYJM])|O[RHK])|■■)|RI)|■[CD])|T[XN])|UT)|V[ATI])|W[AVIY])#mn# size: #ms#53#ms# holes: #mh#3#mh# time: #mt#3.980849#mt#ms
+
+Computed in:
+
+  #c#11846#c#ms
+
+timeSATSolver time:
+
+  #s#4#s#ms

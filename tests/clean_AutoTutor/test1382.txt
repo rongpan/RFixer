@@ -1,0 +1,16 @@
+(a|b)*aaa(a)*
++++
+ababbaaa
+bbbbaaa
+bbbaaa
+aababbaaa
+bbaaa
+aabaaaa
+abbabaaa
+abaaaa
+baabaaa
+abbaaa
+---
+aaa
+aaaa
+baaa

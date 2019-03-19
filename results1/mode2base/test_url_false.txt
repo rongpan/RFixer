@@ -1,0 +1,134 @@
+
+Given the regular expression:
+
+  ([\-\.0-9a-zA-Z])+\.(((((((((com|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU)
+
+That that should match the strings:
+
+  ✓ (0:15)   3SquareBand.com
+  ✓ (15:22)  asp.net
+  ✓ (22:30)  army.mil
+  ✓ (30:42)  gskinner.com
+  ✓ (42:50)  demo.net
+  ✓ (50:60)  regexr.com
+  ✓ (60:75)  mediatemple.net
+  ✓ (75:87)  www.demo.com
+
+And reject the strings:
+
+  ✗ (87:102) $SquareBand.com
+  ✗ (102:113) asp/dot.net
+  ✗ (113:126) army.military
+  ✗ (126:132) Welcom
+  ✗ (132:139) Temple!
+  ✗ (139:144) Edit&
+  ✗ (144:152) matches.
+  ✗ (152:159) ctrl-z.
+  ✗ (159:167) utorial.
+  ✗ (167:193) abcdefghijklmnopqrstuvwxyz
+  ✗ (193:219) ABCDEFGHIJKLMNOPQRSTUVWXYZ
+  ✗ (219:229) 0123456789
+  ✗ (229:252) _+-.,!@#$%^&*();\/|<>"'
+  ✗ (252:256) foo@
+  ✗ (256:273) bar.ba@test.co.uk
+  ✗ (273:290) http://foo.co.uk/
+  ✗ (290:322) http://regexr.com/foo.html?q=bar
+  ✗ (322:345) https://mediatemple.net
+  ✗ (345:356) -domain.com
+  ✗ (356:367) domain-.com
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     ([\-\.0-9a-zA-Z])+\.(((((((((com|or■)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU)  unsatisfiable SAT formula       
+  2      |  1     ([\-\.0-9a-zA-Z])+\.(((((((((co■|org)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  3      |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|■du)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  4      |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|MI■)|(ED)U)  unsatisfiable SAT formula       
+  5      |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|ne■)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  6      |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|■et)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  7      |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|■RG)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  8      |  1     ([\-\.0-9a-zA-Z]){■}\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  9      |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|■il)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  10     |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|■ET)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  11     |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|■IL)|(ED)U)  unsatisfiable SAT formula       
+  12     |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|■rg)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  13     |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|OR■)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  14     |  1     ([\-\.0-9a-zA-Z])+■((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  15     |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|■OM)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  16     |  1     ([\-\.0-9a-zA-Z])+\.(((((((((c■m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  17     |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|mi■)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  18     |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|NE■)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  19     |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|o■g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  20     |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|O■G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  21     |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|e■u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  22     |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|N■T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  23     |  1     ([\-\.0-9a-zA-Z])+\.(((((((((■om|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  24     |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|■DU)  unsatisfiable SAT formula       
+  25     |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|ed■)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  26     |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|CO■)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  27     |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|E■U)  unsatisfiable SAT formula       
+  28     |  1     ([\-\.0-9a-zA-Z])+\.((((((((((co)m|(or)g)|(ne)t)|m■l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)  unsatisfiable SAT formula       
+  29     |  1     (■)+\.((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)tree is((■)+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)
+char_a: true
+char_B: true
+char_c: char0_c
+char_d: true
+char_e: true
+char_g: true
+char_i: true
+char_k: true
+char_l: true
+char_m: true
+char_n: true
+char_.: true
+char_o: true
+char_p: true
+char_q: true
+char_r: true
+char_3: true
+char_S: true
+char_s: true
+char_t: true
+char_u: true
+char_w: true
+char_x: true
+char_y: true
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(o■)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 5.666128ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(■r)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 5.581891ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((■o)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 13.598114ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)■)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 7.986253ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)■)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 6.914792ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(O■)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 7.312882ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(■D)U) size: 41 holes: 1 time: 5.562962ms
+template: (([\-\.0-9a-zA-Z]){■}\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 42 holes: 2 time: 15.125645ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)■)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 5.323836ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(■d)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 6.011893ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(■I)L)|(ED)U) size: 41 holes: 1 time: 5.585147ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)■)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 5.330582ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(■i)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 5.61868ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(■R)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 5.839267ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)■)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 5.601666ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(N■)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 5.295099ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)■|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 14.512833ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(m■)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 5.643268ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)■)|(ED)U) size: 41 holes: 1 time: 5.320704ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)■)|(MI)L)|(ED)U) size: 41 holes: 1 time: 5.438491ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(■E)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 5.338974ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(■e)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 6.037098ms
+template: (([\-\.0-9a-zA-Z])+■)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 16.702995ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(E■)U) size: 41 holes: 1 time: 5.912966ms
+template: ((■)+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 13.321573ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(■O)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 5.6689ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)■)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 5.341968ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((c■)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 14.03108ms
+template: (([\-\.0-9a-zA-Z])+\.)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(e■)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U) size: 41 holes: 1 time: 5.686461ms
+longest: #mn#(([\-\.0-9a-zA-Z])+■)((((((((((co)m|(or)g)|(ne)t)|(mi)l)|(ed)u)|(CO)M)|(OR)G)|(NE)T)|(MI)L)|(ED)U)#mn# size: #ms#41#ms# holes: #mh#1#mh# time: #mt#16.702995#mt#ms
+
+Computed in:
+
+  #c#58075#c#ms
+
+timeSATSolver time:
+
+  #s#221#s#ms

@@ -1,0 +1,46 @@
+
+Given the regular expression:
+
+  ((((\d){1,3})(,(\d){3})*)|((\d)+))(.(\d)+)?
+
+That that should match the strings:
+
+  ✓ (0:7)    9999999
+  ✓ (7:18)   99999.99999
+  ✓ (18:33)  99,999,999.9999
+  ✓ (33:46)  123,456,789.9
+  ✓ (46:60)  954,652,000.03
+
+And reject the strings:
+
+  ✗ (60:65)  9999.
+  ✗ (65:79)  9,99,99999.999
+  ✗ (79:92)  999.9999.9999
+  ✗ (92:101) 100,000,0
+  ✗ (101:107) 100,00
+  ✗ (107:117) 200,999,00
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     (((\d){1,3})(,(\d){3})*|(\d){■})(.(\d)+)?  unsatisfiable SAT formula       
+  2      |  1     (((\d){1,3})(,(\d){3})*|(\d)+)(■(\d)+)?  (((\d){1,3})(,(\d){3})*|(\d)+)(.(\d)+)?
+template: (((\d){1,3})(,(\d){3})*|(\d)+)(■(\d)+)? size: 12 holes: 1 time: 0.816752ms
+template: (((\d){1,3})(,(\d){3})*|(\d){■})(.(\d)+)? size: 13 holes: 2 time: 1.98654ms
+longest: #mn#(((\d){1,3})(,(\d){3})*|(\d){■})(.(\d)+)?#mn# size: #ms#13#ms# holes: #mh#2#mh# time: #mt#1.98654#mt#ms
+
+Computed in:
+
+  #c#106#c#ms
+
+timeSATSolver time:
+
+  #s#3#s#ms
+
+Finds the following solutions (and the corresponding fitness):
+
+  1    (((\d){1,3})(,(\d){3})*|(\d)+)(.(\d)+)?
+
+All done
+

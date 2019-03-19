@@ -1,0 +1,59 @@
+
+Given the regular expression:
+
+  ((0[1-9])|(1[0-2]))\/((\d){4})
+
+That that should match the strings:
+
+  ✓ (0:7)    12/2002
+  ✓ (7:14)   11/1900
+  ✓ (14:21)  02/1977
+  ✓ (21:27)  2/1977
+  ✓ (27:33)  5/2002
+
+And reject the strings:
+
+  ✗ (33:39)  0/2003
+  ✗ (39:46)  13/2002
+  ✗ (46:51)  12/02
+  ✗ (51:58)  15/1900
+  ✗ (58:68)  10/10/1977
+  ✗ (68:75)  12-2002
+  ✗ (75:82)  2002/12
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     (0[1-9]|1[0-2])■(\d){4}   Failed dot test or empty set test. 
+  2      |  1     (0[1-9]|1■)\/(\d){4}      Failed dot test or empty set test. 
+  3      |  1     (0[1-9]|■[0-2])\/(\d){4}  Failed dot test or empty set test. 
+  4      |  1     (■[1-9]|1[0-2])\/(\d){4}  Failed dot test or empty set test. 
+  5      |  1     (0[1-9]|1[0-2])\/(■){4}   Failed dot test or empty set test. 
+  6      |  1     (0[1-9]|1[0-2])\/(\d){■}  Failed dot test or empty set test. 
+  7      |  1     (0■|1[0-2])\/(\d){4}      Failed dot test or empty set test. 
+  8      |  2     (0■|1[0-2])\/(\d){■}      Failed dot test or empty set test. 
+  9      |  2     (0(■■)|1[0-2])\/(\d){4}   Failed dot test or empty set test. 
+  10     |  2     (0[1-9]|(■|■)[0-2])\/(\d){4}  Failed dot test or empty set test. 
+  11     |  2     (0[1-9]|1[0-2])(■|■)(\d){4}  Failed dot test or empty set test. 
+  12     |  2     (0[1-9]|1■)■(\d){4}       Failed dot test or empty set test. 
+  13     |  2     (0■|1■)\/(\d){4}          Failed dot test or empty set test. 
+  14     |  2     ((■){■}[1-9]|1[0-2])\/(\d){4}  ((0){0,1}[1-9]|1[0-2])\/(\d){4} 
+template: ((■){■}[1-9]|1[0-2])\/(\d){4} size: 8 holes: 3 time: 2.950612ms
+longest: #mn#((■){■}[1-9]|1[0-2])\/(\d){4}#mn# size: #ms#8#ms# holes: #mh#3#mh# time: #mt#2.950612#mt#ms
+
+Computed in:
+
+  #c#172#c#ms
+
+timeSATSolver time:
+
+  #s#3#s#ms
+
+Finds the following solutions (and the corresponding fitness):
+
+  1    ((0){0,1}[1-9]|1[0-2])\/(\d){4}
+
+All done
+
+max-sat solution: #m#((0)*[1-9]|1[0-2])\/(\d){4}#m#

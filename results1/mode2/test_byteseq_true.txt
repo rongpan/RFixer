@@ -1,0 +1,49 @@
+
+Given the regular expression:
+
+  (\d)+
+
+That that should match the strings:
+
+  ✓ (0:8)    10101000
+  ✓ (8:16)   01010000
+  ✓ (16:24)  01110110
+  ✓ (24:32)  10111001
+  ✓ (32:40)  01011001
+  ✓ (40:48)  11001100
+  ✓ (48:56)  11111111
+  ✓ (56:64)  00000000
+
+And reject the strings:
+
+  ✗ (64:73)  011011001
+  ✗ (73:83)  100000001 
+  ✗ (83:91)  01000200
+  ✗ (91:99)  00021000
+  ✗ (99:108) e10000000
+  ✗ (108:116) 46548642
+  ✗ (116:123) 2154648
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     (■)+                      unsatisfiable SAT formula       
+  2      |  1     (\d){■}                   unsatisfiable SAT formula       
+  3      |  2     (■■)+                   tree is(■■)+
+char_0: true
+char_1: true
+char_0: true
+char_1: true
+template: (■■)+ size: 1 holes: 2 time: 7.481817ms
+template: (■)+ size: 1 holes: 1 time: 7.761242ms
+template: (\d){■} size: 2 holes: 2 time: 5.810633ms
+longest: #mn#(■)+#mn# size: #ms#1#ms# holes: #mh#1#mh# time: #mt#7.761242#mt#ms
+
+Computed in:
+
+  #c#172#c#ms
+
+timeSATSolver time:
+
+  #s#21#s#ms

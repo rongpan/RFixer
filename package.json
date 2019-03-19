@@ -1,0 +1,40 @@
+{
+  "name": "regex-frontend",
+  "version": "1.0.7",
+  "description": "a RegEx playground with editable matching regions",
+  "main": "server.js",
+  "dependencies": {
+    "codemirror": "^5.23.0",
+    "codemirror-no-newlines": "^1.0.2",
+    "localforage": "^1.5.0",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "superagent": "^3.5.2"
+  },
+  "scripts": {
+    "postinstall": "gulp clean && gulp build:all",
+    "start": "node server.js"
+  },
+  "author": "Isaac Evavold <isaacevavold@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/codemirror": "0.0.38",
+    "@types/localforage": "0.0.33",
+    "@types/react": "^15.0.21",
+    "@types/superagent": "^2.0.36",
+    "del": "^2.2.2",
+    "express": "^4.14.1",
+    "gulp": "^3.9.1",
+    "gulp-clean-css": "^3.0.3",
+    "gulp-concat": "^2.6.1",
+    "gulp-if": "^2.0.2",
+    "gulp-sass": "^3.1.0",
+    "gulp-sourcemaps": "^2.4.1",
+    "gulp-strip-comments": "^2.4.5",
+    "gulp-uglify": "^2.0.1",
+    "rollup-plugin-typescript": "^0.8.1",
+    "rollup-stream": "^1.19.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}

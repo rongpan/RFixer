@@ -1,0 +1,16 @@
+(a|b)b?
++++
+ab
+ba
+baba
+baabba
+abab
+bababa
+abba
+ababba
+baab
+abbaba
+---
+a
+b
+bb

@@ -1,0 +1,63 @@
+
+Given the regular expression:
+
+  ([\-\.0-9a-zA-Z])+\.(((((((((com|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU)
+
+That that should match the strings:
+
+  ✓ (0:15)   3SquareBand.com
+  ✓ (15:22)  asp.net
+  ✓ (22:30)  army.mil
+  ✓ (30:42)  gskinner.com
+  ✓ (42:50)  demo.net
+  ✓ (50:60)  regexr.com
+  ✓ (60:75)  mediatemple.net
+  ✓ (75:87)  www.demo.com
+
+And reject the strings:
+
+  ✗ (87:102) $SquareBand.com
+  ✗ (102:113) asp/dot.net
+  ✗ (113:126) army.military
+  ✗ (126:132) Welcom
+  ✗ (132:139) Temple!
+  ✗ (139:144) Edit&
+  ✗ (144:152) matches.
+  ✗ (152:159) ctrl-z.
+  ✗ (159:167) utorial.
+  ✗ (167:193) abcdefghijklmnopqrstuvwxyz
+  ✗ (193:219) ABCDEFGHIJKLMNOPQRSTUVWXYZ
+  ✗ (219:229) 0123456789
+  ✗ (229:252) _+-.,!@#$%^&*();\/|<>"'
+  ✗ (252:256) foo@
+  ✗ (256:273) bar.ba@test.co.uk
+  ✗ (273:290) http://foo.co.uk/
+  ✗ (290:322) http://regexr.com/foo.html?q=bar
+  ✗ (322:345) https://mediatemple.net
+  ✗ (345:356) -domain.com
+  ✗ (356:367) domain-.com
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     ([\-\.0-9a-zA-Z])+\.(((((((((co■|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU)  unsatisfiable SAT formula       
+  2      |  1     ([\-\.0-9a-zA-Z]){■}\.(((((((((com|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU)  unsatisfiable SAT formula       
+  3      |  1     ([\-\.0-9a-zA-Z])+■(((((((((com|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU)  unsatisfiable SAT formula       
+  4      |  1     ([\-\.0-9a-zA-Z])+\.(((((((((c■m|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU)  unsatisfiable SAT formula       
+  5      |  1     ([\-\.0-9a-zA-Z])+\.(((((((((■om|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU)  unsatisfiable SAT formula       
+  6      |  1     (■)+\.(((((((((com|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU)template: ([\-\.0-9a-zA-Z]){■}\.(((((((((com|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU) size: 42 holes: 2 time: 2.074644ms
+template: ([\-\.0-9a-zA-Z])+\.(((((((((c■m|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU) size: 41 holes: 1 time: 0.719046ms
+template: (■)+\.(((((((((com|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU) size: 41 holes: 1 time: 3.033212ms
+template: ([\-\.0-9a-zA-Z])+\.(((((((((co■|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU) size: 41 holes: 1 time: 2.823791ms
+template: ([\-\.0-9a-zA-Z])+■(((((((((com|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU) size: 41 holes: 1 time: 0.749856ms
+template: ([\-\.0-9a-zA-Z])+\.(((((((((■om|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU) size: 41 holes: 1 time: 0.723656ms
+longest: #mn#(■)+\.(((((((((com|org)|net)|mil)|edu)|COM)|ORG)|NET)|MIL)|EDU)#mn# size: #ms#41#ms# holes: #mh#1#mh# time: #mt#3.033212#mt#ms
+
+Computed in:
+
+  #c#593#c#ms
+
+timeSATSolver time:
+
+  #s#10#s#ms

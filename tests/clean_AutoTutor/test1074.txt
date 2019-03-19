@@ -1,0 +1,14 @@
+((aa)|(ab)|(ba)|(bb))
++++
+ba
+ab
+baa
+bbb
+aab
+b
+abbb
+babb
+aba
+---
+aa
+bb

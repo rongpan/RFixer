@@ -1,0 +1,57 @@
+
+Given the regular expression:
+
+  ((((mailto\:|news)|ht)|ftp\:)){1}(\S)+
+
+That that should match the strings:
+
+  ✓ (0:17)   http://someserver
+  ✓ (17:43)  http://www.someserver.com/
+  ✓ (43:81)  http://www.someserver.com/somefile.txt
+  ✓ (81:98)  http://foo.co.uk/
+  ✓ (98:130) http://regexr.com/foo.html?q=bar
+  ✓ (130:153) https://mediatemple.net
+  ✓ (153:187) http://foo.co.uk/http://someserver
+  ✓ (187:213) ftps://www.someserver.com/
+  ✓ (213:251) ftps://www.someserver.com/somefile.txt
+  ✓ (251:268) ftps://foo.co.uk/
+  ✓ (268:299) ftp://regexr.com/foo.html?q=bar
+  ✓ (299:321) ftps://mediatemple.net
+  ✓ (321:353) ftps://regexr.com/foo.html?q=bar
+  ✓ (353:376) https://mediatemple.net
+  ✓ (376:391) http://yourmoma
+  ✓ (391:417) http://www.aspemporium.com
+  ✓ (417:445) mailto:dominionx@hotmail.com
+  ✓ (445:463) ftp://ftp.test.com
+  ✓ (463:510) http://regexlib.com/REDetails.aspx?regexp_id=37
+
+And reject the strings:
+
+  ✗ (510:530) www.yahoo.com/period
+  ✗ (530:542) foo@demo.net
+  ✗ (542:559) bar.ba@test.co.uk
+  ✗ (559:571) www.demo.com
+  ✗ (571:584) www.abc.co.il
+  ✗ (584:595) -domain.com
+  ✗ (595:607) domain-.com 
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     ((((mailto\:|news)|ht)|f■p\:)){1}(\S)+  Failed dot test or empty set test. 
+  2      |  1     ((((ma■lto\:|news)|ht)|ftp\:)){1}(\S)+  Failed dot test or empty set test. 
+  3      |  1     ((((mailto\:|ne■s)|ht)|ftp\:)){1}(\S)+  Failed dot test or empty set test. 
+  4      |  1     ((((mailto\:|news)|h■)|ftp\:)){1}(\S)+  Failed dot test or empty set test. 
+  5      |  1     ((((mailto\:|news)|■t)|ftp\:)){1}(\S)+get p size() 0 !!!!!!!!!!!!!!!!!!!!!
+  Failed dot test or empty set test. 
+  6      |  1     ((((mailto\:|news)|ht)|ftp■)){1}(\S)+template: ((((mailto\:|news)|ht)|ftp■)){1}(\S)+ size: 22 holes: 1 time: 8.631599ms
+longest: #mn#((((mailto\:|news)|ht)|ftp■)){1}(\S)+#mn# size: #ms#22#ms# holes: #mh#1#mh# time: #mt#8.631599#mt#ms
+
+Computed in:
+
+  #c#425#c#ms
+
+timeSATSolver time:
+
+  #s#9#s#ms

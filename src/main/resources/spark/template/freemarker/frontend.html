@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>RegFixer</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/libs.css">
+    <link rel="stylesheet" href="/app.css">
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+  </head>
+  <body>
+    <div class="app"></div>
+
+    <script src="/libs.js"></script>
+    <script src="/app.js"></script>
+
+    <script>
+      let app = ReactDOM.render(React.createElement(frontend.App, {
+        regex: '\\w+',
+        corpus: 'awdif DxRsf 0pAbdef\n\nxy9D29r r 9 t5 d9b 29gp\n\nz8fn5 v9wSnx0\n\n2nf9bm4 d9vNUN',
+        colors: [
+          '#b6daf2',
+        ],
+      }), document.querySelector('.app'))
+    </script>
+  </body>
+</html>

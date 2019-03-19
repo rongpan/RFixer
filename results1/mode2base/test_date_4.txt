@@ -1,0 +1,75 @@
+
+Given the regular expression:
+
+  ((0[1-9])|(1[0-2]))\/((\d){4})
+
+That that should match the strings:
+
+  ✓ (0:7)    12/2002
+  ✓ (7:14)   11/1900
+  ✓ (14:21)  02/1977
+  ✓ (21:27)  2/1977
+  ✓ (27:33)  5/2002
+
+And reject the strings:
+
+  ✗ (33:39)  0/2003
+  ✗ (39:46)  13/2002
+  ✗ (46:51)  12/02
+  ✗ (51:58)  15/1900
+  ✗ (58:68)  10/10/1977
+  ✗ (68:75)  12-2002
+  ✗ (75:82)  2002/12
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     (0[1-9]|1[0-2])■(\d){4}   unsatisfiable SAT formula       
+  2      |  1     (0[1-9]|1■)\/(\d){4}      unsatisfiable SAT formula       
+  3      |  1     (0[1-9]|■[0-2])\/(\d){4}  unsatisfiable SAT formula       
+  4      |  1     (■[1-9]|1[0-2])\/(\d){4}  unsatisfiable SAT formula       
+  5      |  1     (0[1-9]|1[0-2])\/(■){4}   unsatisfiable SAT formula       
+  6      |  1     (0[1-9]|1[0-2])\/(\d){■}  unsatisfiable SAT formula       
+  7      |  1     (0■|1[0-2])\/(\d){4}      unsatisfiable SAT formula       
+  8      |  2     (0■|1[0-2])\/(\d){■}      unsatisfiable SAT formula       
+  9      |  2     (0(■|■)|1[0-2])\/(\d){4}  unsatisfiable SAT formula       
+  10     |  2     (0[1-9]|(■){■}[0-2])\/(\d){4}  unsatisfiable SAT formula       
+  11     |  2     (0[1-9]|1[0-2])(■|■)(\d){4}  unsatisfiable SAT formula       
+  12     |  2     (0[1-9]|1■)■(\d){4}       unsatisfiable SAT formula       
+  13     |  2     (0[1-9]|1■)\/(■){4}       unsatisfiable SAT formula       
+  14     |  2     ((■){■}[1-9]|1[0-2])\/(\d){4}tree is(((■){■}[1-9]|1[0-2])\/)(\d){4}
+char_0: true
+char_1: false
+char_2: char0_2
+char_5: char0_5
+char_7: char0_7
+char_9: char0_9
+char_/: char0_/
+bound0
+bound is bound0_0
+bound1
+bound is bound1_1
+template: ((0[1-9]|■[0-2])\/)(\d){4} size: 7 holes: 1 time: 4.363637ms
+template: ((0[1-9]|1■)■)(\d){4} size: 6 holes: 2 time: 4.506929ms
+template: ((0[1-9]|1[0-2])(■|■))(\d){4} size: 8 holes: 2 time: 4.151868ms
+template: ((0[1-9]|1■)\/)(■){4} size: 6 holes: 2 time: 4.51754ms
+template: ((0[1-9]|1[0-2])■)(\d){4} size: 7 holes: 1 time: 5.98223ms
+template: ((■[1-9]|1[0-2])\/)(\d){4} size: 7 holes: 1 time: 4.51769ms
+template: (((■){■}[1-9]|1[0-2])\/)(\d){4} size: 8 holes: 3 time: 5.131175ms
+template: ((0[1-9]|1■)\/)(\d){4} size: 7 holes: 1 time: 4.427905ms
+template: ((0■|1[0-2])\/)(\d){■} size: 7 holes: 3 time: 4.128356ms
+template: ((0(■|■)|1[0-2])\/)(\d){4} size: 8 holes: 2 time: 4.110491ms
+template: ((0[1-9]|1[0-2])\/)(\d){■} size: 8 holes: 2 time: 4.181394ms
+template: ((0■|1[0-2])\/)(\d){4} size: 7 holes: 1 time: 4.138913ms
+template: ((0[1-9]|(■){■}[0-2])\/)(\d){4} size: 8 holes: 3 time: 4.21529ms
+template: ((0[1-9]|1[0-2])\/)(■){4} size: 7 holes: 1 time: 4.558101ms
+longest: #mn#((0[1-9]|1[0-2])■)(\d){4}#mn# size: #ms#7#ms# holes: #mh#1#mh# time: #mt#5.98223#mt#ms
+
+Computed in:
+
+  #c#391#c#ms
+
+timeSATSolver time:
+
+  #s#63#s#ms

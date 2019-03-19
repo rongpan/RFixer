@@ -1,0 +1,542 @@
+
+Given the regular expression:
+
+  (\d){1,2}\/(\d){1,2}\/(\d){4}
+
+That that should match the strings:
+
+  ✓ (0:10)   12/30/2004
+  ✓ (10:20)  01/01/2004
+  ✓ (20:28)  4/1/2001
+  ✓ (28:38)  12/12/2001
+
+And reject the strings:
+
+  ✗ (38:48)  10.03.1979
+  ✗ (48:60)  09--02--2004
+  ✗ (60:70)  15-15-2004
+  ✗ (70:80)  13/12/2004
+  ✗ (80:90)  02/31/2000
+  ✗ (90:99)  55/5/3434
+  ✗ (99:105) 1/1/01
+  ✗ (105:114) 12 Jan 01
+  ✗ (114:122) 1-1-2001
+  ✗ (122:132) 12/55/2003
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     (\d){1,2}\/(\d){1,2}\/(\d){■}  unsatisfiable SAT formula       
+  2      |  1     (\d){1,2}■(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  3      |  1     (\d){1,2}\/(■){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  4      |  1     (\d){1,2}\/(\d){■}\/(\d){4}  unsatisfiable SAT formula       
+  5      |  1     (\d){1,2}\/(\d){1,2}■(\d){4}  unsatisfiable SAT formula       
+  6      |  1     (\d){1,2}\/(\d){1,2}\/(■){4}  unsatisfiable SAT formula       
+  7      |  1     (■){1,2}\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  8      |  1     (\d){■}\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  9      |  2     ((■|■)){1,2}\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  10     |  2     ((■){■}){1,2}\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  11     |  2     (\d){1,2}\/(■■){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  12     |  2     (\d){1,2}\/(\d){1,2}\/■   unsatisfiable SAT formula       
+  13     |  2     (\d){1,2}\/(\d){1,2}\/(■){■}  unsatisfiable SAT formula       
+  14     |  2     (■){1,2}■(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  15     |  2     (\d){1,2}\/(\d){■}\/(■){4}  unsatisfiable SAT formula       
+  16     |  2     (\d){1,2}\/(\d){■}■(\d){4}  unsatisfiable SAT formula       
+  17     |  2     (\d){■}■(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  18     |  2     (■){1,2}\/(\d){1,2}■(\d){4}  unsatisfiable SAT formula       
+  19     |  2     (\d){■}\/(\d){1,2}■(\d){4}  unsatisfiable SAT formula       
+  20     |  2     (\d){1,2}\/(■){1,2}\/(\d){■}  unsatisfiable SAT formula       
+  21     |  2     (\d){1,2}■(\d){1,2}\/(■){4}  unsatisfiable SAT formula       
+  22     |  2     (\d){1,2}\/(\d){1,2}■(■){4}  unsatisfiable SAT formula       
+  23     |  2     (\d){1,2}\/(\d){1,2}(■■)(\d){4}  unsatisfiable SAT formula       
+  24     |  2     (\d){1,2}■(\d){1,2}■(\d){4}  unsatisfiable SAT formula       
+  25     |  2     (\d){1,2}\/(\d){1,2}(■){■}(\d){4}  unsatisfiable SAT formula       
+  26     |  2     (\d){■}\/(\d){1,2}\/(■){4}  unsatisfiable SAT formula       
+  27     |  2     (\d){1,2}(■■)(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  28     |  2     (\d){1,2}\/(\d){■}\/(\d){■}  unsatisfiable SAT formula       
+  29     |  2     (\d){1,2}■(\d){■}\/(\d){4}  unsatisfiable SAT formula       
+  30     |  2     (■){1,2}\/(\d){1,2}\/(■){4}  unsatisfiable SAT formula       
+  31     |  2     (\d){1,2}\/(\d){1,2}\/(■■){4}  unsatisfiable SAT formula       
+  32     |  2     (\d){1,2}(■|■)(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  33     |  2     (\d){1,2}\/(\d){1,2}\/((■|■)){4}  unsatisfiable SAT formula       
+  34     |  2     (■){■}\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  35     |  2     (■){1,2}\/(\d){1,2}\/(\d){■}  unsatisfiable SAT formula       
+  36     |  2     (\d){1,2}(■){■}(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  37     |  2     ■\/(\d){1,2}\/(\d){4}     unsatisfiable SAT formula       
+  38     |  2     (■■){1,2}\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  39     |  2     (\d){■}\/(■){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  40     |  2     (\d){1,2}\/(\d){1,2}\/((■){■}){4}  unsatisfiable SAT formula       
+  41     |  2     (■){1,2}\/(\d){■}\/(\d){4}  unsatisfiable SAT formula       
+  42     |  2     (\d){■}\/(\d){1,2}\/(\d){■}  unsatisfiable SAT formula       
+  43     |  2     (\d){1,2}\/(■){1,2}\/(■){4}  unsatisfiable SAT formula       
+  44     |  2     (\d){1,2}\/(■){1,2}■(\d){4}  unsatisfiable SAT formula       
+  45     |  2     (\d){1,2}■(\d){1,2}\/(\d){■}  unsatisfiable SAT formula       
+  46     |  2     (\d){1,2}\/(■){■}\/(\d){4}  unsatisfiable SAT formula       
+  47     |  2     (■){1,2}\/(■){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  48     |  2     (\d){1,2}\/(\d){1,2}(■|■)(\d){4}  unsatisfiable SAT formula       
+  49     |  2     (\d){1,2}\/(\d){1,2}■(\d){■}  unsatisfiable SAT formula       
+  50     |  2     (\d){1,2}\/■\/(\d){4}     unsatisfiable SAT formula       
+  51     |  2     (\d){1,2}\/((■|■)){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  52     |  2     (\d){1,2}■(■){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  53     |  2     (\d){1,2}\/((■){■}){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  54     |  2     (\d){■}\/(\d){■}\/(\d){4}  unsatisfiable SAT formula       
+  55     |  3     (\d){1,2}\/((■■){■}){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  56     |  3     (\d){1,2}\/(((■|■)){■}){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  57     |  3     (■■)\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  58     |  3     (\d){1,2}\/(\d){1,2}(■(■■))(\d){4}  unsatisfiable SAT formula       
+  59     |  3     (\d){1,2}\/(\d){■}\/(■■){4}  unsatisfiable SAT formula       
+  60     |  3     (\d){1,2}\/((■■)■){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  61     |  3     ((■|■■)){1,2}\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  62     |  3     ((■){■}){■}\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  63     |  3     (■){1,2}\/(■){1,2}■(\d){4}  unsatisfiable SAT formula       
+  64     |  3     (\d){1,2}\/(((■){■}|■)){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  65     |  3     (\d){1,2}\/((■|(■|■))){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  66     |  3     (■){1,2}\/(\d){1,2}■(\d){■}  unsatisfiable SAT formula       
+  67     |  3     (\d){1,2}\/((■■|■)){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  68     |  3     (\d){1,2}\/((■|(■){■})){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  69     |  3     (((■|■)){■}){1,2}\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  70     |  3     (■){1,2}\/(\d){1,2}■(■){4}  unsatisfiable SAT formula       
+  71     |  3     (\d){1,2}\/(((■|■)|■)){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  72     |  3     (\d){1,2}\/(((■){■}){■}){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  73     |  3     ■\/(\d){1,2}■(\d){4}      unsatisfiable SAT formula       
+  74     |  3     (((■){■}){■}){1,2}\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  75     |  3     ((■■){■}){1,2}\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  76     |  3     (■){1,2}\/(\d){1,2}(■){■}(\d){4}  unsatisfiable SAT formula       
+  77     |  3     (■){1,2}\/(\d){1,2}(■■)(\d){4}  unsatisfiable SAT formula       
+  78     |  3     (\d){1,2}\/(■■){■}\/(\d){4}  unsatisfiable SAT formula       
+  79     |  3     (■■){1,2}\/(\d){1,2}■(\d){4}  unsatisfiable SAT formula       
+  80     |  3     (\d){■}\/(\d){1,2}■(\d){■}  unsatisfiable SAT formula       
+  81     |  3     (■){1,2}(■){■}(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  82     |  3     (\d){1,2}\/(\d){1,2}\/(■■)  unsatisfiable SAT formula       
+  83     |  3     (■){1,2}\/(■■){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  84     |  3     (\d){■}\/(■){1,2}■(\d){4}  unsatisfiable SAT formula       
+  85     |  3     (\d){■}\/(\d){1,2}■(■){4}  unsatisfiable SAT formula       
+  86     |  3     (\d){1,2}■(■■){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  87     |  3     (\d){■}\/(\d){1,2}(■|■)(\d){4}  unsatisfiable SAT formula       
+  88     |  3     (\d){■}\/(\d){1,2}(■){■}(\d){4}  unsatisfiable SAT formula       
+  89     |  3     (\d){1,2}\/(\d){1,2}\/(■■){■}  unsatisfiable SAT formula       
+  90     |  3     (\d){1,2}\/(■■){1,2}\/(\d){■}  unsatisfiable SAT formula       
+  91     |  3     (\d){1,2}\/(■){1,2}■(\d){■}  unsatisfiable SAT formula       
+  92     |  3     (■){1,2}\/(■){1,2}\/(\d){■}  unsatisfiable SAT formula       
+  93     |  3     (\d){1,2}\/(■■){1,2}■(\d){4}  unsatisfiable SAT formula       
+  94     |  3     (\d){■}\/(■){1,2}\/(\d){■}  unsatisfiable SAT formula       
+  95     |  3     (\d){1,2}■(■){1,2}\/(\d){■}  unsatisfiable SAT formula       
+  96     |  3     (\d){1,2}\/(\d){1,2}■(■■){4}  unsatisfiable SAT formula       
+  97     |  3     (■){1,2}\/(\d){1,2}(■|■)(\d){4}  unsatisfiable SAT formula       
+  98     |  3     (\d){1,2}\/(\d){■}(■■)(\d){4}  unsatisfiable SAT formula       
+  99     |  3     (\d){1,2}\/(■■){1,2}\/(■){4}  unsatisfiable SAT formula       
+  100    |  3     (\d){1,2}\/(■){■}\/(\d){■}  unsatisfiable SAT formula       
+  101    |  3     (\d){1,2}\/■\/(\d){■}     unsatisfiable SAT formula       
+  102    |  3     (\d){■}\/(■■){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  103    |  3     (\d){1,2}\/((■|■)){1,2}\/(\d){■}  unsatisfiable SAT formula       
+  104    |  3     (\d){1,2}■(\d){1,2}■(■){4}  unsatisfiable SAT formula       
+  105    |  3     (\d){■}(■){■}(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  106    |  3     (\d){1,2}\/((■){■}■){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  107    |  3     (\d){1,2}■(■){1,2}\/(■){4}  unsatisfiable SAT formula       
+  108    |  3     (\d){1,2}■(\d){1,2}\/(■■){4}  unsatisfiable SAT formula       
+  109    |  3     (\d){1,2}\/((■|■)■){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  110    |  3     (\d){1,2}(■){■}(\d){1,2}\/(■){4}  unsatisfiable SAT formula       
+  111    |  3     (\d){1,2}■(\d){1,2}\/((■|■)){4}  unsatisfiable SAT formula       
+  112    |  3     (\d){1,2}■(\d){1,2}\/((■){■}){4}  unsatisfiable SAT formula       
+  113    |  3     (\d){■}\/(\d){1,2}(■■)(\d){4}  unsatisfiable SAT formula       
+  114    |  3     (\d){1,2}\/(■(■|■)){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  115    |  3     (\d){1,2}(■|■)(\d){1,2}\/(■){4}  unsatisfiable SAT formula       
+  116    |  3     (\d){1,2}(■■)(\d){1,2}\/(■){4}  unsatisfiable SAT formula       
+  117    |  3     (\d){1,2}\/(■(■){■}){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  118    |  3     (\d){1,2}\/(■){1,2}■(■){4}  unsatisfiable SAT formula       
+  119    |  3     (\d){1,2}\/(\d){1,2}■((■){■}){4}  unsatisfiable SAT formula       
+  120    |  3     (\d){1,2}\/((■){■}){1,2}\/(\d){■}  unsatisfiable SAT formula       
+  121    |  3     (\d){1,2}\/(■(■■)){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  122    |  3     (\d){1,2}\/(\d){1,2}■((■|■)){4}  unsatisfiable SAT formula       
+  123    |  3     (\d){1,2}\/(\d){1,2}(■){■}(■){4}  unsatisfiable SAT formula       
+  124    |  3     (\d){1,2}\/(\d){1,2}■■    unsatisfiable SAT formula       
+  125    |  3     (\d){1,2}\/(\d){1,2}(■■)(■){4}  unsatisfiable SAT formula       
+  126    |  3     (\d){1,2}\/(\d){1,2}(■|■)(■){4}  unsatisfiable SAT formula       
+  127    |  3     (\d){1,2}((■|■)){■}(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  128    |  3     (■){1,2}\/(\d){1,2}\/((■){■}){4}  unsatisfiable SAT formula       
+  129    |  3     (\d){■}\/(\d){1,2}\/((■|■)){4}  unsatisfiable SAT formula       
+  130    |  3     (\d){1,2}(■|■)(\d){1,2}■(\d){4}  unsatisfiable SAT formula       
+  131    |  3     (\d){1,2}\/(■){1,2}\/■    unsatisfiable SAT formula       
+  132    |  3     (\d){1,2}■(\d){1,2}(■■)(\d){4}  unsatisfiable SAT formula       
+  133    |  3     (\d){1,2}\/(\d){1,2}(■■)(\d){■}  unsatisfiable SAT formula       
+  134    |  3     (\d){1,2}■(\d){1,2}\/■    unsatisfiable SAT formula       
+  135    |  3     (\d){1,2}\/(■){1,2}(■■)(\d){4}  unsatisfiable SAT formula       
+  136    |  3     (\d){1,2}\/(\d){1,2}(■)(\d){4}  unsatisfiable SAT formula       
+  137    |  3     (\d){1,2}\/(\d){1,2}((■){■}){■}(\d){4}  unsatisfiable SAT formula       
+  138    |  3     (\d){■}\/(\d){1,2}\/■     unsatisfiable SAT formula       
+  139    |  3     (\d){1,2}\/(\d){1,2}((■){■}■)(\d){4}  unsatisfiable SAT formula       
+  140    |  3     (\d){1,2}\/(\d){1,2}((■■)■)(\d){4}  unsatisfiable SAT formula       
+  141    |  3     (■){1,2}\/(\d){1,2}\/■    unsatisfiable SAT formula       
+  142    |  3     (\d){1,2}\/(\d){1,2}((■|■)■)(\d){4}  unsatisfiable SAT formula       
+  143    |  3     (\d){1,2}\/(\d){1,2}(■(■){■})(\d){4}  unsatisfiable SAT formula       
+  144    |  3     (\d){1,2}(■|■)(\d){■}\/(\d){4}  unsatisfiable SAT formula       
+  145    |  3     (\d){1,2}((■■)■)(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  146    |  3     (\d){1,2}\/(\d){■}\/■     unsatisfiable SAT formula       
+  147    |  3     (\d){1,2}\/(\d){1,2}(■(■|■))(\d){4}  unsatisfiable SAT formula       
+  148    |  3     (\d){1,2}■(\d){1,2}■(\d){■}  unsatisfiable SAT formula       
+  149    |  3     (\d){1,2}\/(\d){1,2}\/(■|■)  unsatisfiable SAT formula       
+  150    |  3     (\d){1,2}■(■){1,2}■(\d){4}  unsatisfiable SAT formula       
+  151    |  3     (\d){1,2}■(\d){1,2}(■){■}(\d){4}  unsatisfiable SAT formula       
+  152    |  3     (\d){■}\/(\d){■}\/(\d){■}  unsatisfiable SAT formula       
+  153    |  3     (\d){1,2}■(\d){1,2}\/(■){■}  unsatisfiable SAT formula       
+  154    |  3     (\d){1,2}■(\d){1,2}(■|■)(\d){4}  unsatisfiable SAT formula       
+  155    |  3     (\d){1,2}(■■)(\d){1,2}■(\d){4}  unsatisfiable SAT formula       
+  156    |  3     (\d){■}\/(\d){1,2}\/(■){■}  unsatisfiable SAT formula       
+  157    |  3     (\d){1,2}(■){■}(\d){1,2}■(\d){4}  unsatisfiable SAT formula       
+  158    |  3     (\d){1,2}\/(\d){1,2}(■){■}(\d){■}  unsatisfiable SAT formula       
+  159    |  3     (■■){1,2}\/(\d){1,2}\/(\d){■}  unsatisfiable SAT formula       
+  160    |  3     (\d){1,2}\/(\d){1,2}\/((■|(■){■})){4}  unsatisfiable SAT formula       
+  161    |  3     (\d){1,2}\/(\d){1,2}\/((■){■}■){4}  unsatisfiable SAT formula       
+  162    |  3     (\d){1,2}\/(■){1,2}\/(■){■}  unsatisfiable SAT formula       
+  163    |  3     (\d){1,2}\/(■){1,2}(■){■}(\d){4}  unsatisfiable SAT formula       
+  164    |  3     (\d){1,2}\/(\d){1,2}((■|■)){■}(\d){4}  unsatisfiable SAT formula       
+  165    |  3     (\d){1,2}\/(\d){■}\/(■){■}  unsatisfiable SAT formula       
+  166    |  3     (\d){1,2}\/(\d){1,2}(■■){■}(\d){4}  unsatisfiable SAT formula       
+  167    |  3     (\d){■}\/(■){1,2}\/(■){4}  unsatisfiable SAT formula       
+  168    |  3     (\d){1,2}(■|(■){■})(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  169    |  3     (\d){1,2}\/(\d){1,2}■(■){■}  unsatisfiable SAT formula       
+  170    |  3     (■){■}\/(\d){1,2}\/(■){4}  unsatisfiable SAT formula       
+  171    |  3     ■\/(\d){1,2}\/(■){4}      unsatisfiable SAT formula       
+  172    |  3     (■){1,2}\/(\d){1,2}\/(■){■}  unsatisfiable SAT formula       
+  173    |  3     (\d){■}\/(\d){1,2}\/((■){■}){4}  unsatisfiable SAT formula       
+  174    |  3     (\d){■}\/(\d){1,2}\/(■■){4}  unsatisfiable SAT formula       
+  175    |  3     (■■){■}\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  176    |  3     ((■|■)){1,2}■(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  177    |  3     (\d){1,2}\/(\d){1,2}\/((■|■)){■}  unsatisfiable SAT formula       
+  178    |  3     (\d){1,2}(■■)(■){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  179    |  3     (\d){1,2}(■■)(\d){1,2}\/(\d){■}  unsatisfiable SAT formula       
+  180    |  3     (\d){1,2}\/(\d){1,2}\/((■){■}){■}  unsatisfiable SAT formula       
+  181    |  3     (\d){1,2}(■■)(\d){■}\/(\d){4}  unsatisfiable SAT formula       
+  182    |  3     (\d){1,2}(■)(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  183    |  3     ((■|■)){1,2}\/(\d){■}\/(\d){4}  unsatisfiable SAT formula       
+  184    |  3     (■){1,2}■(\d){1,2}\/(■){4}  unsatisfiable SAT formula       
+  185    |  3     (\d){1,2}(■(■■))(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  186    |  3     (\d){1,2}((■){■}■)(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  187    |  3     (■){1,2}■(\d){1,2}\/(\d){■}  unsatisfiable SAT formula       
+  188    |  3     (\d){1,2}(■(■|■))(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  189    |  3     (\d){1,2}((■|■)■)(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  190    |  3     (\d){1,2}■((■){■}){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  191    |  3     (\d){1,2}\/((■|■)){1,2}■(\d){4}  unsatisfiable SAT formula       
+  192    |  3     (\d){1,2}\/(\d){1,2}\/(((■|■)){■}){4}  unsatisfiable SAT formula       
+  193    |  3     ((■|■)■){1,2}\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  194    |  3     ((■|■)){1,2}\/(\d){1,2}\/(■){4}  unsatisfiable SAT formula       
+  195    |  3     (■){1,2}■(\d){■}\/(\d){4}  unsatisfiable SAT formula       
+  196    |  3     (\d){1,2}(■(■){■})(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  197    |  3     (■){1,2}\/(\d){■}\/(\d){■}  unsatisfiable SAT formula       
+  198    |  3     (■){1,2}■(\d){1,2}■(\d){4}  unsatisfiable SAT formula       
+  199    |  3     (\d){1,2}■(\d){■}\/(\d){■}  unsatisfiable SAT formula       
+  200    |  3     (\d){1,2}■(■){■}\/(\d){4}  unsatisfiable SAT formula       
+  201    |  3     ((■|■)){1,2}\/(\d){1,2}\/(\d){■}  unsatisfiable SAT formula       
+  202    |  3     (■){1,2}■(■){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  203    |  3     (\d){1,2}■■\/(\d){4}      unsatisfiable SAT formula       
+  204    |  3     (\d){1,2}(■){■}(\d){■}\/(\d){4}  unsatisfiable SAT formula       
+  205    |  3     (■){■}■(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  206    |  3     (■){1,2}\/(■){1,2}\/(■){4}  unsatisfiable SAT formula       
+  207    |  3     (■){1,2}\/(\d){1,2}\/(■■){4}  unsatisfiable SAT formula       
+  208    |  3     (\d){■}\/((■){■}){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  209    |  3     ((■|■)){1,2}\/(■){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  210    |  3     ■■(\d){1,2}\/(\d){4}      unsatisfiable SAT formula       
+  211    |  3     (■■){1,2}\/(\d){1,2}\/(■){4}  unsatisfiable SAT formula       
+  212    |  3     (■){1,2}\/(\d){1,2}\/((■|■)){4}  unsatisfiable SAT formula       
+  213    |  3     (■■){1,2}■(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  214    |  3     (\d){1,2}\/(■){1,2}\/(■■){4}  unsatisfiable SAT formula       
+  215    |  3     (\d){1,2}\/(\d){1,2}\/((■|■)■){4}  unsatisfiable SAT formula       
+  216    |  3     ((■|■)){1,2}\/(\d){1,2}■(\d){4}  unsatisfiable SAT formula       
+  217    |  3     (■){1,2}(■■)(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  218    |  3     (\d){1,2}\/(\d){1,2}\/(■(■■)){4}  unsatisfiable SAT formula       
+  219    |  3     (\d){1,2}\/(\d){1,2}\/(■(■|■)){4}  unsatisfiable SAT formula       
+  220    |  3     (■){1,2}(■|■)(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  221    |  3     (\d){1,2}\/(\d){1,2}\/((■■)■){4}  unsatisfiable SAT formula       
+  222    |  3     (\d){1,2}\/(\d){1,2}\/(■(■){■}){4}  unsatisfiable SAT formula       
+  223    |  3     (\d){1,2}\/((■){■}){1,2}\/(■){4}  unsatisfiable SAT formula       
+  224    |  3     (■){1,2}\/■\/(\d){4}      unsatisfiable SAT formula       
+  225    |  3     ((■|■)){■}\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  226    |  3     (■){1,2}\/(\d){■}\/(■){4}  unsatisfiable SAT formula       
+  227    |  3     (\d){1,2}(■|■)(\d){1,2}\/(\d){■}  unsatisfiable SAT formula       
+  228    |  3     (\d){1,2}(■|■)(■){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  229    |  3     (\d){■}\/(\d){■}\/(■){4}  unsatisfiable SAT formula       
+  230    |  3     (\d){1,2}((■|■)|■)(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  231    |  3     (\d){1,2}(■|(■|■))(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  232    |  3     ((■|(■){■})){1,2}\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  233    |  3     (\d){1,2}\/(■){■}\/(■){4}  unsatisfiable SAT formula       
+  234    |  3     (\d){1,2}(■■|■)(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  235    |  3     (\d){1,2}(■|■■)(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  236    |  3     (\d){1,2}\/(\d){■}■(■){4}  unsatisfiable SAT formula       
+  237    |  3     (\d){1,2}((■){■}|■)(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  238    |  3     (\d){1,2}\/(■){1,2}\/((■|■)){4}  unsatisfiable SAT formula       
+  239    |  3     (■){1,2}\/(■){■}\/(\d){4}  unsatisfiable SAT formula       
+  240    |  3     (((■){■}|■)){1,2}\/(\d){1,2}\/(\d){4}  unsatisfiable SAT formula       
+  241    |  3     (\d){1,2}■(\d){■}\/(■){4}  unsatisfiable SAT formula       
+  242    |  3     (\d){1,2}\/(\d){1,2}\/(((■|■)|■)){4}  unsatisfiable SAT formula       
+  243    |  3     (\d){1,2}\/(\d){1,2}\/((■|■■)){4}tree is((((\d){1,2}\/)(\d){1,2})\/)((■|■■)){4}
+char_0: false
+char_1: true
+char_2: false
+char_3: false
+char_4: true
+char_/: false
+char_0: true
+char_1: false
+char_2: true
+char_3: true
+char_4: true
+char_/: true
+char_0: true
+char_1: true
+char_2: true
+char_3: true
+char_4: false
+char_/: true
+template: ((((■){■}\/)(\d){1,2})\/)(■){4} size: 6 holes: 4 time: 5.418969ms
+template: ((((\d){■}\/)(\d){1,2})\/)(■■){4} size: 7 holes: 4 time: 4.272959ms
+template: ((((■){1,2}■)(■){1,2})\/)(\d){4} size: 5 holes: 3 time: 4.543761ms
+template: ((((\d){1,2}(■(■■)))(\d){1,2})\/)(\d){4} size: 7 holes: 3 time: 4.275165ms
+template: ((((\d){1,2}\/)(\d){1,2})((■|■)■))(\d){4} size: 8 holes: 3 time: 5.436776ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)(\d){■} size: 8 holes: 2 time: 7.649652ms
+template: (((■\/)(\d){1,2})\/)(\d){4} size: 6 holes: 1 time: 4.3631ms
+template: ((((■){1,2}■)(\d){1,2})■)(\d){4} size: 5 holes: 3 time: 4.464631ms
+template: ((((\d){1,2}■)■)\/)(\d){4} size: 5 holes: 2 time: 4.138756ms
+template: ((((\d){■}\/)((■){■}){1,2})\/)(\d){4} size: 8 holes: 5 time: 6.98129ms
+template: ((((\d){1,2}\/)(((■){■}|■)){1,2})\/)(\d){4} size: 9 holes: 4 time: 6.227938ms
+template: ((((\d){■}\/)(\d){1,2})\/)■ size: 6 holes: 3 time: 5.367184ms
+template: ((((\d){1,2}\/)(\d){1,2})■)(■){■} size: 6 holes: 4 time: 6.320684ms
+template: (((((■){■}){■}\/)(\d){1,2})\/)(\d){4} size: 8 holes: 5 time: 5.032522ms
+template: ((((\d){1,2}\/)(■){1,2})(■■))(\d){4} size: 6 holes: 3 time: 8.569298ms
+template: ((((\d){1,2}(■){■})(\d){■})\/)(\d){4} size: 8 holes: 5 time: 5.931188ms
+template: ((((\d){1,2}■)(■){1,2})■)(\d){4} size: 5 holes: 3 time: 5.84655ms
+template: ((((\d){■}\/)(\d){1,2})■)(\d){4} size: 7 holes: 3 time: 4.521782ms
+template: ((((\d){1,2}■)(\d){1,2})■)(\d){4} size: 6 holes: 2 time: 4.485988ms
+template: ((((\d){1,2}■)(\d){■})\/)(\d){4} size: 7 holes: 3 time: 4.734553ms
+template: ((((\d){1,2}\/)(\d){1,2})(■■))(■){4} size: 6 holes: 3 time: 4.379191ms
+template: ((((\d){1,2}\/)(\d){1,2})(■))(\d){4} size: 7 holes: 1 time: 8.355878ms
+template: ((((■■){1,2}■)(\d){1,2})\/)(\d){4} size: 6 holes: 3 time: 4.213499ms
+template: (((((■|■)){1,2}\/)(\d){1,2})\/)(\d){4} size: 8 holes: 2 time: 5.86666ms
+template: ((((■){1,2}■)(\d){■})\/)(\d){4} size: 6 holes: 4 time: 4.59121ms
+template: ((((■){1,2}(■){■})(\d){1,2})\/)(\d){4} size: 7 holes: 4 time: 5.710004ms
+template: ((((■){1,2}\/)(■■){1,2})\/)(\d){4} size: 6 holes: 3 time: 4.539816ms
+template: (((((■|■)){1,2}\/)(\d){1,2})\/)(\d){■} size: 8 holes: 4 time: 5.432805ms
+template: ((((\d){■}\/)(\d){1,2})■)(\d){■} size: 7 holes: 5 time: 5.49981ms
+template: ((((\d){1,2}■)(\d){■})\/)(\d){■} size: 7 holes: 5 time: 5.679886ms
+template: ((((\d){1,2}■)(\d){1,2})\/)■ size: 5 holes: 2 time: 4.065867ms
+template: ((((\d){1,2}■)(\d){1,2})(■|■))(\d){4} size: 7 holes: 3 time: 4.508397ms
+template: ((((\d){1,2}(■){■})(\d){1,2})\/)(\d){4} size: 8 holes: 3 time: 6.028486ms
+template: ((((\d){■}\/)(■){1,2})\/)(\d){■} size: 7 holes: 5 time: 5.652841ms
+template: ((((\d){1,2}\/)(■■){■})\/)(\d){4} size: 7 holes: 4 time: 4.596368ms
+template: ((((■){1,2}\/)(\d){1,2})\/)■ size: 5 holes: 2 time: 5.335805ms
+template: ((((\d){1,2}\/)(■){1,2})\/)((■|■)){4} size: 7 holes: 3 time: 5.452283ms
+template: ((((\d){1,2}■)(\d){1,2})■)(\d){■} size: 6 holes: 4 time: 6.516373ms
+template: ((((■){1,2}\/)(\d){1,2})(■){■})(\d){4} size: 7 holes: 4 time: 5.393824ms
+template: ((((\d){1,2}■)(■){1,2})\/)(■){4} size: 5 holes: 3 time: 5.315857ms
+template: ((((■){1,2}■)(\d){1,2})\/)(■){4} size: 5 holes: 3 time: 5.113203ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)(((■|■)){■}){4} size: 9 holes: 4 time: 29.196888ms
+template: ((((\d){1,2}\/)(\d){1,2})((■){■}■))(\d){4} size: 8 holes: 4 time: 6.049467ms
+template: ((((\d){1,2}\/)(((■|■)){■}){1,2})\/)(\d){4} size: 9 holes: 4 time: 8.077146ms
+template: ((((■){■}■)(\d){1,2})\/)(\d){4} size: 6 holes: 4 time: 4.631219ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)((■■)■){4} size: 7 holes: 3 time: 4.434172ms
+template: ((((\d){1,2}\/)(\d){■})■)(\d){4} size: 7 holes: 3 time: 4.515175ms
+template: ((((\d){1,2}\/)(■){1,2})■)(■){4} size: 5 holes: 3 time: 5.134929ms
+template: ((((\d){1,2}■)(\d){1,2})\/)(■){■} size: 6 holes: 4 time: 7.011204ms
+template: ((((\d){■}\/)(\d){1,2})(■){■})(\d){4} size: 8 holes: 5 time: 5.312275ms
+template: ((((\d){1,2}\/)(\d){1,2})((■|■)){■})(\d){4} size: 9 holes: 4 time: 4.971007ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)((■|■)■){4} size: 8 holes: 3 time: 4.217945ms
+template: (((((■|■)){1,2}\/)(\d){1,2})\/)(■){4} size: 7 holes: 3 time: 5.100953ms
+template: ((((\d){1,2}\/)(\d){1,2})■)■ size: 5 holes: 2 time: 4.1781ms
+template: ((((\d){1,2}(■(■){■}))(\d){1,2})\/)(\d){4} size: 8 holes: 4 time: 4.640292ms
+template: ((((\d){■}\/)(\d){1,2})\/)(\d){4} size: 8 holes: 2 time: 5.828144ms
+template: ((((\d){1,2}\/)(\d){1,2})(■(■){■}))(\d){4} size: 8 holes: 4 time: 6.018054ms
+template: ((((\d){1,2}■)(\d){1,2})\/)((■){■}){4} size: 7 holes: 4 time: 16.166033ms
+template: ((((\d){1,2}■)((■){■}){1,2})\/)(\d){4} size: 7 holes: 4 time: 5.349874ms
+template: ((((\d){1,2}■)(\d){1,2})\/)(■){4} size: 6 holes: 2 time: 5.126258ms
+template: ((((\d){1,2}\/)(\d){1,2})■)(■■){4} size: 6 holes: 3 time: 5.655311ms
+template: ((((\d){1,2}■)(\d){1,2})(■■))(\d){4} size: 6 holes: 3 time: 4.196716ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)■ size: 6 holes: 1 time: 4.204315ms
+template: ((((\d){1,2}\/)(\d){■})■)(■){4} size: 6 holes: 4 time: 5.205021ms
+template: ((((\d){■}\/)(\d){1,2})\/)(\d){■} size: 8 holes: 4 time: 5.211916ms
+template: ((((\d){1,2}■)(■■){1,2})\/)(\d){4} size: 6 holes: 3 time: 4.671894ms
+template: ((((■){1,2}\/)(\d){1,2})(■|■))(\d){4} size: 7 holes: 3 time: 4.487955ms
+template: ((((\d){■}\/)(\d){1,2})\/)((■|■)){4} size: 8 holes: 4 time: 5.280975ms
+template: ((((\d){1,2}\/)((■|(■|■))){1,2})\/)(\d){4} size: 9 holes: 3 time: 4.581478ms
+template: ((((■){1,2}\/)(\d){1,2})\/)((■|■)){4} size: 7 holes: 3 time: 5.476776ms
+template: ((((\d){1,2}(■■))(\d){1,2})\/)(\d){■} size: 7 holes: 4 time: 4.367942ms
+template: ((((\d){1,2}(■|■■))(\d){1,2})\/)(\d){4} size: 8 holes: 3 time: 4.464651ms
+template: ((((\d){1,2}(■|■))(\d){1,2})■)(\d){4} size: 7 holes: 3 time: 4.611574ms
+template: ((((\d){1,2}(■■))(\d){■})\/)(\d){4} size: 7 holes: 4 time: 4.868895ms
+template: ((((\d){■}\/)(\d){■})\/)(■){4} size: 7 holes: 5 time: 5.276096ms
+template: ((((\d){■}\/)(\d){1,2})(■■))(\d){4} size: 7 holes: 4 time: 4.201857ms
+template: ((((■■)\/)(\d){1,2})\/)(\d){4} size: 6 holes: 2 time: 4.178563ms
+template: ((((\d){1,2}■)(■){1,2})\/)(\d){4} size: 6 holes: 2 time: 4.489183ms
+template: ((((\d){1,2}\/)(\d){1,2})((■■)■))(\d){4} size: 7 holes: 3 time: 5.364438ms
+template: ((((\d){1,2}\/)(\d){1,2})(■(■|■)))(\d){4} size: 8 holes: 3 time: 5.414607ms
+template: ((((\d){1,2}(■|■))(\d){1,2})\/)(■){4} size: 7 holes: 3 time: 5.129155ms
+template: ((((\d){1,2}(■(■|■)))(\d){1,2})\/)(\d){4} size: 8 holes: 3 time: 4.188443ms
+template: ((((\d){1,2}\/)(\d){1,2})((■){■}){■})(\d){4} size: 9 holes: 5 time: 8.543257ms
+template: ((((\d){■}\/)(■){1,2})\/)(\d){4} size: 7 holes: 3 time: 4.59862ms
+template: ((((\d){1,2}■)(■){1,2})\/)(\d){■} size: 6 holes: 4 time: 5.239146ms
+template: ((((\d){1,2}\/)(((■){■}){■}){1,2})\/)(\d){4} size: 9 holes: 5 time: 244.94573ms
+template: (((((■|■)■){1,2}\/)(\d){1,2})\/)(\d){4} size: 8 holes: 3 time: 4.239058ms
+template: ((((\d){1,2}(■■))(\d){1,2})\/)(\d){4} size: 7 holes: 2 time: 4.660966ms
+template: (((((■|■)){1,2}\/)(\d){1,2})■)(\d){4} size: 7 holes: 3 time: 4.51701ms
+template: ((((■){■}\/)(\d){1,2})\/)(\d){4} size: 7 holes: 3 time: 11.66257ms
+template: ((((\d){■}\/)(■■){1,2})\/)(\d){4} size: 7 holes: 4 time: 4.286765ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)((■|■■)){4} size: 8 holes: 3 time: 7.045736ms
+template: ((((\d){1,2}\/)(\d){1,2})(■){■})(\d){4} size: 8 holes: 3 time: 5.270953ms
+template: ((((■){1,2}\/)(\d){1,2})\/)(■){■} size: 6 holes: 4 time: 7.031401ms
+template: ((((\d){1,2}((■■)■))(\d){1,2})\/)(\d){4} size: 7 holes: 3 time: 5.418904ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)(■(■|■)){4} size: 8 holes: 3 time: 4.595905ms
+template: ((((■){1,2}\/)(\d){1,2})■)(\d){■} size: 6 holes: 4 time: 5.276365ms
+template: (((■\/)(\d){1,2})■)(\d){4} size: 5 holes: 2 time: 4.406579ms
+template: ((((\d){1,2}\/)(■){■})\/)(\d){■} size: 7 holes: 5 time: 8.309048ms
+template: ((((\d){1,2}((■|■)|■))(\d){1,2})\/)(\d){4} size: 9 holes: 3 time: 4.416647ms
+template: ((((■){1,2}\/)(\d){1,2})■)(\d){4} size: 6 holes: 2 time: 4.55382ms
+template: ((((■){1,2}\/)■)\/)(\d){4} size: 5 holes: 2 time: 4.120327ms
+template: ((((\d){1,2}(■|(■|■)))(\d){1,2})\/)(\d){4} size: 9 holes: 3 time: 4.392884ms
+template: ((((■){1,2}\/)(\d){1,2})\/)(■){4} size: 6 holes: 2 time: 5.253158ms
+template: ((((\d){1,2}\/)(\d){1,2})(■){■})(\d){■} size: 8 holes: 5 time: 13.627059ms
+template: ((((\d){1,2}■)(■){■})\/)(\d){4} size: 6 holes: 4 time: 4.898313ms
+template: ((((\d){■}■)(\d){1,2})\/)(\d){4} size: 7 holes: 3 time: 4.555817ms
+template: ((((■){1,2}\/)(\d){1,2})\/)(■■){4} size: 6 holes: 3 time: 5.187192ms
+template: ((((\d){1,2}\/)(■){■})\/)(\d){4} size: 7 holes: 3 time: 4.687243ms
+template: ((((\d){1,2}\/)(\d){1,2})(■(■■)))(\d){4} size: 7 holes: 3 time: 4.154566ms
+template: (((■\/)(\d){1,2})\/)(■){4} size: 5 holes: 2 time: 4.153837ms
+template: (((((■){■}){1,2}\/)(\d){1,2})\/)(\d){4} size: 8 holes: 3 time: 6.475245ms
+template: ((((■){1,2}\/)(\d){■})\/)(\d){4} size: 7 holes: 3 time: 4.585931ms
+template: ((((\d){1,2}\/)(\d){1,2})(■|■))(■){4} size: 7 holes: 3 time: 5.144266ms
+template: ((((\d){1,2}((■){■}|■))(\d){1,2})\/)(\d){4} size: 9 holes: 4 time: 4.842788ms
+template: ((((\d){1,2}\/)(■){1,2})\/)■ size: 5 holes: 2 time: 4.083804ms
+template: ((((■){1,2}\/)(■){1,2})■)(\d){4} size: 5 holes: 3 time: 4.550954ms
+template: ((((\d){1,2}■)(\d){1,2})\/)(\d){4} size: 7 holes: 1 time: 5.809092ms
+template: ((((\d){1,2}(■){■})(\d){1,2})■)(\d){4} size: 7 holes: 4 time: 4.675067ms
+template: ((((■){1,2}\/)(\d){■})\/)(\d){■} size: 7 holes: 5 time: 5.774715ms
+template: ((((((■){■}){■}){1,2}\/)(\d){1,2})\/)(\d){4} size: 9 holes: 5 time: 5.808423ms
+template: ((((\d){■}\/)(\d){1,2})(■|■))(\d){4} size: 8 holes: 4 time: 4.495805ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)(((■|■)|■)){4} size: 9 holes: 3 time: 5.104314ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)((■|(■){■})){4} size: 9 holes: 4 time: 18.582752ms
+template: (((((■|(■){■})){1,2}\/)(\d){1,2})\/)(\d){4} size: 9 holes: 4 time: 5.384245ms
+template: ((((■){1,2}\/)(\d){1,2})\/)((■){■}){4} size: 7 holes: 4 time: 20.9529ms
+template: ((((\d){1,2}(■■))(\d){1,2})\/)(■){4} size: 6 holes: 3 time: 4.38459ms
+template: ((((\d){1,2}((■){■}■))(\d){1,2})\/)(\d){4} size: 8 holes: 4 time: 4.609424ms
+template: ((((\d){1,2}\/)(■■){1,2})\/)(\d){4} size: 7 holes: 2 time: 5.643133ms
+template: ((((\d){1,2}\/)((■■|■)){1,2})\/)(\d){4} size: 8 holes: 3 time: 4.705645ms
+template: ((((((■|■)){■}){1,2}\/)(\d){1,2})\/)(\d){4} size: 9 holes: 4 time: 6.825021ms
+template: ((((\d){1,2}■)(\d){1,2})■)(■){4} size: 5 holes: 3 time: 5.08677ms
+template: ((((\d){1,2}\/)(\d){1,2})(■|■))(\d){4} size: 8 holes: 2 time: 4.361578ms
+template: ((((\d){1,2}\/)(\d){■})(■■))(\d){4} size: 7 holes: 4 time: 4.529922ms
+template: ((((■){1,2}\/)(■){1,2})\/)(\d){■} size: 6 holes: 4 time: 5.317676ms
+template: ((((■){1,2}\/)(\d){1,2})\/)(\d){■} size: 7 holes: 3 time: 8.35088ms
+template: ((((\d){1,2}\/)((■■)■){1,2})\/)(\d){4} size: 7 holes: 3 time: 4.201343ms
+template: ((((■){1,2}(■■))(\d){1,2})\/)(\d){4} size: 6 holes: 3 time: 4.287768ms
+template: ((((\d){1,2}\/)(■){1,2})■)(\d){■} size: 6 holes: 4 time: 5.260354ms
+template: ((((\d){1,2}\/)(\d){■})\/)(\d){4} size: 8 holes: 2 time: 5.865735ms
+template: ((((\d){1,2}\/)(\d){■})\/)(\d){■} size: 8 holes: 4 time: 5.615531ms
+template: ((((\d){1,2}(■■|■))(\d){1,2})\/)(\d){4} size: 8 holes: 3 time: 4.533157ms
+template: ((((\d){1,2}\/)(\d){1,2})(■■))(\d){4} size: 7 holes: 2 time: 4.219343ms
+template: ((((\d){1,2}\/)((■|(■){■})){1,2})\/)(\d){4} size: 9 holes: 4 time: 6.379309ms
+template: ((((\d){1,2}\/)(\d){■})\/)■ size: 6 holes: 3 time: 5.424428ms
+template: ((((\d){1,2}\/)(■){1,2})\/)(\d){4} size: 7 holes: 1 time: 5.848637ms
+template: ((((■){1,2}\/)(■){1,2})\/)(■){4} size: 5 holes: 3 time: 5.188895ms
+template: ((((\d){1,2}\/)(((■|■)|■)){1,2})\/)(\d){4} size: 9 holes: 3 time: 4.522003ms
+template: ((((\d){1,2}\/)((■|■)■){1,2})\/)(\d){4} size: 8 holes: 3 time: 4.309425ms
+template: ((((\d){1,2}\/)(■■){1,2})\/)(\d){■} size: 7 holes: 4 time: 4.615268ms
+template: ((((\d){1,2}\/)(■(■■)){1,2})\/)(\d){4} size: 7 holes: 3 time: 4.185568ms
+template: ((((\d){1,2}(■■))(■){1,2})\/)(\d){4} size: 6 holes: 3 time: 4.231713ms
+template: (((((■|■)){1,2}\/)(■){1,2})\/)(\d){4} size: 7 holes: 3 time: 4.522603ms
+template: ((((\d){1,2}■)(\d){1,2})\/)(\d){■} size: 7 holes: 3 time: 5.055009ms
+template: ((((\d){1,2}■)(\d){■})\/)(■){4} size: 6 holes: 4 time: 5.435875ms
+template: (((((■|■■)){1,2}\/)(\d){1,2})\/)(\d){4} size: 8 holes: 3 time: 4.563181ms
+template: ((((\d){1,2}\/)(\d){■})\/)(■){■} size: 7 holes: 5 time: 8.046618ms
+template: ((((\d){1,2}(■|■))(\d){1,2})\/)(\d){■} size: 8 holes: 4 time: 5.134938ms
+template: (((((■|■)){1,2}■)(\d){1,2})\/)(\d){4} size: 7 holes: 3 time: 4.497669ms
+template: ((((\d){1,2}\/)(■(■|■)){1,2})\/)(\d){4} size: 8 holes: 3 time: 4.277014ms
+template: ((((\d){1,2}\/)(■){1,2})■)(\d){4} size: 6 holes: 2 time: 4.554739ms
+template: ((((\d){1,2}\/)((■|■)){1,2})■)(\d){4} size: 7 holes: 3 time: 4.460442ms
+template: ((((\d){■}\/)(\d){1,2})■)(■){4} size: 6 holes: 4 time: 5.140254ms
+template: (((((■|■)){■}\/)(\d){1,2})\/)(\d){4} size: 8 holes: 4 time: 4.859327ms
+template: ((((■){1,2}\/)(■){1,2})\/)(\d){4} size: 6 holes: 2 time: 4.516718ms
+template: ((((\d){1,2}\/)(\d){1,2})(■■))(\d){■} size: 7 holes: 4 time: 5.042192ms
+template: ((((\d){1,2}((■|■)){■})(\d){1,2})\/)(\d){4} size: 9 holes: 4 time: 4.742557ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)((■){■}■){4} size: 8 holes: 4 time: 11.40137ms
+template: ((((\d){1,2}\/)(\d){1,2})(■){■})(■){4} size: 7 holes: 4 time: 5.946266ms
+template: ((((■){1,2}\/)(\d){1,2})\/)(\d){4} size: 7 holes: 1 time: 5.905338ms
+template: ((((■){1,2}\/)(■){■})\/)(\d){4} size: 6 holes: 4 time: 4.766929ms
+template: ((((\d){1,2}\/)(\d){■})\/)(■){4} size: 7 holes: 3 time: 5.193589ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)(■){■} size: 7 holes: 3 time: 6.38958ms
+template: ((((\d){1,2}■)(\d){1,2})\/)((■|■)){4} size: 7 holes: 3 time: 5.218232ms
+template: ((((\d){1,2}\/)(■){1,2})(■){■})(\d){4} size: 7 holes: 4 time: 5.053963ms
+template: ((((■){1,2}■)(\d){1,2})\/)(\d){■} size: 6 holes: 4 time: 5.159108ms
+template: ((((\d){1,2}\/)(\d){1,2})■)((■){■}){4} size: 7 holes: 4 time: 32.774724ms
+template: ((((■■){1,2}\/)(\d){1,2})\/)(■){4} size: 6 holes: 3 time: 4.380513ms
+template: ((((\d){1,2}\/)((■){■}){1,2})\/)(■){4} size: 7 holes: 4 time: 6.526846ms
+template: ((((\d){■}\/)(\d){■})\/)(\d){4} size: 8 holes: 4 time: 4.53024ms
+template: ((((\d){1,2}■)(\d){1,2})\/)(■■){4} size: 6 holes: 3 time: 4.298857ms
+template: ((((\d){1,2}\/)(\d){1,2})(■■){■})(\d){4} size: 8 holes: 4 time: 4.408223ms
+template: ((((\d){■}\/)(■){1,2})■)(\d){4} size: 6 holes: 4 time: 4.567483ms
+template: ((((\d){■}(■){■})(\d){1,2})\/)(\d){4} size: 8 holes: 5 time: 4.908323ms
+template: ((((■■){1,2}\/)(\d){1,2})\/)(\d){■} size: 7 holes: 4 time: 4.457843ms
+template: ((((\d){1,2}\/)■)\/)(\d){4} size: 6 holes: 1 time: 4.151815ms
+template: ((((\d){1,2}\/)((■){■}){1,2})\/)(\d){■} size: 8 holes: 5 time: 12.294888ms
+template: ((((\d){1,2}\/)(■){1,2})\/)(■){4} size: 6 holes: 2 time: 5.21702ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)((■){■}){■} size: 8 holes: 5 time: 252.992577ms
+template: ((((((■){■}|■)){1,2}\/)(\d){1,2})\/)(\d){4} size: 9 holes: 4 time: 4.919495ms
+template: ((((\d){1,2}(■■))(\d){1,2})■)(\d){4} size: 6 holes: 3 time: 4.31209ms
+template: ((((\d){1,2}((■|■)■))(\d){1,2})\/)(\d){4} size: 8 holes: 3 time: 4.187414ms
+template: ((((\d){1,2}(■|(■){■}))(\d){1,2})\/)(\d){4} size: 9 holes: 4 time: 4.651538ms
+template: ((((\d){1,2}\/)((■|■)){1,2})\/)(\d){■} size: 8 holes: 4 time: 5.218326ms
+template: ((((\d){1,2}\/)((■){■}■){1,2})\/)(\d){4} size: 8 holes: 4 time: 5.324265ms
+template: ((((\d){■}\/)(\d){1,2})\/)(■){■} size: 7 holes: 5 time: 7.489493ms
+template: ((((\d){1,2}(■|■))(\d){1,2})\/)(\d){4} size: 8 holes: 2 time: 4.425946ms
+template: ((((\d){1,2}\/)■)\/)(\d){■} size: 6 holes: 3 time: 4.242175ms
+template: ((((\d){1,2}\/)(■){■})\/)(■){4} size: 6 holes: 4 time: 5.587659ms
+template: (((((■|■)){1,2}\/)(\d){■})\/)(\d){4} size: 8 holes: 4 time: 4.863298ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)((■|■)){4} size: 8 holes: 2 time: 5.137077ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)(■){4} size: 7 holes: 1 time: 6.635493ms
+template: ((((■){1,2}(■|■))(\d){1,2})\/)(\d){4} size: 7 holes: 3 time: 4.72039ms
+template: ((((■){1,2}■)(\d){1,2})\/)(\d){4} size: 6 holes: 2 time: 4.480784ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)((■){■}){4} size: 8 holes: 3 time: 11.783533ms
+template: (((■■)(\d){1,2})\/)(\d){4} size: 5 holes: 2 time: 4.108418ms
+template: ((((\d){1,2}\/)((■){■}){1,2})\/)(\d){4} size: 8 holes: 3 time: 5.392371ms
+template: ((((\d){1,2}\/)(■){1,2})\/)(■){■} size: 6 holes: 4 time: 7.191641ms
+template: ((((\d){1,2}\/)(■){1,2})\/)(\d){■} size: 7 holes: 3 time: 5.841794ms
+template: ((((\d){■}\/)(\d){1,2})\/)(■){4} size: 7 holes: 3 time: 5.273374ms
+template: ((((\d){1,2}(■))(\d){1,2})\/)(\d){4} size: 7 holes: 1 time: 4.632393ms
+template: ((((\d){1,2}\/)((■|■)){1,2})\/)(\d){4} size: 8 holes: 2 time: 4.497671ms
+template: ((((\d){1,2}(■){■})(\d){1,2})\/)(■){4} size: 7 holes: 4 time: 5.698899ms
+template: ((((\d){1,2}(■|■))(■){1,2})\/)(\d){4} size: 7 holes: 3 time: 4.487722ms
+template: ((((■■){1,2}\/)(\d){1,2})■)(\d){4} size: 6 holes: 3 time: 4.476506ms
+template: ((((\d){1,2}\/)(\d){1,2})■)((■|■)){4} size: 7 holes: 3 time: 5.231566ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)((■|■)){■} size: 8 holes: 4 time: 7.047203ms
+template: ((((\d){1,2}\/)(\d){1,2})■)(\d){■} size: 7 holes: 3 time: 4.952724ms
+template: ((((■){1,2}\/)(\d){■})\/)(■){4} size: 6 holes: 4 time: 5.533795ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)(■(■■)){4} size: 7 holes: 3 time: 4.384885ms
+template: ((((\d){1,2}\/)(■){1,2})\/)(■■){4} size: 6 holes: 3 time: 4.202718ms
+template: ((((\d){■}\/)(\d){1,2})\/)((■){■}){4} size: 8 holes: 5 time: 17.804544ms
+template: (((((■■){■}){1,2}\/)(\d){1,2})\/)(\d){4} size: 8 holes: 4 time: 4.727345ms
+template: ((((■■){■}\/)(\d){1,2})\/)(\d){4} size: 7 holes: 4 time: 4.250057ms
+template: ((((■){1,2}\/)(\d){1,2})(■■))(\d){4} size: 6 holes: 3 time: 4.472548ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)(■■) size: 6 holes: 2 time: 4.33937ms
+template: ((((\d){1,2}\/)(\d){1,2})■)(\d){4} size: 7 holes: 1 time: 5.706509ms
+template: ((((\d){■}\/)(■){1,2})\/)(■){4} size: 6 holes: 4 time: 5.216334ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)(■■){■} size: 7 holes: 4 time: 9.62696ms
+template: ((((■■){1,2}\/)(\d){1,2})\/)(\d){4} size: 7 holes: 2 time: 4.270354ms
+template: ((((\d){1,2}\/)(\d){1,2})■)(■){4} size: 6 holes: 2 time: 5.118202ms
+template: ((((\d){1,2}\/)(\d){■})\/)(■■){4} size: 7 holes: 4 time: 4.224767ms
+template: ((((\d){1,2}\/)((■■){■}){1,2})\/)(\d){4} size: 8 holes: 4 time: 4.495856ms
+template: ((((\d){1,2}(■|■))(\d){■})\/)(\d){4} size: 8 holes: 4 time: 5.854522ms
+template: ((((\d){■}\/)(\d){■})\/)(\d){■} size: 8 holes: 6 time: 5.794432ms
+template: ((((■){1,2}\/)(\d){1,2})■)(■){4} size: 5 holes: 3 time: 5.204976ms
+template: ((((\d){1,2}\/)(■■){1,2})■)(\d){4} size: 6 holes: 3 time: 4.288675ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)(■■){4} size: 7 holes: 2 time: 4.561738ms
+template: ((((\d){1,2}\/)(■■){1,2})\/)(■){4} size: 6 holes: 3 time: 4.473188ms
+template: ((((\d){1,2}\/)(■(■){■}){1,2})\/)(\d){4} size: 8 holes: 4 time: 5.939808ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)(■(■){■}){4} size: 8 holes: 4 time: 10.844583ms
+template: ((((\d){1,2}■)(\d){1,2})(■){■})(\d){4} size: 7 holes: 4 time: 5.04424ms
+template: ((((\d){1,2}\/)(\d){1,2})\/)(■|■) size: 7 holes: 2 time: 5.30308ms
+longest: #mn#((((\d){1,2}\/)(\d){1,2})\/)((■){■}){■}#mn# size: #ms#8#ms# holes: #mh#5#mh# time: #mt#252.992577#mt#ms
+
+Computed in:
+
+  #c#19444#c#ms
+
+timeSATSolver time:
+
+  #s#1883#s#ms

@@ -1,0 +1,135 @@
+
+Given the regular expression:
+
+  (([1234555555||||]){2})(([0-9]){14})
+
+That that should match the strings:
+
+  ✓ (0:16)   5125632154125412
+  ✓ (16:32)  5225632154125412
+  ✓ (32:48)  5525632154125412
+  ✓ (48:64)  5525632154125412
+  ✓ (64:80)  5125632154125412
+  ✓ (80:96)  5325632154125412
+  ✓ (96:112) 5425632154125412
+  ✓ (112:128) 5425632154125412
+  ✓ (128:144) 5211632154125412
+
+And reject the strings:
+
+  ✗ (144:160) 1525632154125412
+  ✗ (160:176) 2525632154125412
+  ✗ (176:192) 3525632154125412
+  ✗ (192:208) 1599999999999999
+  ✗ (208:224) 4525632154125412
+  ✗ (224:240) 1525632154125412
+  ✗ (240:256) 3525632154125412
+  ✗ (256:272) 5625632154125412
+  ✗ (272:288) 4825632154125412
+  ✗ (288:304) 6011632154125412
+  ✗ (304:323) 6011-1111-1111-1111
+  ✗ (323:342) 5423-1111-1111-1111
+  ✗ (342:357) 341111111111111
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     ([1234555555||||]){2}(■){14}  unsatisfiable SAT formula       
+  2      |  1     ([1234555555||||]){■}([0-9]){14}  unsatisfiable SAT formula       
+  3      |  1     ([1234555555||||]){2}([0-9]){■}  unsatisfiable SAT formula       
+  4      |  1     (■){2}([0-9]){14}         unsatisfiable SAT formula       
+  5      |  2     (■){2}([0-9]){■}          unsatisfiable SAT formula       
+  6      |  2     (■■){2}([0-9]){14}        Failed dot test or empty set test. 
+  7      |  2     ([1234555555||||]){2}((■|■)){14}  unsatisfiable SAT formula       
+  8      |  2     ([1234555555||||]){2}(■){■}  unsatisfiable SAT formula       
+  9      |  2     ([1234555555||||]){2}((■){■}){14}  unsatisfiable SAT formula       
+  10     |  2     ([1234555555||||]){2}(■■){14}  Failed dot test or empty set test. 
+  11     |  2     ([1234555555||||]){■}(■){14}  unsatisfiable SAT formula       
+  12     |  2     ([1234555555||||]){■}([0-9]){■}  unsatisfiable SAT formula       
+  13     |  2     (■){■}([0-9]){14}         unsatisfiable SAT formula       
+  14     |  2     ■([0-9]){14}              Failed dot test or empty set test. 
+  15     |  2     (■){2}(■){14}             unsatisfiable SAT formula       
+  16     |  2     ((■|■)){2}([0-9]){14}     unsatisfiable SAT formula       
+  17     |  2     ((■){■}){2}([0-9]){14}    unsatisfiable SAT formula       
+  18     |  2     ([1234555555||||]){2}■    Failed dot test or empty set test. 
+  19     |  3     (((■){■}){■}){2}([0-9]){14}  unsatisfiable SAT formula       
+  20     |  3     ([1234555555||||]){2}(■■)  Failed dot test or empty set test. 
+  21     |  3     ([1234555555||||]){■}■    Failed dot test or empty set test. 
+  22     |  3     ([1234555555||||]){2}(((■|■)|■)){14}  unsatisfiable SAT formula       
+  23     |  3     ((■|■)){2}([0-9]){■}      unsatisfiable SAT formula       
+  24     |  3     ■([0-9]){■}               unsatisfiable SAT formula       
+  25     |  3     ([1234555555||||]){2}(((■){■}|■)){14}  unsatisfiable SAT formula       
+  26     |  3     ([1234555555||||]){2}((■■|■)){14}  unsatisfiable SAT formula       
+  27     |  3     (■){2}■                   Failed dot test or empty set test. 
+  28     |  3     ([1234555555||||]){2}((■|■■)){14}  unsatisfiable SAT formula       
+  29     |  3     ([1234555555||||]){■}(■){■}  unsatisfiable SAT formula       
+  30     |  3     (■(■|■)){2}([0-9]){14}    Failed dot test or empty set test. 
+  31     |  3     (■■){2}([0-9]){■}         unsatisfiable SAT formula       
+  32     |  3     ([1234555555||||]){2}(■■){■}  unsatisfiable SAT formula       
+  33     |  3     (■){2}((■){■}){14}        unsatisfiable SAT formula       
+  34     |  3     ((■){■}){2}([0-9]){■}     unsatisfiable SAT formula       
+  35     |  3     ([1234555555||||]){■}((■){■}){14}  unsatisfiable SAT formula       
+  36     |  3     ([1234555555||||]){2}(((■|■)){■}){14}  unsatisfiable SAT formula       
+  37     |  3     ([1234555555||||]){2}((■|■)■){14}  Failed dot test or empty set test. 
+  38     |  3     ([1234555555||||]){2}((■){■}){■}  unsatisfiable SAT formula       
+  39     |  3     (■■){2}(■){14}            Failed dot test or empty set test. 
+  40     |  3     ([1234555555||||]){2}((■■){■}){14}  unsatisfiable SAT formula       
+  41     |  3     ([1234555555||||]){■}(■■){14}  Failed dot test or empty set test. 
+  42     |  3     (■■){■}([0-9]){14}      tree is(■■){■}([0-9]){14}
+char_1: false
+char_2: false
+char_3: false
+char_4: false
+char_5: true
+char_6: char0_6
+char_1: true
+char_2: true
+char_3: true
+char_4: true
+char_5: true
+char_6: false
+bound0
+bound is bound0_2
+bound1
+bound is bound1_2
+template: ([1234555555||||]){■}(■){14} size: 3 holes: 3 time: 45.522914ms
+template: ([1234555555||||]){2}(■){■} size: 3 holes: 3 time: 61.445792ms
+template: (■■){■}([0-9]){14} size: 3 holes: 4 time: 16.697042ms
+template: ([1234555555||||]){■}([0-9]){■} size: 4 holes: 4 time: 31.8823ms
+template: ([1234555555||||]){2}((■■|■)){14} size: 4 holes: 3 time: 51.700797ms
+template: ([1234555555||||]){2}((■|■■)){14} size: 4 holes: 3 time: 53.585166ms
+template: (((■){■}){■}){2}([0-9]){14} size: 5 holes: 5 time: 34.852599ms
+template: ([1234555555||||]){2}(■){14} size: 3 holes: 1 time: 28.579582ms
+template: ([1234555555||||]){2}(((■|■)|■)){14} size: 5 holes: 3 time: 53.753376ms
+template: (■){2}(■){14} size: 2 holes: 2 time: 43.813747ms
+template: (■){■}([0-9]){14} size: 3 holes: 3 time: 15.033252ms
+template: ([1234555555||||]){■}(■){■} size: 3 holes: 5 time: 78.423775ms
+template: ((■){■}){2}([0-9]){■} size: 4 holes: 5 time: 88.129018ms
+template: ((■|■)){2}([0-9]){■} size: 4 holes: 4 time: 9.27363ms
+template: ■([0-9]){■} size: 2 holes: 3 time: 9.227291ms
+template: ([1234555555||||]){2}((■){■}){■} size: 4 holes: 5 time: 314.223008ms
+template: (■){2}([0-9]){■} size: 3 holes: 3 time: 8.85111ms
+template: ([1234555555||||]){2}((■|■)){14} size: 4 holes: 2 time: 33.896672ms
+template: ([1234555555||||]){2}(((■|■)){■}){14} size: 5 holes: 4 time: 76.765212ms
+template: ([1234555555||||]){■}((■){■}){14} size: 4 holes: 5 time: 446.330013ms
+template: ([1234555555||||]){2}([0-9]){■} size: 4 holes: 2 time: 14.458702ms
+template: ((■){■}){2}([0-9]){14} size: 4 holes: 3 time: 19.12571ms
+template: ([1234555555||||]){2}(■■){■} size: 3 holes: 4 time: 72.034066ms
+template: (■){2}((■){■}){14} size: 3 holes: 4 time: 83.990396ms
+template: ([1234555555||||]){2}((■■){■}){14} size: 4 holes: 4 time: 114.409185ms
+template: ([1234555555||||]){■}([0-9]){14} size: 4 holes: 2 time: 14.684332ms
+template: ([1234555555||||]){2}((■){■}){14} size: 4 holes: 3 time: 79.732337ms
+template: ([1234555555||||]){2}(((■){■}|■)){14} size: 5 holes: 4 time: 40.735209ms
+template: ((■|■)){2}([0-9]){14} size: 4 holes: 2 time: 12.908644ms
+template: (■■){2}([0-9]){■} size: 3 holes: 4 time: 9.551097ms
+template: (■){2}([0-9]){14} size: 3 holes: 1 time: 14.937346ms
+longest: #mn#([1234555555||||]){■}((■){■}){14}#mn# size: #ms#4#ms# holes: #mh#5#mh# time: #mt#446.330013#mt#ms
+
+Computed in:
+
+  #c#49447#c#ms
+
+timeSATSolver time:
+
+  #s#1979#s#ms

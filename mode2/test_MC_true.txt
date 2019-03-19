@@ -1,0 +1,105 @@
+
+Given the regular expression:
+
+  (([1234555555||||]){2})(([0-9]){14})
+
+That that should match the strings:
+
+  ✓ (0:16)   5125632154125412
+  ✓ (16:32)  5225632154125412
+  ✓ (32:48)  5525632154125412
+  ✓ (48:64)  5525632154125412
+  ✓ (64:80)  5125632154125412
+  ✓ (80:96)  5325632154125412
+  ✓ (96:112) 5425632154125412
+  ✓ (112:128) 5425632154125412
+  ✓ (128:144) 5211632154125412
+
+And reject the strings:
+
+  ✗ (144:160) 1525632154125412
+  ✗ (160:176) 2525632154125412
+  ✗ (176:192) 3525632154125412
+  ✗ (192:208) 1599999999999999
+  ✗ (208:224) 4525632154125412
+  ✗ (224:240) 1525632154125412
+  ✗ (240:256) 3525632154125412
+  ✗ (256:272) 5625632154125412
+  ✗ (272:288) 4825632154125412
+  ✗ (288:304) 6011632154125412
+  ✗ (304:323) 6011-1111-1111-1111
+  ✗ (323:342) 5423-1111-1111-1111
+  ✗ (342:357) 341111111111111
+
+Search through possible transformations:
+
+  Order  |  Cost  Template                  Solution                        
+---------|--------------------------------------------------------------------
+  1      |  1     (■){2}([0-9]){14}         unsatisfiable SAT formula       
+  2      |  1     ([1234555555||||]){2}([0-9]){■}  unsatisfiable SAT formula       
+  3      |  1     ([1234555555||||]){2}(■){14}  unsatisfiable SAT formula       
+  4      |  1     ([1234555555||||]){■}([0-9]){14}  unsatisfiable SAT formula       
+  5      |  2     (■){2}(■){14}             unsatisfiable SAT formula       
+  6      |  2     (■){2}([0-9]){■}          unsatisfiable SAT formula       
+  7      |  2     (■){■}([0-9]){14}         unsatisfiable SAT formula       
+  8      |  2     ■([0-9]){14}              9      |  2     ((■|■)){2}([0-9]){14}     10     |  2     ((■){■}){2}([0-9]){14}    unsatisfiable SAT formula       
+  11     |  2     (■■){2}([0-9]){14}        12     |  2     ([1234555555||||]){■}([0-9]){■}  unsatisfiable SAT formula       
+  13     |  2     ([1234555555||||]){2}(■){■}  unsatisfiable SAT formula       
+  14     |  2     ([1234555555||||]){2}■    15     |  2     ([1234555555||||]){■}(■){14}  unsatisfiable SAT formula       
+  16     |  2     ([1234555555||||]){2}((■){■}){14}  unsatisfiable SAT formula       
+  17     |  2     ([1234555555||||]){2}((■|■)){14}  18     |  2     ([1234555555||||]){2}(■■){14}  19     |  3     (■){■}(■){14}             unsatisfiable SAT formula       
+  20     |  3     (■){2}(■){■}              unsatisfiable SAT formula       
+  21     |  3     ■(■){14}                  22     |  3     (■){2}■                   23     |  3     (■){2}(■■){14}            24     |  3     ((■){■}){2}(■){14}        unsatisfiable SAT formula       
+  25     |  3     (■■){2}(■){14}            26     |  3     (■){2}((■){■}){14}        unsatisfiable SAT formula       
+  27     |  3     ((■|■)){2}(■){14}         28     |  3     (■){2}((■|■)){14}         29     |  3     (■){■}([0-9]){■}          unsatisfiable SAT formula       
+  30     |  3     ■([0-9]){■}               unsatisfiable SAT formula       
+  31     |  3     ((■){■}){2}([0-9]){■}     unsatisfiable SAT formula       
+  32     |  3     ((■|■)){2}([0-9]){■}      33     |  3     (■■){2}([0-9]){■}         unsatisfiable SAT formula       
+  34     |  3     (■■){■}([0-9]){14}      tree is(■■){■}([0-9]){14}
+char_1: false
+char_2: false
+char_3: false
+char_4: false
+char_5: true
+char_6: char0_6
+char_1: true
+char_2: true
+char_3: true
+char_4: true
+char_5: true
+char_6: false
+bound0
+bound is bound0_0
+bound1
+bound is bound1_1
+final tree is([5][12345]){0,1}([0-9]){14}
+template: ([1234555555||||]){■}(■){14} size: 3 holes: 3 time: 19.597042ms
+template: (■){2}([0-9]){■} size: 3 holes: 3 time: 4.358131ms
+template: ([1234555555||||]){2}(■){■} size: 3 holes: 3 time: 19.703835ms
+template: (■■){■}([0-9]){14} size: 3 holes: 4 time: 5.435108ms
+template: ([1234555555||||]){■}([0-9]){■} size: 4 holes: 4 time: 16.902866ms
+template: ([1234555555||||]){2}([0-9]){■} size: 4 holes: 2 time: 4.223046ms
+template: ((■){■}){2}([0-9]){14} size: 4 holes: 3 time: 6.563412ms
+template: (■){2}((■){■}){14} size: 3 holes: 4 time: 38.347519ms
+template: ([1234555555||||]){2}(■){14} size: 3 holes: 1 time: 20.568991ms
+template: ([1234555555||||]){■}([0-9]){14} size: 4 holes: 2 time: 4.462091ms
+template: (■){2}(■){14} size: 2 holes: 2 time: 20.669463ms
+template: (■){■}([0-9]){14} size: 3 holes: 3 time: 4.495657ms
+template: ([1234555555||||]){2}((■){■}){14} size: 4 holes: 3 time: 36.971002ms
+template: (■){■}(■){14} size: 2 holes: 4 time: 20.9293ms
+template: ((■){■}){2}([0-9]){■} size: 4 holes: 5 time: 38.552437ms
+template: ((■){■}){2}(■){14} size: 3 holes: 4 time: 22.002324ms
+template: (■){2}(■){■} size: 2 holes: 4 time: 19.975005ms
+template: ■([0-9]){■} size: 2 holes: 3 time: 3.982236ms
+template: (■■){2}([0-9]){■} size: 3 holes: 4 time: 4.559502ms
+template: (■){■}([0-9]){■} size: 3 holes: 5 time: 19.983755ms
+template: (■){2}([0-9]){14} size: 3 holes: 1 time: 5.71021ms
+longest: #mn#((■){■}){2}([0-9]){■}#mn# size: #ms#4#ms# holes: #mh#5#mh# time: #mt#38.552437#mt#ms
+
+Computed in:
+
+  #c#16003#c#ms
+
+timeSATSolver time:
+
+  #s#338#s#ms
