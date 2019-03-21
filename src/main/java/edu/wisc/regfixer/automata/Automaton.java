@@ -78,11 +78,13 @@ public class Automaton extends automata.Automaton {
    * METHODS FOR EVALUATING THE AUTOMATON
    */
 
-  private List<State> getEpsClosure (State frontier) {
-    return getEpsClosureDest(Arrays.asList(frontier), null);
+  private Set<State> getEpsClosure (State frontier) {
+	  Set<State> set = new HashSet<State>();
+	  set.add(frontier);
+    return getEpsClosureDest(set, null);
   }
   
-  private List<State> getEpsClosure (List<State> frontier) {
+  private Set<State> getEpsClosure (Set<State> frontier) {
     return getEpsClosureDest(frontier, null);
   }
 
@@ -111,10 +113,10 @@ public class Automaton extends automata.Automaton {
     return reached;
   }*/
 
-  private List<State> getEpsClosureDest (List<State> frontier, Set<Integer> dest) {
-    List<State> res = new LinkedList<>();
+  private Set<State> getEpsClosureDest (Set<State> frontier, Set<Integer> dest) {
+    Set<State> res = new HashSet<>();
     for (State s : frontier) {
-    	List<State> curstates = getEpsClosureForOneState(s);
+    	Set<State> curstates = getEpsClosureForOneState(s);
     	if (dest != null) {
 	    	for (State curstate : curstates) {
 	    		if (dest.contains(curstate.getStateId()))
@@ -157,8 +159,8 @@ public class Automaton extends automata.Automaton {
 	  return res;
   }*/
   
-  private List<State> getEpsClosureForOneState (State frontier) {
-    List<State> reached = new LinkedList<>();
+  private Set<State> getEpsClosureForOneState (State frontier) {
+    Set<State> reached = new HashSet<>();
     reached.add(frontier);
     Set<Integer> seenStateIds = new HashSet<>();
     seenStateIds.add(frontier.getStateId());
@@ -239,12 +241,12 @@ public class Automaton extends automata.Automaton {
 	  this.coreStates.remove(getFinalStates());
   }
   
-  public List<State> getNextState (List<State> frontier, Character ch) throws TimeoutException {
+  public Set<State> getNextState (Set<State> frontier, Character ch) throws TimeoutException {
     return getNextState(null, frontier, ch);
   }
 
-  public List<State> getNextState (Set<Integer> filter, List<State> frontier, Character ch) throws TimeoutException {
-    List<State> nextStates = new LinkedList<>();
+  public Set<State> getNextState (Set<Integer> filter, Set<State> frontier, Character ch) throws TimeoutException {
+    Set<State> nextStates = new HashSet<>();
 
     for (State state : frontier) {
       nextStates.addAll(getNextState(filter, state, ch));
@@ -392,7 +394,7 @@ public class Automaton extends automata.Automaton {
   }
 
   public boolean accepts (List<Character> chars) throws TimeoutException {
-    List<State> frontier = getEpsClosure(new State(getInitialState()));
+    Set<State> frontier = getEpsClosure(new State(getInitialState()));
 
     for (Character ch : chars) {
       frontier = getNextState(frontier, ch);
@@ -483,9 +485,11 @@ public class Automaton extends automata.Automaton {
   }
 
   public Set<Route> trace (String source) throws TimeoutException {
-	  boolean useElimination = true;
-	  List<State> frontier;
+	  boolean useElimination = false;
+	  Set<State> frontier;
 	  List<Set<Integer>> valid = null;
+	  Set<State> initials = new HashSet<State>();
+	  initials.add(new State(this.getInitialState()));
 	  if (useElimination) {
 		  Layer[] net = this.buildTrans(source);
 		  valid = new LinkedList<>();
@@ -493,9 +497,9 @@ public class Automaton extends automata.Automaton {
 			  valid.add(net[i].reachFinal);
 		  }
 	      //frontier = getEpsClosureWithDest(new State(getInitialState()), valid.get(0));
-	      frontier = getEpsClosureDest(Arrays.asList(new State(getInitialState())), valid.get(0));
+	      frontier = getEpsClosureDest(initials, valid.get(0));
 	  } else {
-		  frontier = getEpsClosureDest(Arrays.asList(new State(getInitialState())), null);
+		  frontier = getEpsClosureDest(initials, null);
 	  }
     for (int i = 0; i < source.length(); i++) {
       /*if (layers.size() <= i) {
