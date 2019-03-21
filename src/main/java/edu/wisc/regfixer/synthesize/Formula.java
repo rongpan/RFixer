@@ -41,7 +41,7 @@ public class Formula {
 
   private Set<UnknownId> unknownChars;
   private Map<UnknownId, Set<BoolExpr>> unknownToVars;
-  private Map<UnknownId, List<IntExpr>> unknownToWeights;
+  private Map<UnknownId, IntExpr> unknownToWeight;
   private Map<UnknownId, Map<MetaClassTree, BoolExpr>> unknownToTreeToVar;
   private Map<BoolExpr, MetaClassTree> varToTree;
   private Map<BoolExpr, Predicate> varToPred;
@@ -57,104 +57,120 @@ public class Formula {
     this(positives, negatives, new Diagnostic());
   }*/
 
-  public Formula (List<Set<Route>> positives, List<Set<Route>> negatives, Diagnostic diag) {
-    this.positives = positives;
-    this.negatives = negatives;
-    this.diag = diag;
+	public Formula(List<Set<Route>> positives, List<Set<Route>> negatives, Diagnostic diag) {
+		this.positives = positives;
+		this.negatives = negatives;
+		this.diag = diag;
 
-    // Initialize SAT formula objects
-    this.ctx = new Context();
-    this.opt = this.ctx.mkOptimize();
-    this.model = null;
+		// Initialize SAT formula objects
+		this.ctx = new Context();
+		this.opt = this.ctx.mkOptimize();
+		this.model = null;
 
-    // Initialize structures for tracking state
-    this.unknownChars = new HashSet<>();
-    this.unknownToVars = new HashMap<>();
-    this.unknownToWeights = new HashMap<>();
-    this.unknownToTreeToVar = new HashMap<>();
-    this.varToTree = new HashMap<>();
-    this.varToPred = new HashMap<>();
-    this.tree = MetaClassTree.initialize();
-    this.unknownToCharToVar = new HashMap<>();
-    this.misc = new HashSet<>();
+		// Initialize structures for tracking state
+		this.unknownChars = new HashSet<>();
+		this.unknownToVars = new HashMap<>();
+		this.unknownToWeight = new HashMap<>();
+		this.unknownToTreeToVar = new HashMap<>();
+		this.varToTree = new HashMap<>();
+		this.varToPred = new HashMap<>();
+		this.tree = MetaClassTree.initialize();
+		this.unknownToCharToVar = new HashMap<>();
+		this.misc = new HashSet<>();
 
-    this.unknownBounds = new HashSet<>();
-    this.unknownToMinVar = new HashMap<>();
-    this.unknownToMaxVar = new HashMap<>();
+		this.unknownBounds = new HashSet<>();
+		this.unknownToMinVar = new HashMap<>();
+		this.unknownToMaxVar = new HashMap<>();
 
-    // Build a list of all unknown IDs encountered by these automata routes.
-    this.getAllRelevantUnknownExits(this.positives);
-    this.getAllRelevantUnknownExits(this.negatives);
+		// Build a list of all unknown IDs encountered by these automata routes.
+		this.getAllRelevantUnknownExits(this.positives);
+		this.getAllRelevantUnknownExits(this.negatives);
 
-    IntExpr zero = this.ctx.mkInt(0);
-    IntExpr one  = this.ctx.mkInt(1);
+		IntExpr zero = this.ctx.mkInt(0);
+		IntExpr one = this.ctx.mkInt(1);
 
-    // Create all 'H?_max' and 'H?_min' variables for all relevant IDs.
-    List<IntExpr> quantCosts = new LinkedList<>();
-    for (UnknownId id : this.unknownBounds) {
-      UnknownBounds unknown = (UnknownBounds)(id.getUnknown());
+		// Create all 'H?_max' and 'H?_min' variables for all relevant IDs.
+		List<IntExpr> quantCosts = new LinkedList<>();
+		for (UnknownId id : this.unknownBounds) {
+			UnknownBounds unknown = (UnknownBounds) (id.getUnknown());
 
-      // Create minimum and maximum bound variables.
-      IntExpr minVar = this.ctx.mkIntConst(id.toString() + "_min");
-      IntExpr maxVar = this.ctx.mkIntConst(id.toString() + "_max");
+			// Create minimum and maximum bound variables.
+			IntExpr minVar = this.ctx.mkIntConst(id.toString() + "_min");
+			IntExpr maxVar = this.ctx.mkIntConst(id.toString() + "_max");
 
-      // Associate minimum and maximum bound variables with appropriate ID.
-      this.unknownToMinVar.put(id, minVar);
-      this.unknownToMaxVar.put(id, maxVar);
+			// Associate minimum and maximum bound variables with appropriate
+			// ID.
+			this.unknownToMinVar.put(id, minVar);
+			this.unknownToMaxVar.put(id, maxVar);
 
-      // Force every minimum bound to be <= corresponding maximum bound.
-      this.opt.Assert(this.ctx.mkLe(minVar, maxVar));
-      this.opt.Assert(this.ctx.mkGe(minVar, zero));
-      this.opt.Assert(this.ctx.mkGe(maxVar, one));
+			// Force every minimum bound to be <= corresponding maximum bound.
+			this.opt.Assert(this.ctx.mkLe(minVar, maxVar));
+			this.opt.Assert(this.ctx.mkGe(minVar, zero));
+			this.opt.Assert(this.ctx.mkGe(maxVar, one));
 
-      // (declare H0_min_cost Int)
-      // (declare H0_max_cost Int)
-      // (assert (= H0_min_cost (ite (= H0_min <old minimum>) 0 1)))
-      // (assert (= H0_max_cost (ite (= H0_max <old maximum>) 0 1)))
-      // (minimize (+ H0_min_cost H0_max_cost))
-      int oldMin = unknown.getMin();
-      int oldMax = unknown.hasMax() ? unknown.getMax() : Bounds.MAX_BOUND;
+			// (declare H0_min_cost Int)
+			// (declare H0_max_cost Int)
+			// (assert (= H0_min_cost (ite (= H0_min <old minimum>) 0 1)))
+			// (assert (= H0_max_cost (ite (= H0_max <old maximum>) 0 1)))
+			// (minimize (+ H0_min_cost H0_max_cost))
+			if (Global.findMaxSat || Global.cegis) {
+				int oldMin = unknown.getMin();
+				int oldMax = unknown.hasMax() ? unknown.getMax() : Bounds.MAX_BOUND;
+	
+				IntExpr minCost = this.ctx.mkIntConst(id.toString() + "_min_cost");
+				IntExpr maxCost = this.ctx.mkIntConst(id.toString() + "_max_cost");
+	
+				this.opt.Assert(
+						this.ctx.mkEq(minCost, this.ctx.mkITE(this.ctx.mkEq(minVar, this.ctx.mkInt(oldMin)), zero, one)));
+	
+				this.opt.Assert(
+						this.ctx.mkEq(maxCost, this.ctx.mkITE(this.ctx.mkEq(maxVar, this.ctx.mkInt(oldMax)), zero, one)));
+	
+				quantCosts.add(maxCost);
+				quantCosts.add(minCost);
+			}
+		}
 
-      IntExpr minCost = this.ctx.mkIntConst(id.toString() + "_min_cost");
-      IntExpr maxCost = this.ctx.mkIntConst(id.toString() + "_max_cost");
+		// Build the formula and encode meta-class formulae
+		this.encodeRoutes();
+		
+		if (Global.findMaxSat || Global.cegis) {
+			/*if (quantCosts.size() > 0) {
+				IntExpr[] costArray = quantCosts.toArray(new IntExpr[quantCosts.size()]);
+				this.opt.MkMinimize(this.ctx.mkAdd(costArray));
+			}*/
 
-      this.opt.Assert(this.ctx.mkEq(minCost, this.ctx.mkITE(
-        this.ctx.mkEq(minVar, this.ctx.mkInt(oldMin)),
-        zero,
-        one)));
-
-      this.opt.Assert(this.ctx.mkEq(maxCost, this.ctx.mkITE(
-        this.ctx.mkEq(maxVar, this.ctx.mkInt(oldMax)),
-        zero,
-        one)));
-
-      quantCosts.add(maxCost);
-      quantCosts.add(minCost);
-    }
-
-    if (Global.maxSat && Global.findMaxSat){
-	    if (quantCosts.size() > 0) {
-	      IntExpr[] costArray = quantCosts.toArray(new IntExpr[quantCosts.size()]);
-	      this.opt.MkMinimize(this.ctx.mkAdd(costArray));
-	    }
-    }
-
-    // Build the formula and encode meta-class formulae
-    this.encodeRoutes();
-
-    List<ArithExpr> charCosts = new LinkedList<>();
-    for (UnknownId id : this.unknownChars) {
-      this.encodeCharClass(id, this.tree);
-      charCosts.add(this.encodeCharClassSummation(id));
-    }
-
-    if (Global.maxSat && Global.findMaxSat){
-	    if (charCosts.size() > 0) {
-	      ArithExpr[] costArray = charCosts.toArray(new ArithExpr[charCosts.size()]);
-	      this.opt.MkMaximize(this.ctx.mkAdd(costArray));
-	    }
-    }
-  }
+			ArithExpr quantCost = null;
+			if (quantCosts.size() > 0)
+				quantCost = this.ctx.mkAdd(quantCosts.toArray(new IntExpr[quantCosts.size()]));
+			
+			List<IntExpr> charCosts = new LinkedList<>();
+			for (UnknownId id : this.unknownChars) {
+				this.encodeCharClass(id, this.tree);
+				IntExpr expr = this.unknownToWeight.get(id);
+				if (expr != null)
+					charCosts.add(expr);
+			}
+			
+			ArithExpr charCost = null;
+			if (charCosts.size() > 0)
+				charCost = this.ctx.mkAdd(charCosts.toArray(new IntExpr[charCosts.size()]));
+			
+			if (quantCost != null && charCost != null) {
+				this.opt.MkMinimize(this.ctx.mkSub(quantCost, charCost));
+		    } else if (quantCost != null) {
+		    	this.opt.MkMinimize(quantCost);
+		    } else if (charCost != null) {
+		    	this.opt.MkMaximize(charCost);
+		    }
+			
+			/*if (charCosts.size() > 0) {
+				ArithExpr[] costArray = charCosts.toArray(new ArithExpr[charCosts.size()]);
+				this.opt.MkMaximize(this.ctx.mkAdd(costArray));
+			}*/
+		}
+		
+	}
 
   private void encodeRoutes () {
     for (Set<Route> example : this.positives) {
@@ -420,7 +436,7 @@ public class Formula {
     return vars;
   }
 
-  private ArithExpr encodeCharClassSummation (UnknownId id) {
+  /*private ArithExpr encodeCharClassSummation (UnknownId id) {
     List<IntExpr> weightsList = this.unknownToWeights.get(id);
     IntExpr[] weightsArr = new IntExpr[weightsList.size()];
 
@@ -429,7 +445,7 @@ public class Formula {
     }
 
     return this.ctx.mkAdd(weightsArr);
-  }
+  }*/
 
   private String createVariableName (UnknownId id, MetaClassTree tree) {
     String idName = id.toString();
@@ -443,11 +459,11 @@ public class Formula {
   }
 
   private void saveWeightForSummation (UnknownId id, IntExpr weight) {
-    if (this.unknownToWeights.containsKey(id) == false) {
-      this.unknownToWeights.put(id, new LinkedList<>());
+    if (this.unknownToWeight.containsKey(id) == false) {
+      this.unknownToWeight.put(id, weight);
     }
 
-    this.unknownToWeights.get(id).add(weight);
+    //this.unknownToWeights.get(id).add(weight);
   }
 
   // Register variable with unknown -> variable mapping.

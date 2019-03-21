@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import edu.wisc.regfixer.automata.Automaton;
 import edu.wisc.regfixer.diagnostic.Diagnostic;
 import edu.wisc.regfixer.diagnostic.Timing;
 import edu.wisc.regfixer.enumerate.Enumerant;
@@ -84,6 +85,13 @@ public class RegFixer {
     // solution.
     int costCutoff = Integer.MAX_VALUE;
 
+    try {
+		Global.correctAutomaton = new Automaton(job.getTruth());
+	} catch (org.sat4j.specs.TimeoutException e) {
+		e.printStackTrace();
+		return null;
+	}
+    
     while ((enumerant = enumerants.next()) != null) {
       // Stop the loop if the cost of the current template is greater than
       // cutoff or if the number of templates searched is greater than the

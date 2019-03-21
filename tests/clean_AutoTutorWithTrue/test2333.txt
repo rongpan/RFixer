@@ -1,0 +1,25 @@
+(a|b)*
+a+b
++++
+aaaaaab
+aab
+aaaaab
+aaab
+ab
+aaaab
+ab
+aab
+---
+a
+b
+abaa
+ababa
+baba
+abba
+aaba
+bba
+baa
+ba
+ aa
+aba
+bb

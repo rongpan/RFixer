@@ -1,0 +1,11 @@
+abba
+a(a|b)a(a|b)*
++++
+aaa
+aaabaa
+abaaa
+abaa
+aaab
+aba
+---
+abba

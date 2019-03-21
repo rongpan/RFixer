@@ -9,13 +9,23 @@ import org.apache.commons.codec.digest.DigestUtils;
 public class Job {
   private final String name;
   private final RegexNode tree;
+  private final RegexNode truth;
   private final Corpus corpus;
 
   public Job (String name, String regex, String corpus, Set<Range> positives) {
+	  this(name, regex, null, corpus, positives);
+  }
+  
+  public Job (String name, String regex, String truth, String corpus, Set<Range> positives) {
     this.name = name;
 
     try {
       this.tree = edu.wisc.regfixer.parser.Main.parse(regex);
+      if (truth != null) {
+        this.truth = edu.wisc.regfixer.parser.Main.parse(truth);
+      } else {
+    	 this.truth = null;
+      }
     } catch (Exception ex) {
       // FIXME
       throw new RuntimeException("malformed regular expression");
@@ -27,9 +37,18 @@ public class Job {
   }
 
   public Job (String name, String regex, String corpus, Set<Range> positives, Set<Range> negatives) {
+	  this(name, regex, null, corpus, positives, negatives);
+  }
+  
+  public Job (String name, String regex, String truth, String corpus, Set<Range> positives, Set<Range> negatives) {
     this.name = name;
 
     try {
+	  if (truth != null) {
+        this.truth = edu.wisc.regfixer.parser.Main.parse(truth);
+      } else {
+    	this.truth = null;
+      }
       this.tree = edu.wisc.regfixer.parser.Main.parse(regex);
     } catch (Exception ex) {
       // FIXME
@@ -40,8 +59,13 @@ public class Job {
   }
 
   public Job (String name, RegexNode tree, Corpus corpus) {
+	  this(name, tree, null, corpus);
+  }
+  
+  public Job (String name, RegexNode tree, RegexNode truth, Corpus corpus) {
     this.name = name;
     this.tree = tree;
+    this.truth = truth;
     this.corpus = corpus;
   }
 
@@ -51,6 +75,10 @@ public class Job {
 
   public RegexNode getTree () {
     return this.tree;
+  }
+  
+  public RegexNode getTruth () {
+    return this.truth;
   }
 
   public Corpus getCorpus () {

@@ -1,0 +1,11 @@
+a
+(ab|ba)*
++++
+ba
+ab
+baba
+abab
+abba
+baab
+---
+a

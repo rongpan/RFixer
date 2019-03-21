@@ -1,0 +1,15 @@
+((aa)|(ab)|(ba)|(bb))
+(a*ba*b)*a*ba*
++++
+ba
+ab
+baa
+bbb
+aab
+b
+abbb
+babb
+aba
+---
+aa
+bb

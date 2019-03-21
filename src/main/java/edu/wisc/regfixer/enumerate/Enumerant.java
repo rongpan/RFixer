@@ -3,11 +3,9 @@ package edu.wisc.regfixer.enumerate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,6 +38,8 @@ import com.microsoft.z3.Optimize;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 
+import org.apache.commons.lang3.*;
+
 public class Enumerant implements Comparable<Enumerant> {
   public final static int UNION_COST    = 1;
   public final static int OPTIONAL_COST = 1;
@@ -57,10 +57,16 @@ public class Enumerant implements Comparable<Enumerant> {
   public long order;
 
   private final RegexNode tree;
+  private Automaton automaton = null;
   private final Set<UnknownId> ids;
   private final int cost;
   private final Expansion latest;
   private Enumerant parent;
+  
+  private String lastPositive = "";
+  private String posiChange = "";
+  private String lastNegative = "";
+  private String negaChange = "";
 
   @FunctionalInterface
   public static interface ExpansionFunction {
@@ -293,21 +299,17 @@ public class Enumerant implements Comparable<Enumerant> {
     return new Enumerant(root, ids, cost, Expansion.Freeze);
   }
 
-  public Synthesis synthesize (Set<String> p, Set<String> n) throws SynthesisFailure {
-    return this.synthesize(p, n, new Diagnostic());
-  }
-
   public Synthesis synthesize (Set<String> p, Set<String> n, Diagnostic diag) throws SynthesisFailure {
-    Automaton automaton = null;
+    //Automaton automaton = null;
 
-    try {
-      automaton = new Automaton(this.tree);
-      automaton.IniMoveTo();
-    } catch (TimeoutException ex) {
-      String fmt = "timed-out building automaton for `%s`";
-      throw new SynthesisFailure(String.format(fmt, this.tree));
-    }
-
+	if (automaton == null) {
+		try {
+		  automaton = new Automaton(this.tree);
+		} catch (TimeoutException ex) {
+		  String fmt = "timed-out building automaton for `%s`";
+		  throw new SynthesisFailure(String.format(fmt, this.tree));
+		}
+	}
     List<Set<Route>> positiveRuns = new LinkedList<>();
     List<Set<Route>> negativeRuns = new LinkedList<>();
 
@@ -336,17 +338,23 @@ public class Enumerant implements Comparable<Enumerant> {
       }
 
       for (String source : n) {
-    	  //System.out.println("negative example: " + source);
+    	  if (source.equals(""))
+    		  System.out.println("negative example: " + source);
     	  Set<Route> negativeRun = automaton.trace(source);
-    	  //System.out.println("negativeRun:\n" + negativeRun);
+    	  if (source.equals(""))
+    		  System.out.println("negativeRun:\n" + negativeRun);
     	  if (negativeRun.size() == 0) {
     		  continue;
     	  }
     	  //System.err.println("source is " + source);
     	  for (Route route : negativeRun) {
-    		  //System.err.println("negative route: " + route);
-      		if (route.hasNoRealExits() && route.hasNoSpans())
+    		  if (source.equals(""))
+    			  System.err.println("negative route: " + route);
+      		if (route.hasNoRealExits() && route.hasNoSpans()) {
+      			if (source.equals(""))
+      				System.out.println("negative skip");
       			return null;
+      		}
       	}
         negativeRuns.add(negativeRun);
       }
@@ -369,7 +377,55 @@ public class Enumerant implements Comparable<Enumerant> {
     }
 
     Global.root = this.tree;
-    return new Synthesis(this, positiveRuns, negativeRuns, diag);
+    if (!Global.cegis) {
+      return new Synthesis(this, positiveRuns, negativeRuns, diag);
+    } else {
+    	Synthesis syn = new Synthesis(this, positiveRuns, negativeRuns, diag);
+    	RegexNode solution = syn.getTree();
+    	System.err.println("get a solution: " + solution);
+    	Automaton currentAutomaton;
+    			
+	    try {
+	    	System.err.println("before building automaton");
+	        currentAutomaton = new Automaton(solution);
+	        System.err.println("before verify");
+	        if (currentAutomaton.verify(Global.correctAutomaton)) {
+		    	return syn;
+		    } else {
+		    	String positive = currentAutomaton.morePositive(Global.correctAutomaton);
+		    	String negative = currentAutomaton.moreNegative(Global.correctAutomaton);
+		    	if (positive != null) {
+		    		System.err.println("add positive: " + positive);
+		    		if (!lastPositive.equals("")) {
+			    		String newChange = StringUtils.difference(positive, lastPositive);
+			    		if (newChange.equals(posiChange)) {
+			    			throw new SynthesisFailure("recurrent positive");
+			    		}
+			    		posiChange = newChange;
+		    		}
+		    		lastPositive = positive;
+		    		p.add(positive);
+		    	}
+		    	if (negative != null) {
+		    		System.err.println("add negative: " + negative);
+		    		if (!lastNegative.equals("")) {
+			    		String newChange = StringUtils.difference(negative, lastNegative);
+			    		if (newChange.equals(negaChange)) {
+			    			throw new SynthesisFailure("recurrent negative");
+			    		}
+			    		negaChange = newChange;
+		    		}
+		    		lastNegative = negative;
+		    		n.add(negative);
+		    	}
+		    	return synthesize(p, n, diag);
+		    }
+	    } catch (TimeoutException ex) {
+	        String fmt = "timed-out cegis for `%s`";
+	        throw new SynthesisFailure(String.format(fmt, this.tree));
+	    }
+	    
+    }
   }
 
   public Synthesis synthesizePair (Set<String> p, Set<String> n, Diagnostic diag) throws SynthesisFailure {

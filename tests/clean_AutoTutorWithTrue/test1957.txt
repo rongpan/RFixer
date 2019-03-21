@@ -1,0 +1,13 @@
+[ab]*a{3}
+(a|b)(a|b)+aaa+
++++
+baaaa
+abaaa
+bbaaa
+aaabaaa
+abaaaa
+abbaaa
+---
+aaa
+aaaa
+baaa

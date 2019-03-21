@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
+import edu.wisc.regfixer.global.Global;
 import edu.wisc.regfixer.parser.RegexNode;
 
 public class Benchmark {
@@ -17,6 +18,9 @@ public class Benchmark {
 		File fp = new File(filename);
 		Scanner scnr = new Scanner(fp);
 		String regExp = scnr.nextLine();
+		String truth = null;
+		if (Global.cegis)
+			truth = scnr.nextLine();
 		scnr.nextLine();
 		String example = scnr.nextLine();
 		String corpus = "";
@@ -33,7 +37,7 @@ public class Benchmark {
 			corpus = corpus.concat(example);
 		}
 		scnr.close();
-		return new Job(filename, regExp, corpus, pRange, nRange);
+		return new Job(filename, regExp, truth, corpus, pRange, nRange);
 	}
 
 	public static Job readFromStr(String input, RegexNode tree) {
@@ -56,7 +60,7 @@ public class Benchmark {
 		}
 		scnr.close();
 		Corpus c = new Corpus(corpus, pRange, nRange, true);
-		return new Job("str", tree, c);
+		return new Job("str", tree, null, c);
 	}
 
 	/*

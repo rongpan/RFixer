@@ -22,6 +22,7 @@ import edu.wisc.regfixer.enumerate.Layer;
 import edu.wisc.regfixer.enumerate.UnknownBounds;
 import edu.wisc.regfixer.enumerate.UnknownChar;
 import edu.wisc.regfixer.enumerate.UnknownId;
+import edu.wisc.regfixer.parser.Bounds;
 import edu.wisc.regfixer.parser.CharClassSetNode;
 import edu.wisc.regfixer.parser.CharDotNode;
 import edu.wisc.regfixer.parser.CharEscapedNode;
@@ -35,6 +36,7 @@ import edu.wisc.regfixer.parser.RepetitionNode;
 import edu.wisc.regfixer.parser.StarNode;
 import edu.wisc.regfixer.parser.UnionNode;
 import org.sat4j.specs.TimeoutException;
+import theory.BooleanAlgebra;
 import theory.characters.CharPred;
 import theory.characters.StdCharPred;
 import theory.intervals.UnaryCharIntervalSolver;
@@ -61,6 +63,7 @@ public class Automaton extends automata.Automaton {
     this.sfa = aut.sfa;
     this.unknownToExitStates = aut.unknownToExitStates;
     this.unknownToEntryState = aut.unknownToEntryState;
+    this.IniMoveTo();
   }
 
   public Automaton (CharPred predicate) throws TimeoutException {
@@ -180,7 +183,7 @@ public class Automaton extends automata.Automaton {
     return reached;
   }
   
-  public void IniMoveTo() {
+  private void IniMoveTo() {
 	  for (int curr : this.getStates()) {
 		  moveTo.put(curr, getReachableId(curr));
 	  }
@@ -629,7 +632,6 @@ public class Automaton extends automata.Automaton {
 
   public static Automaton star (Automaton only) throws TimeoutException {
     Automaton aut = new Automaton(SFA.star(only.sfa, Automaton.solver));
-
     // Transfer watched states from the child Automaton to the new Automaton
     // without any need to rename states.
     aut.unknownToEntryState.putAll(only.unknownToEntryState);
@@ -761,6 +763,9 @@ public class Automaton extends automata.Automaton {
       return getEmptyStringSFA();
     }
 
+    if (node.getBounds().getMax() > 30 && node.getBounds().getMax() < Bounds.MAX_BOUND)
+    	throw new TimeoutException();
+    		
     Automaton sub = nodeToAutomaton(node.getChild());
     Automaton min = getEmptyStringSFA();
 
@@ -771,8 +776,7 @@ public class Automaton extends automata.Automaton {
         min = concatenate(min, sub);
       }
     }
-
-    if (node.getBounds().hasMax() == false) {
+    if (node.getBounds().hasMax() == false || node.getBounds().getMax() >= Bounds.MAX_BOUND) {
       // min to infinite
       Automaton star = star(sub);
       return concatenate(min, star);
@@ -813,6 +817,10 @@ public class Automaton extends automata.Automaton {
   private static Automaton charClassSetToAutomaton (CharClassSetNode node) throws TimeoutException {
     List<CharPred> predicates = new LinkedList<>();
 
+    if (node.toString().equals("[∅]")) {
+    	return new Automaton(SFA.getEmptySFA(solver));
+    }
+    
     for (CharRangeNode charClass : node.getSubClasses()) {
       if (charClass.isSingle()) {
         char ch = charClass.getLeftChild().getChar();
@@ -949,6 +957,38 @@ public class Automaton extends automata.Automaton {
 		  }
 	  }
 	  return result;
+  }
+  
+  public boolean verify(Automaton truth) throws TimeoutException {  
+	  return SFA.areEquivalent(this.sfa, truth.sfa, solver, 100000);
+  }
+  
+  public String morePositive(Automaton truth) throws TimeoutException {
+	  List<Character> list = SFA.difference(truth.sfa, this.sfa, solver, 100000).getWitness(solver);
+	  if (list == null)
+		  return null;
+	  if (list.size() == 0)
+		  return "";
+	  StringBuilder sb = new StringBuilder();
+	  for (Character ch : list) {
+		  sb.append(ch);
+	  }
+	  
+	  return sb.toString();
+  }
+  
+  public String moreNegative(Automaton truth) throws TimeoutException {
+	  List<Character> list = SFA.difference(this.sfa, truth.sfa, solver, 100000).getWitness(solver);
+	  if (list == null)
+		  return null;
+	  if (list.size() == 0)
+		  return "";
+	  StringBuilder sb = new StringBuilder();
+	  for (Character ch : list) {
+		  sb.append(ch);
+	  }
+	  
+	  return sb.toString();
   }
   
 }
