@@ -141,7 +141,7 @@ public class Enumerant implements Comparable<Enumerant> {
     return pattern;
   }
 
-  public List<Enumerant> expand () {
+  /*public List<Enumerant> expand () {
     List<Enumerant> expansions = new LinkedList<>();
 
     // Create a sorted list of UnknownChar's from youngest -> oldest.
@@ -297,7 +297,7 @@ public class Enumerant implements Comparable<Enumerant> {
 
     // Build components into new enumerant.
     return new Enumerant(root, ids, cost, Expansion.Freeze);
-  }
+  }*/
 
   public Synthesis synthesize (Set<String> p, Set<String> n, Diagnostic diag) throws SynthesisFailure {
     //Automaton automaton = null;
@@ -396,26 +396,10 @@ public class Enumerant implements Comparable<Enumerant> {
 		    	String negative = currentAutomaton.moreNegative(Global.correctAutomaton);
 		    	if (positive != null) {
 		    		System.err.println("add positive: " + positive);
-		    		if (!lastPositive.equals("")) {
-			    		String newChange = StringUtils.difference(positive, lastPositive);
-			    		if (newChange.equals(posiChange)) {
-			    			throw new SynthesisFailure("recurrent positive");
-			    		}
-			    		posiChange = newChange;
-		    		}
-		    		lastPositive = positive;
 		    		p.add(positive);
 		    	}
 		    	if (negative != null) {
 		    		System.err.println("add negative: " + negative);
-		    		if (!lastNegative.equals("")) {
-			    		String newChange = StringUtils.difference(negative, lastNegative);
-			    		if (newChange.equals(negaChange)) {
-			    			throw new SynthesisFailure("recurrent negative");
-			    		}
-			    		negaChange = newChange;
-		    		}
-		    		lastNegative = negative;
 		    		n.add(negative);
 		    	}
 		    	return synthesize(p, n, diag);
@@ -436,7 +420,8 @@ public class Enumerant implements Comparable<Enumerant> {
 	  //this.tree.toBinary();
 	  int holes = this.tree.collectUnknown();
 	  
-	  Storage.ctx = new Context();
+	  Context ctx = new Context();
+	  Storage.ctx = ctx;
 	  Set<Character> chars = new HashSet<>();
 	  for (String s : p) {
 		  chars.addAll(this.CollectChars(s));
@@ -458,28 +443,42 @@ public class Enumerant implements Comparable<Enumerant> {
 		  }
 	  }
 	  
+	  BoolExpr expr = ctx.mkBoolConst("final");
+	  boolean init = false;
+	  
 	  if (Storage.unknownBoundCounter > -1)
 	      Storage.boundPreds = new IntExpr[Storage.unknownBoundCounter + 1];
 	  for (int i = 0; i < Storage.unknownBoundCounter + 1; i++) {
-		  Storage.boundPreds[i] = Storage.ctx.mkIntConst("bound" + Integer.toString(i));
+		  IntExpr boundExpr = Storage.ctx.mkIntConst("bound" + Integer.toString(i));
+		  Storage.boundPreds[i] = boundExpr;
+		  if (Global.tutor) {
+			  if (i % 2 == 0) {
+				  if (!init) {
+					  expr = ctx.mkAnd(ctx.mkLe(boundExpr, ctx.mkInt(2)));
+					  init = true;
+				  } else {
+					  expr = ctx.mkAnd(expr, ctx.mkLe(boundExpr, ctx.mkInt(2)));
+				  }
+			  } else {
+				  expr = ctx.mkAnd(expr, ctx.mkOr(ctx.mkEq(boundExpr, ctx.mkInt(1)),
+						  ctx.mkEq(boundExpr, ctx.mkInt(Bounds.MAX_BOUND))));
+			  }
+		  }
 	  }
 	  
 	  this.tree.setNullable();
 	  this.tree.setLen();
 	  
-	  BoolExpr expr = Storage.ctx.mkBoolConst("final");
-	  int ini = 0;
 	  for (String s : p) {
 		  if (s.length() < 1)
 			  continue;
-		  if (ini == 0) {
+		  if (!init) {
 		      expr = Storage.ctx.mkAnd(this.getConstraintForOne(s, tree));
-		      ini++;
+		      init = true;
 		  } else {
 		      expr = Storage.ctx.mkAnd(expr, this.getConstraintForOne(s, tree));
 		  }
 	  }
-	  ini = 0;
 	  for (String s : n) {
 		  if (s.length() < 1)
 			  continue;
@@ -516,27 +515,70 @@ public class Enumerant implements Comparable<Enumerant> {
 	  } else {
 	      model = opt.getModel();
 	      Storage.model = model;
-	      //System.err.println("model is " + model.toString());
-	      System.out.println("tree is" + this.tree);
-	      
-	      for (int count = 0; count < Storage.unknownCharCounter + 1; count++) {
-	        	for (int cNum = 0; cNum < Storage.allChars.length; cNum++) {
-	        	    System.out.println("char_" + Storage.allChars[cNum] + ": " + 
-	        	    		model.evaluate(Storage.charPreds[count][cNum], false));
-	        	}
+	      if (Global.cegis) {
+	      	RegexNode solution;
+	      	try {
+	      		solution = edu.wisc.regfixer.parser.Main.parse(this.tree.finalString());
+	      	} catch (Exception ex) {
+	            // FIXME
+	            throw new RuntimeException("malformed regular expression");
 	        }
-	      
-	      for (int count = 0; count < Storage.unknownBoundCounter + 1; count++) {
-	            System.out.println(Storage.boundPreds[count]);
-	            
-	            IntExpr intExpr = Storage.boundPreds[count];
-	            System.out.println("bound is " + intExpr + "_" + model.getConstInterp(intExpr));
+	      	System.err.println("get a solution: " + solution);
+	      	Automaton currentAutomaton;
+	      			
+	  	    try {
+	  	    	System.err.println("before building automaton");
+	  	        currentAutomaton = new Automaton(solution);
+	  	        System.err.println("before verify");
+	  	        if (currentAutomaton.verify(Global.correctAutomaton)) {
+	  	        	displayPairResults(model);
+	  	    	  return new Synthesis();
+	  		    } else {
+	  		    	String positive = currentAutomaton.morePositive(Global.correctAutomaton);
+	  		    	String negative = currentAutomaton.moreNegative(Global.correctAutomaton);
+	  		    	if (positive != null) {
+	  		    		System.err.println("add positive: " + positive);
+	  		    		p.add(positive);
+	  		    	}
+	  		    	if (negative != null) {
+	  		    		System.err.println("add negative: " + negative);
+	  		    		n.add(negative);
+	  		    	}
+	  		    	return synthesizePair(p, n, diag);
+	  		    }
+	  	    } catch (TimeoutException ex) {
+	  	        String fmt = "timed-out cegis for `%s`";
+	  	        throw new SynthesisFailure(String.format(fmt, this.tree));
+	  	    }
+	  	    
+	      } else {
+	    	  displayPairResults(model);
+	    	  return new Synthesis();
 	      }
-	     
-	      System.out.println("final tree is" + this.tree.finalString());
-	      return new Synthesis();
 	  }
 	  
+  }
+  
+  private void displayPairResults (Model model) {
+	  
+      //System.err.println("model is " + model.toString());
+      System.out.println("tree is" + this.tree);
+      
+      for (int count = 0; count < Storage.unknownCharCounter + 1; count++) {
+        	for (int cNum = 0; cNum < Storage.allChars.length; cNum++) {
+        	    System.out.println("char_" + Storage.allChars[cNum] + ": " + 
+        	    		model.evaluate(Storage.charPreds[count][cNum], false));
+        	}
+        }
+      
+      for (int count = 0; count < Storage.unknownBoundCounter + 1; count++) {
+            System.out.println(Storage.boundPreds[count]);
+            
+            IntExpr intExpr = Storage.boundPreds[count];
+            System.out.println("bound is " + intExpr + "_" + model.getConstInterp(intExpr));
+      }
+     
+      System.out.println("final tree is" + this.tree.finalString());
   }
   
   /*public Synthesis synthesizePairMax (Set<String> p, Set<String> n, Diagnostic diag) throws SynthesisFailure {

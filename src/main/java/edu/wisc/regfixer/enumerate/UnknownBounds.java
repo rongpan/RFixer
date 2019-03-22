@@ -41,6 +41,10 @@ public class UnknownBounds extends Bounds implements Unknown {
 	  String r = "";
 	  if (Storage.model.getConstInterp(Storage.boundPreds[rloc]) != null)
 	  	r = Storage.model.getConstInterp(Storage.boundPreds[rloc]).toString();
+	  if (l.equals("0") && r.equals(String.valueOf(Bounds.MAX_BOUND)))
+		  return "*";
+	  if (l.equals("1") && r.equals(String.valueOf(Bounds.MAX_BOUND)))
+		  return "+";
 	  return "{" + l + "," + r + "}";
   }
 }

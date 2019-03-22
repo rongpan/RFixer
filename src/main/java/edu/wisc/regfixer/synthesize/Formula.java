@@ -140,7 +140,7 @@ public class Formula {
 		// Build the formula and encode meta-class formulae
 		this.encodeRoutes();
 		
-		if (Global.findMaxSat || Global.cegis) {
+		if (Global.findMaxSat) {
 			/*if (quantCosts.size() > 0) {
 				IntExpr[] costArray = quantCosts.toArray(new IntExpr[quantCosts.size()]);
 				this.opt.MkMinimize(this.ctx.mkAdd(costArray));
