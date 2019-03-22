@@ -85,12 +85,14 @@ public class RegFixer {
     // solution.
     int costCutoff = Integer.MAX_VALUE;
 
-    try {
-		Global.correctAutomaton = new Automaton(job.getTruth());
-	} catch (org.sat4j.specs.TimeoutException e) {
-		e.printStackTrace();
-		return null;
-	}
+    if (Global.cegis) {
+	    try {
+			Global.correctAutomaton = new Automaton(job.getTruth());
+		} catch (org.sat4j.specs.TimeoutException e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
     
     while ((enumerant = enumerants.next()) != null) {
       // Stop the loop if the cost of the current template is greater than

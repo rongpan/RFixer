@@ -22,6 +22,7 @@ import edu.wisc.regfixer.enumerate.Layer;
 import edu.wisc.regfixer.enumerate.UnknownBounds;
 import edu.wisc.regfixer.enumerate.UnknownChar;
 import edu.wisc.regfixer.enumerate.UnknownId;
+import edu.wisc.regfixer.global.Global;
 import edu.wisc.regfixer.parser.Bounds;
 import edu.wisc.regfixer.parser.CharClassSetNode;
 import edu.wisc.regfixer.parser.CharDotNode;
@@ -36,7 +37,6 @@ import edu.wisc.regfixer.parser.RepetitionNode;
 import edu.wisc.regfixer.parser.StarNode;
 import edu.wisc.regfixer.parser.UnionNode;
 import org.sat4j.specs.TimeoutException;
-import theory.BooleanAlgebra;
 import theory.characters.CharPred;
 import theory.characters.StdCharPred;
 import theory.intervals.UnaryCharIntervalSolver;
@@ -57,13 +57,17 @@ public class Automaton extends automata.Automaton {
   public Map<Integer, Set<Integer>> moveTo = new HashMap<>();
   // states which have at least one non-epsilon transition
   public Set<Integer> coreStates = new HashSet<>();
+  
+  private Map<Integer, Set<List<Integer>>> epsList = new HashMap<>();
 
   public Automaton (RegexNode tree) throws TimeoutException {
     Automaton aut = nodeToAutomaton(tree);
     this.sfa = aut.sfa;
     this.unknownToExitStates = aut.unknownToExitStates;
     this.unknownToEntryState = aut.unknownToEntryState;
-    this.IniMoveTo();
+    if (Global.useElimination)
+    	this.IniMoveTo();
+    this.IniEpsList();
   }
 
   public Automaton (CharPred predicate) throws TimeoutException {
@@ -114,9 +118,11 @@ public class Automaton extends automata.Automaton {
   }*/
 
   private Set<State> getEpsClosureDest (Set<State> frontier, Set<Integer> dest) {
+	  //System.err.println("begin eps dest");
     Set<State> res = new HashSet<>();
     for (State s : frontier) {
-    	Set<State> curstates = getEpsClosureForOneState(s);
+    	Set<State> curstates = getEpsStates(s);
+    	//System.err.println("curstates are " + curstates);
     	if (dest != null) {
 	    	for (State curstate : curstates) {
 	    		if (dest.contains(curstate.getStateId()))
@@ -130,6 +136,7 @@ public class Automaton extends automata.Automaton {
     		res.add(new State(reach, s));
     	}*/
     }
+    //System.err.println("end eps dest");
     return res;
   }
   
@@ -159,31 +166,109 @@ public class Automaton extends automata.Automaton {
 	  return res;
   }*/
   
-  private Set<State> getEpsClosureForOneState (State frontier) {
+  private void IniEpsList() {
+	  for (int curr : this.getStates()) {
+		  epsList.put(curr, getEpsClosureForOneState(curr));
+	  }
+  }
+  
+	private Set<List<Integer>> getEpsClosureForOneState(int state) {
+		Set<List<Integer>> res = new HashSet<>();
+		//res.add(new ArrayList<>(state));
+
+		LinkedList<List<Integer>> toVisit = new LinkedList<>();
+		List<Integer> initList = new ArrayList<>();
+		initList.add(state);
+		toVisit.add(initList);
+		
+		while (toVisit.size() > 0) {
+			List<Integer> currList = toVisit.removeFirst();
+			int size = currList.size();
+			if (size == 0)
+				continue;
+			int currState = currList.get(size - 1);
+			
+			for (Move<CharPred, Character> move : getMovesFrom(currState)) {
+		        if (move.isEpsilonTransition()) {
+		        	int newState = move.to;
+		        	if (!currList.contains(newState)) {
+		        		List<Integer> newList = new ArrayList<>();
+		        		newList.addAll(currList);
+		        		newList.add(newState);
+		        		res.add(newList);
+		        		//System.err.println("add newList " + newList);
+		        		
+		        		toVisit.add(newList);
+		        	}
+		        }
+			}
+		}
+		
+		return res;
+	}
+  
+	private Set<State> getEpsStates(State state) {
+		Set<State> res = new HashSet<>();
+		res.add(state);
+		Set<List<Integer>> set  = this.epsList.get(state.getStateId());
+		//System.err.println("set is " + set);
+		for (List<Integer> list : set) {
+			if (list.size() == 0)
+				continue;
+			State last = state;
+			for (int curr : list) {
+				last = new State(curr, last);
+			}
+			res.add(last);
+		}
+		return res;
+	}
+	
+  /*private Set<State> getEpsClosureForOneState (State frontier) {
+	  //System.err.println("begin closure");
     Set<State> reached = new HashSet<>();
     reached.add(frontier);
-    Set<Integer> seenStateIds = new HashSet<>();
-    seenStateIds.add(frontier.getStateId());
+    Map<State, Set<Integer>> seenStateIds = new HashMap<>();
+    Set<Integer> startingSet = new HashSet<>();
+    startingSet.add(frontier.getStateId());
+    seenStateIds.put(frontier, startingSet);
+    
+    //seenStateIds.add(frontier.getStateId());
     LinkedList<State> toVisit = new LinkedList<>();
     toVisit.add(frontier);
     
     while (toVisit.size() > 0) {
       State currState = toVisit.removeFirst();
+      Set<Integer> currSet = seenStateIds.get(currState);
       for (Move<CharPred, Character> move : getMovesFrom(currState.getStateId())) {
         if (move.isEpsilonTransition()) {
-          State newState = new State(move.to, currState);
-          reached.add(newState);
+        	
+        	if (false == currSet.contains(move.to)) {
+        		State newState = new State(move.to, currState);
+        		reached.add(newState);
+                toVisit.add(newState);
+                
+                Set<Integer> newSet = new HashSet<>();
+                for (int id : currSet) {
+                	newSet.add(id);
+                }
+                newSet.add(move.to);
+                seenStateIds.put(newState, newSet);
+              }
+        	
+          //State newState = new State(move.to, currState);
+          //reached.add(newState);
 
-          if (false == seenStateIds.contains(newState.getStateId())) {
-            toVisit.add(newState);
-            seenStateIds.add(newState.getStateId());
-          }
+          //if (false == seenStateIds.contains(newState.getStateId())) {
+            //toVisit.add(newState);
+            //seenStateIds.add(newState.getStateId());
+          //}
         }
       }
     }
-
+    //System.err.println("end closure");
     return reached;
-  }
+  }*/
   
   private void IniMoveTo() {
 	  for (int curr : this.getStates()) {
@@ -485,12 +570,11 @@ public class Automaton extends automata.Automaton {
   }
 
   public Set<Route> trace (String source) throws TimeoutException {
-	  boolean useElimination = false;
 	  Set<State> frontier;
 	  List<Set<Integer>> valid = null;
 	  Set<State> initials = new HashSet<State>();
 	  initials.add(new State(this.getInitialState()));
-	  if (useElimination) {
+	  if (Global.useElimination) {
 		  Layer[] net = this.buildTrans(source);
 		  valid = new LinkedList<>();
 		  for (int i = 0; i < source.length() + 1; i++) {
@@ -508,8 +592,9 @@ public class Automaton extends automata.Automaton {
 
       Set<Integer> filter = layers.get(i);
       frontier = getNextState(filter, frontier, source.charAt(i));*/
+    	//System.err.println("current char is " + source.charAt(i));
       frontier = getNextState(frontier, source.charAt(i));
-      if (useElimination) {
+      if (Global.useElimination) {
     	  frontier = getEpsClosureDest(frontier, valid.get(i + 1));
       } else {
     	  frontier = getEpsClosureDest(frontier, null);
