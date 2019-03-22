@@ -9,6 +9,7 @@ public class Global {
 	public static boolean pairMode = false;
 	public static boolean baseLine = false;
 	public static boolean cegis = false;
+	public static boolean tutor = false;
 	public static boolean useElimination = true;
 	public static Automaton correctAutomaton = null;
 	public static RegexNode root = null;

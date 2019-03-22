@@ -108,6 +108,12 @@ public class Formula {
 			this.opt.Assert(this.ctx.mkGe(minVar, zero));
 			this.opt.Assert(this.ctx.mkGe(maxVar, one));
 
+			if (Global.tutor) {
+				this.opt.Assert(this.ctx.mkLe(minVar, ctx.mkInt(2)));
+				this.opt.Assert(ctx.mkOr(ctx.mkEq(maxVar, ctx.mkInt(1)), 
+						ctx.mkEq(maxVar, ctx.mkInt(Bounds.MAX_BOUND))));
+			}
+			
 			// (declare H0_min_cost Int)
 			// (declare H0_max_cost Int)
 			// (assert (= H0_min_cost (ite (= H0_min <old minimum>) 0 1)))

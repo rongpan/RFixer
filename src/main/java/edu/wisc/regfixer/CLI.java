@@ -130,9 +130,13 @@ public class CLI {
     @Parameter(names={"--baseLine", "-base"})
     private boolean baseLine = false;
     
- // base = true -> use baseLine implementation
+    // base = true -> use baseLine implementation
     @Parameter(names={"--cegis", "-c"})
     private boolean cegis = false;
+    
+    // base = true -> use baseLine implementation
+    @Parameter(names={"--tutor", "-t"})
+    private boolean tutor = false;
     
     @Parameter
     private List<String> catchall = new ArrayList<>();
@@ -210,6 +214,9 @@ public class CLI {
     
     if (root.cegis)
     	Global.cegis = true;
+    
+    if (root.tutor)
+    	Global.tutor = true;
     
     if (root.help) {
       System.exit(handleHelp());
