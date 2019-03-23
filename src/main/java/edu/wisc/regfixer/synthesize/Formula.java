@@ -119,7 +119,7 @@ public class Formula {
 			// (assert (= H0_min_cost (ite (= H0_min <old minimum>) 0 1)))
 			// (assert (= H0_max_cost (ite (= H0_max <old maximum>) 0 1)))
 			// (minimize (+ H0_min_cost H0_max_cost))
-			if (Global.findMaxSat || Global.cegis) {
+			if (Global.findMaxSat) {
 				int oldMin = unknown.getMin();
 				int oldMax = unknown.hasMax() ? unknown.getMax() : Bounds.MAX_BOUND;
 	

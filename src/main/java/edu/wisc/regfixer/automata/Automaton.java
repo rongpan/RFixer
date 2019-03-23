@@ -122,7 +122,7 @@ public class Automaton extends automata.Automaton {
     Set<State> res = new HashSet<>();
     for (State s : frontier) {
     	Set<State> curstates = getEpsStates(s);
-    	//System.err.println("curstates are " + curstates);
+    	//Set<State> curstates = getEpsClosureForOneState(s);
     	if (dest != null) {
 	    	for (State curstate : curstates) {
 	    		if (dest.contains(curstate.getStateId()))
@@ -213,11 +213,14 @@ public class Automaton extends automata.Automaton {
 		Set<List<Integer>> set  = this.epsList.get(state.getStateId());
 		//System.err.println("set is " + set);
 		for (List<Integer> list : set) {
-			if (list.size() == 0)
+			if (list.size() <= 1)
 				continue;
 			State last = state;
+			int ctr = 0;
 			for (int curr : list) {
-				last = new State(curr, last);
+				if (ctr > 0)
+					last = new State(curr, last);
+				ctr++;
 			}
 			res.add(last);
 		}

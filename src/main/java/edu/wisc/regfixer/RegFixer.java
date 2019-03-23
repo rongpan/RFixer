@@ -12,6 +12,7 @@ import java.util.TreeSet;
 import edu.wisc.regfixer.automata.Automaton;
 import edu.wisc.regfixer.diagnostic.Diagnostic;
 import edu.wisc.regfixer.diagnostic.Timing;
+import edu.wisc.regfixer.enumerate.Corpus;
 import edu.wisc.regfixer.enumerate.Enumerant;
 import edu.wisc.regfixer.enumerate.Enumerants;
 import edu.wisc.regfixer.enumerate.Expansion;
@@ -19,6 +20,7 @@ import edu.wisc.regfixer.enumerate.Job;
 import edu.wisc.regfixer.enumerate.Range;
 import edu.wisc.regfixer.enumerate.UnknownChar;
 import edu.wisc.regfixer.global.Global;
+import edu.wisc.regfixer.parser.RegexNode;
 import edu.wisc.regfixer.parser.Storage;
 import edu.wisc.regfixer.synthesize.Synthesis;
 import edu.wisc.regfixer.synthesize.SynthesisFailure;
@@ -290,6 +292,30 @@ public class RegFixer {
 	    Global.findMaxSat = false;
     }
     
+    RegexNode solutionNode;
+    
+		try {
+			if (!Global.pairMode) {
+				solutionNode = edu.wisc.regfixer.parser.Main.parse(solution);
+			} else {
+				solutionNode = edu.wisc.regfixer.parser.Main.parse(Global.root.finalString());
+			}
+			Enumerant sol = new Enumerant(solutionNode, new HashSet<>(), 0, null);
+			if (job.getCorpus().passesEmptySetTest(sol)) {
+				System.out.println("pass negatives");
+			} else {
+				System.out.println("fail negatives!!!!!!!!!!!!!!!");
+			}
+			if (job.getCorpus().passesDotTest(sol)) {
+				System.out.println("pass positives");
+			} else {
+				System.out.println("fail positives!!!!!!!!!!!!!!!");
+			}
+		} catch (Exception ex) {
+			// FIXME
+			throw new RuntimeException("malformed regular expression");
+		}
+    		
     return solution;
   }
 

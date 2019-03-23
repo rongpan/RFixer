@@ -63,11 +63,6 @@ public class Enumerant implements Comparable<Enumerant> {
   private final Expansion latest;
   private Enumerant parent;
   
-  private String lastPositive = "";
-  private String posiChange = "";
-  private String lastNegative = "";
-  private String negaChange = "";
-
   @FunctionalInterface
   public static interface ExpansionFunction {
     Enumerant apply(UnknownChar unknown) throws ForbiddenExpansionException;
@@ -319,7 +314,7 @@ public class Enumerant implements Comparable<Enumerant> {
 
     try {
       for (String source : p) {
-    	  //System.out.println("positive example: " + source);
+    		  //System.out.println("positive example: " + source);
     	//if(emptySetMatching(source))
     		//continue;
     	Set<Route> positiveRun = automaton.trace(source);
@@ -329,8 +324,11 @@ public class Enumerant implements Comparable<Enumerant> {
     	}
     	boolean ignore = false;
     	for (Route route : positiveRun) {
-    		if (route.hasNoRealExits() && route.hasNoSpans())
+    		//System.out.println("positive Route: " + route);
+    		if (route.hasNoRealExits() && route.hasNoSpans()) {
+    			//System.out.println("positive ignore");
     			ignore = true;
+    		}
     	}
     	if (ignore)
     		continue;
@@ -338,21 +336,17 @@ public class Enumerant implements Comparable<Enumerant> {
       }
 
       for (String source : n) {
-    	  if (source.equals(""))
-    		  System.out.println("negative example: " + source);
+          //System.out.println("negative example: " + source);
     	  Set<Route> negativeRun = automaton.trace(source);
-    	  if (source.equals(""))
-    		  System.out.println("negativeRun:\n" + negativeRun);
+    	  //System.out.println("negativeRun:\n" + negativeRun);
     	  if (negativeRun.size() == 0) {
     		  continue;
     	  }
     	  //System.err.println("source is " + source);
     	  for (Route route : negativeRun) {
-    		  if (source.equals(""))
-    			  System.err.println("negative route: " + route);
+    		//System.out.println("negative route: " + route);
       		if (route.hasNoRealExits() && route.hasNoSpans()) {
-      			if (source.equals(""))
-      				System.out.println("negative skip");
+      			//System.out.println("negative skip");
       			return null;
       		}
       	}
@@ -563,6 +557,8 @@ public class Enumerant implements Comparable<Enumerant> {
 	  
       //System.err.println("model is " + model.toString());
       System.out.println("tree is" + this.tree);
+      
+      Global.root = this.tree;
       
       for (int count = 0; count < Storage.unknownCharCounter + 1; count++) {
         	for (int cNum = 0; cNum < Storage.allChars.length; cNum++) {
