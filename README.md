@@ -8,82 +8,33 @@ Run `mvn install` to compile & bundle the project. The finished JAR will be avai
 
 ## Running on terminal
 
-Running `java -jar target/regfixer.jar fix --limit 4000 --file tests/test_words.txt` should produce the following report:
+Running `java -jar target/regfixer.jar -m [modeNum] -max -base -c -t fix --file [path to file]`
 
-```
-Given the regular expression:
+--mode / -m (default = 1) modeNum = 1 tells the synthesizer to use Automaton-directed SMT Encoding; modeNum = 2 tells the synthesizer to use Regular-expression-directed SMT Encoding.
 
-  \w\w\w
+--max-sat / -max (optional) If this flag is set, RFixer will search for the solution with Max-SMT objectives.
 
-That that should match the strings:
+--baseLine / -base (optional) If this flag is set, RFixer will not use any template pruning technique.
 
-  ✓ (8:11)   123
-  ✓ (12:15)  456
+--cegis / -c (optional) If this flag is set, RFixer will iteratively find the true repair.
 
-And reject the strings:
+--tutor / -t (optional) If this flag is set, RFixer will put additional constraints on the quantifiers.
 
-  ✗ (16:19)  ghi
-  ✗ (20:23)  5hh
-  ✗ (24:27)  h5h
-  ✗ (28:31)  hh5
-  ✗ (32:35)  1hh
-  ✗ (36:39)  4hh
-  ✗ (40:43)  h2h
-  ✗ (44:47)  h5h
-  ✗ (48:51)  hh3
-  ✗ (52:55)  hh6
-  ✗ (56:59)  66h
-  ✗ (60:63)  55h
-  ✗ (64:67)  11h
-  ✗ (68:71)  12h
-  ✗ (72:75)  e33
-  ✗ (76:79)  e25
-  ✗ (80:83)  e23
+The -c and -t flags should be used together for finding true repairs of AutomataTutor benchmarks.
 
-Search through possible transformations:
+## Folders
 
-  Order  |  Cost  Template                  Solution
----------|--------------------------------------------------------------------
-  1      |  0     ■\w\w                     unsatisfiable SAT formula
-  2      |  0     \w■\w                     unsatisfiable SAT formula
-  3      |  0     ■\w                       failed dot test
-  4      |  0     \w■                       failed dot test
-  5      |  0     \w\w■                     unsatisfiable SAT formula
-  6      |  1     \w■■\w                    failed dot test
-  7      |  1     \w\w■■                    failed dot test
-  8      |  1     \w\w\w■                   failed dot test
-  9      |  1     \w■\w\w                   failed dot test
-  10     |  1     \w\w■\w                   failed dot test
+tests/benchmark_explicit : Regexlib benchmarks
 
-  (lines removed for brevity)
+tests/clean_AutoTutor : AutomataTutor benchmarks without underlying true repairs
 
-  3541   |  5     (■(■)+)+\w\w              failed dot test
-  3542   |  5     ■|(■)?|(■)+\w\w           unsatisfiable SAT formula
-  3543   |  5     \w■(■)?■|(■)?\w           no solution for some holes
-  3544   |  5     \w(■)?(■|■)+\w            no solution for some holes
-  3545   |  5     \w\w■■(■■)+               failed dot test
-  3546   |  5     \w\w(■)?|((■)?■)?         unsatisfiable SAT formula
-  3547   |  5     \w(■)*|■|■\w              unsatisfiable SAT formula
-  3548   |  5     \w(■)?(■)?(■)?\w          no solution for some holes
-  3549   |  5     \w\w■■|((■)?■)?           failed dot test
-  3550   |  5     \w\w■|((■■)?■)?           unsatisfiable SAT formula
-  3551   |  5     ■(■)+|(■)?\w\w            no solution for some holes
-  3552   |  5     \w\w■|((■)?(■)?)?         unsatisfiable SAT formula
-  3553   |  5     (■)?■                     failed dot test
-  3554   |  5     ■■|■|(■)?|■\w\w           no solution for some holes
-  3555   |  5     ■■|■|■■|■\w\w             no solution for some holes
-  3556   |  5     (■)+■■\w\w\w              failed dot test
-  3557   |  5     ■■|■|■|(■)?\w\w           no solution for some holes
-  3558   |  5     ■■■                       \d\d\d
+tests/clean_AutoTutorWithTrue : AutomataTutor benchmarks with underlying true repairs (on the second line of each test file)
 
-Results in the expression:
+shells : scripts to run evals under each configutations
 
-  \d\d\d
+utils : scripts to generate statistics
 
-All done
-```
-
-## Running on local server (with JAR file)
+## Running on local server (with JAR file) (not maintained)
 
 `java -jar target/regfixer.jar serve --port=8080`
 
