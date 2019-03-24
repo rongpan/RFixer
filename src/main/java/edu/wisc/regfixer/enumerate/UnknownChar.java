@@ -192,7 +192,47 @@ public class UnknownChar implements Unknown, RegexNode, Comparable<UnknownChar> 
 	  return this.pairs;
   }
   
-  public String finalString () {
+	public String finalString() {
+		StringBuilder sb = new StringBuilder();
+		boolean hasd = false;
+		boolean hasaz = false;
+		boolean hasAZ = false;
+		if (Global.findMaxSat) {
+			if (Storage.model.evaluate(Storage.maxCharPreds[location][3], false).toString().equals("true")) {
+				return "\\w";
+			}
+			if (Storage.model.evaluate(Storage.maxCharPreds[location][0], false).toString().equals("true")) {
+				sb.append("\\d");
+				hasd = true;
+			}
+			if (Storage.model.evaluate(Storage.maxCharPreds[location][1], false).toString().equals("true")) {
+				sb.append("[a-z]");
+				hasaz = true;
+			}
+			if (Storage.model.evaluate(Storage.maxCharPreds[location][2], false).toString().equals("true")) {
+				sb.append("[A-Z]");
+				hasAZ = true;
+			}
+		}
+
+		for (int cNum = 0; cNum < Storage.allChars.length; cNum++) {
+			char c = Storage.allChars[cNum];
+			if ('0' <= c && c <= '9' && hasd)
+				continue;
+			if ('a' <= c && c <= 'z' && hasaz)
+				continue;
+			if ('A' <= c && c <= 'Z' && hasAZ)
+				continue;
+			if (Storage.model.evaluate(Storage.charPreds[location][cNum], false).toString().equals("true")) {
+				sb.append(c);
+			}
+		}
+		if (sb.length() == 0)
+			return "∅";
+		return "[" + sb.toString() + "]";
+	}
+  
+  /*public String finalString () {
 	StringBuilder sb = new StringBuilder();
 	int num_d = 0;
 	int num_az = 0;
@@ -248,7 +288,7 @@ public class UnknownChar implements Unknown, RegexNode, Comparable<UnknownChar> 
 		}
 	}
 	return "[" + sb.toString() + "]";
-  }
+  }*/
   
   public void setEpsilon() {
   }

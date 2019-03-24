@@ -3,7 +3,6 @@
 foo@demo.net
 ba@test.co
 smith@foo.com
-smith@foo.com
 bob_smith@foo.com
 you@home.co
 barney@stonehenge.com
@@ -22,7 +21,6 @@ test@f.comads
 bar.
 bob-smith@foo.com
 ob.smith@foo.com
-bob_smith@foo.com
 me.you@home.co.uk
 fred&barney@stonehenge.com
 king-bart@home.simpsons.com

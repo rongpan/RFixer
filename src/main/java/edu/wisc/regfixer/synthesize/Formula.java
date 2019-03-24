@@ -29,6 +29,7 @@ import edu.wisc.regfixer.parser.CharLiteralNode;
 import edu.wisc.regfixer.parser.CharRangeNode;
 import edu.wisc.regfixer.parser.ConcreteCharClass;
 import edu.wisc.regfixer.parser.RegexNode;
+import edu.wisc.regfixer.parser.Storage;
 
 public class Formula {
   private List<Set<Route>> positives;
@@ -41,7 +42,7 @@ public class Formula {
 
   private Set<UnknownId> unknownChars;
   private Map<UnknownId, Set<BoolExpr>> unknownToVars;
-  private Map<UnknownId, IntExpr> unknownToWeight;
+  private Map<UnknownId, List<IntExpr>> unknownToWeights;
   private Map<UnknownId, Map<MetaClassTree, BoolExpr>> unknownToTreeToVar;
   private Map<BoolExpr, MetaClassTree> varToTree;
   private Map<BoolExpr, Predicate> varToPred;
@@ -52,6 +53,8 @@ public class Formula {
   private Set<UnknownId> unknownBounds;
   private Map<UnknownId, IntExpr> unknownToMinVar;
   private Map<UnknownId, IntExpr> unknownToMaxVar;
+  
+  private int holes;
 
   /*public Formula (List<Set<Route>> positives, List<Set<Route>> negatives) {
     this(positives, negatives, new Diagnostic());
@@ -70,7 +73,7 @@ public class Formula {
 		// Initialize structures for tracking state
 		this.unknownChars = new HashSet<>();
 		this.unknownToVars = new HashMap<>();
-		this.unknownToWeight = new HashMap<>();
+		this.unknownToWeights = new HashMap<>();
 		this.unknownToTreeToVar = new HashMap<>();
 		this.varToTree = new HashMap<>();
 		this.varToPred = new HashMap<>();
@@ -89,6 +92,9 @@ public class Formula {
 		IntExpr zero = this.ctx.mkInt(0);
 		IntExpr one = this.ctx.mkInt(1);
 
+		Storage.reset();
+		holes = Global.root.collectUnknown();
+		
 		// Create all 'H?_max' and 'H?_min' variables for all relevant IDs.
 		List<IntExpr> quantCosts = new LinkedList<>();
 		for (UnknownId id : this.unknownBounds) {
@@ -150,12 +156,10 @@ public class Formula {
 			if (quantCosts.size() > 0)
 				quantCost = this.ctx.mkAdd(quantCosts.toArray(new IntExpr[quantCosts.size()]));
 			
-			List<IntExpr> charCosts = new LinkedList<>();
+			List<ArithExpr> charCosts = new LinkedList<>();
 			for (UnknownId id : this.unknownChars) {
 				this.encodeCharClass(id, this.tree);
-				IntExpr expr = this.unknownToWeight.get(id);
-				if (expr != null)
-					charCosts.add(expr);
+				charCosts.add(this.encodeCharClassSummation(id));
 			}
 			
 			ArithExpr charCost = null;
@@ -442,7 +446,7 @@ public class Formula {
     return vars;
   }
 
-  /*private ArithExpr encodeCharClassSummation (UnknownId id) {
+  private ArithExpr encodeCharClassSummation (UnknownId id) {
     List<IntExpr> weightsList = this.unknownToWeights.get(id);
     IntExpr[] weightsArr = new IntExpr[weightsList.size()];
 
@@ -451,7 +455,7 @@ public class Formula {
     }
 
     return this.ctx.mkAdd(weightsArr);
-  }*/
+  }
 
   private String createVariableName (UnknownId id, MetaClassTree tree) {
     String idName = id.toString();
@@ -465,11 +469,11 @@ public class Formula {
   }
 
   private void saveWeightForSummation (UnknownId id, IntExpr weight) {
-    if (this.unknownToWeight.containsKey(id) == false) {
-      this.unknownToWeight.put(id, weight);
+    if (this.unknownToWeights.containsKey(id) == false) {
+      this.unknownToWeights.put(id, new LinkedList<>());
     }
 
-    //this.unknownToWeights.get(id).add(weight);
+    this.unknownToWeights.get(id).add(weight);
   }
 
   // Register variable with unknown -> variable mapping.
@@ -559,7 +563,7 @@ public class Formula {
     Status status = this.opt.Check();
     long duration = diag.timing().stopTimingAndAdd("timeSATSolver");
     RegexNode root = Global.root;
-    diag.stat.add(root.toString(), root.descendants(), root.collectUnknown(), duration);
+    diag.stat.add(root.toString(), root.descendants(), holes, duration);
     if (status == Status.UNSATISFIABLE) {
       throw new SynthesisFailure("unsatisfiable SAT formula");
     } else {

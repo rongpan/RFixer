@@ -356,14 +356,6 @@ public class Enumerant implements Comparable<Enumerant> {
       String fmt = "timed-out computing runs for `%s`";
       throw new SynthesisFailure(String.format(fmt, this.tree));
     }
-
-    /*for (int i=0; i < positiveRuns.size(); i++) {
-    	System.out.println("positive run" + Integer.toString(i) + positiveRuns.get(i));
-    }
-    
-    for (int i=0; i < negativeRuns.size(); i++) {
-    	System.out.println("negative run" + Integer.toString(i) + negativeRuns.get(i));
-    }*/
     
     int totalRuns = positiveRuns.size() + negativeRuns.size();
     if (diag.getInt("maximumRoutes") < totalRuns) {
@@ -419,6 +411,11 @@ public class Enumerant implements Comparable<Enumerant> {
 	  Set<Character> chars = new HashSet<>();
 	  for (String s : p) {
 		  chars.addAll(this.CollectChars(s));
+	  }
+	  if (Global.findMaxSat) {
+		  for (String s : n) {
+			  chars.addAll(this.CollectChars(s));
+		  }
 	  }
 	  Storage.allChars = new char[chars.size()];
 	  int ctr = 0;
@@ -485,13 +482,26 @@ public class Enumerant implements Comparable<Enumerant> {
 	  Optimize opt = Storage.ctx.mkOptimize();
 	  if (Global.findMaxSat) {
 		  Storage.costArray = new ArrayList<>();
-		  if (Storage.unknownBoundCounter > -1)
+		  /*if (Storage.unknownBoundCounter > -1)
 		      Storage.boundPreds = new IntExpr[Storage.unknownBoundCounter + 1];
 		  for (int i = 0; i < Storage.unknownBoundCounter + 1; i++) {
 			  Storage.boundPreds[i] = Storage.ctx.mkIntConst("bound" + Integer.toString(i));
 		  }
 		  for (int i = 0; i < Storage.unknownBoundCounter + 1; i++) {
 			  this.setOptBound(opt, i);
+		  }*/
+		  if (Storage.unknownBoundCounter > -1) {
+			  this.setOptBound(opt);
+		  }
+		  if (Storage.unknownCharCounter > -1) {
+			  Storage.maxCharPreds = new BoolExpr[Storage.unknownCharCounter + 1][4];
+			  for (int i = 0; i < Storage.unknownCharCounter + 1; i++) {
+				  for (int j = 0; j < 4; j++) {
+					  Storage.maxCharPreds[i][j] = ctx.mkBoolConst(String.valueOf(i) + "_" +
+				  "maxChar" + String.valueOf(j));
+				  }
+				  this.setOpt(opt, i);
+			  }
 		  }
 		  IntExpr[] costArray = Storage.costArray.toArray(new IntExpr[Storage.costArray.size()]);
 		  opt.Assert(expr);
@@ -564,6 +574,12 @@ public class Enumerant implements Comparable<Enumerant> {
         	for (int cNum = 0; cNum < Storage.allChars.length; cNum++) {
         	    System.out.println("char_" + Storage.allChars[cNum] + ": " + 
         	    		model.evaluate(Storage.charPreds[count][cNum], false));
+        	}
+        	if (Global.findMaxSat) {
+        		for (int j = 0; j < 4; j++) {
+        			System.out.println("maxChar_" + 
+            	    		model.evaluate(Storage.maxCharPreds[count][j], false));
+        		}
         	}
         }
       
@@ -734,7 +750,7 @@ public class Enumerant implements Comparable<Enumerant> {
 	  return this.tree.getPairs()[0][length - 1];
   }
   
-  /*private void setOpt(Optimize opt, int index) {
+  private void setOpt(Optimize opt, int index) {
 	  Context ctx = Storage.ctx;
 	  int num_d = 0;
 	  int num_az = 0;
@@ -743,13 +759,16 @@ public class Enumerant implements Comparable<Enumerant> {
 		  char c = Storage.allChars[i];
 		  if (c >= '0' && c <= '9') {
 			  num_d++;
-			  ctx.mkImplies(Storage.maxCharPreds[index][0], Storage.charPreds[index][i]);
+			  opt.Assert(ctx.mkImplies(Storage.maxCharPreds[index][0], Storage.charPreds[index][i]));
+			  opt.Assert(ctx.mkImplies(Storage.maxCharPreds[index][3], Storage.charPreds[index][i]));
 		  } else if (c >= 'a' && c <= 'z') {
 			  num_az++;
-			  ctx.mkImplies(Storage.maxCharPreds[index][1], Storage.charPreds[index][i]);
+			  opt.Assert(ctx.mkImplies(Storage.maxCharPreds[index][1], Storage.charPreds[index][i]));
+			  opt.Assert(ctx.mkImplies(Storage.maxCharPreds[index][3], Storage.charPreds[index][i]));
 		  } else if (c >= 'A' && c <= 'Z') {
 			  num_AZ++;
-			  ctx.mkImplies(Storage.maxCharPreds[index][2], Storage.charPreds[index][i]);
+			  opt.Assert(ctx.mkImplies(Storage.maxCharPreds[index][2], Storage.charPreds[index][i]));
+			  opt.Assert(ctx.mkImplies(Storage.maxCharPreds[index][3], Storage.charPreds[index][i]));
 		  }
 		  //Storage.ctx.mkImplies(Storage.charPreds[index][i], null);
 		  
@@ -788,33 +807,40 @@ public class Enumerant implements Comparable<Enumerant> {
 		  Storage.costArray.add(weight);
 	  }
 	  
-	  BoolExpr d = Storage.maxCharPreds[index][0];
+	  IntExpr weight = Storage.ctx.mkIntConst(Integer.toString(index) + "num_w");
+	  BoolExpr ifTrue = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(0));
+	  BoolExpr ifFalse = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(1));
+	  opt.Assert((BoolExpr)Storage.ctx.mkITE(Storage.maxCharPreds[index][3], ifTrue, ifFalse));
+	  Storage.costArray.add(weight);
+	  
+	  /*BoolExpr d = Storage.maxCharPreds[index][0];
 	  BoolExpr az = Storage.maxCharPreds[index][1];
 	  BoolExpr AZ = Storage.maxCharPreds[index][2];
 	  BoolExpr w = Storage.maxCharPreds[index][3];
 	  
 	  ctx.mkImplies(ctx.mkOr(ctx.mkAnd(d,az), ctx.mkAnd(d,AZ), ctx.mkAnd(az,AZ)), w);
-  }*/
+	  */
+  }
   
-  private void setOptBound(Optimize opt, int index) {
+  private void setOptBound(Optimize opt) {
 	  Context ctx = Storage.ctx;
 	  for (int i = 0; i < Storage.unknownBoundCounter + 1; i++) {
-		  IntExpr weight = Storage.ctx.mkIntConst(Integer.toString(index) + "bound");
-		  //if (i % 2 == 0) {
+		  IntExpr weight = Storage.ctx.mkIntConst(Integer.toString(i) + "bound");
+		  if (i % 2 == 0) {
 			  BoolExpr ifTrue = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(0));
 			  BoolExpr ifFalse = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(1));
-			  opt.Assert((BoolExpr)Storage.ctx.mkITE(ctx.mkOr(ctx.mkEq(Storage.boundPreds[index],ctx.mkInt(0)),
-					  ctx.mkEq(Storage.boundPreds[index],ctx.mkInt(1))),
+			  opt.Assert((BoolExpr)Storage.ctx.mkITE(ctx.mkOr(ctx.mkEq(Storage.boundPreds[i], ctx.mkInt(0)),
+					  ctx.mkEq(Storage.boundPreds[i],ctx.mkInt(1))),
 					  ifTrue, ifFalse));
 			  Storage.costArray.add(weight);
-		  /*} else {
+		  } else {
 			  BoolExpr ifTrue = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(0));
 			  BoolExpr ifFalse = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(1));
-			  opt.Assert((BoolExpr)Storage.ctx.mkITE(
-					  ctx.mkEq(Storage.boundPreds[index],ctx.mkInt(1)),
+			  opt.Assert((BoolExpr)Storage.ctx.mkITE(ctx.mkOr(ctx.mkEq(Storage.boundPreds[i], ctx.mkInt(Bounds.MAX_BOUND)),
+					  ctx.mkEq(Storage.boundPreds[i],ctx.mkInt(1))),
 					  ifTrue, ifFalse));
 			  Storage.costArray.add(weight);
-		  }*/
+		  }
 		  
 	  }
   }

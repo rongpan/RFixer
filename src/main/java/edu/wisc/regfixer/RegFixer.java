@@ -300,6 +300,7 @@ public class RegFixer {
 			} else {
 				solutionNode = edu.wisc.regfixer.parser.Main.parse(Global.root.finalString());
 			}
+			//System.out.println("solution is " + solutionNode);
 			Enumerant sol = new Enumerant(solutionNode, new HashSet<>(), 0, null);
 			if (job.getCorpus().passesEmptySetTest(sol)) {
 				System.out.println("pass negatives");

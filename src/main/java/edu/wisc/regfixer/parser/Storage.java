@@ -12,7 +12,7 @@ public class Storage {
     public static int unknownBoundCounter = -1;
     public static Context ctx;
     public static BoolExpr[][] charPreds;
-    //public static BoolExpr[][] maxCharPreds;
+    public static BoolExpr[][] maxCharPreds;
     public static List<IntExpr> costArray;
     public static IntExpr[] boundPreds;
     public static char[] curExample;
