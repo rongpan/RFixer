@@ -120,9 +120,16 @@ public class Enumerants {
 				expandHoles(enumerant);
 				if (enumerant.passDot && enumerant.solve) {
 					//System.out.println("pass dot and solve");
+					Global.nextHeight = 0;
 					return enumerant;
 				}
 			}
+			Global.nextHeight++;
+		    if (Global.nextHeight >= 50) {
+		    	Global.nextHeight = 0;
+		    	Global.skipForStack = true;
+		    	return enumerant;
+		    }
 			return this.next();
 
 		} else {
