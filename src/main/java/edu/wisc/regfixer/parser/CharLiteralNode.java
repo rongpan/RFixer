@@ -132,60 +132,42 @@ public class CharLiteralNode implements ConcreteCharClass {
 	      return "\\.";
 	    } else if (this.ch == '■') {
 	    	StringBuilder sb = new StringBuilder();
-	    	int num_d = 0;
-	    	int num_az = 0;
-	    	int num_AZ = 0;
-	    	boolean neg_d = false;
-	    	boolean neg_az = false;
-	    	boolean neg_AZ = false;
-	    	for (int cNum = 0; cNum < Storage.allChars.length; cNum++) {
-	    		char c = Storage.allChars[cNum];
-	    	    if (Storage.model.evaluate(Storage.charPreds[location][cNum], false).toString()
-	    	    		.equals("true")) {
-	    	    	sb.append(c);
-	    	    	if (Global.findMaxSat) {
-	    		    	if (c >= '0' && c <= '9') {
-	    				    num_d++;
-	    		    	} else if (c >= 'a' && c <= 'z') {
-	    		    	    num_az++;
-	    		    	} else if (c >= 'A' && c <= 'Z') {
-	    		    	    num_AZ++;
-	    		    	}
-	    		    		
-	    	    	}
-	    	    }
-	    	    if (Global.findMaxSat) {
-	    	        if (Storage.model.evaluate(Storage.charPreds[location][cNum], false).toString()
-	    	    		.equals("false")) {
-	    	        	if (c >= '0' && c <= '9') {
-	    				    neg_d = true;
-	    		    	} else if (c >= 'a' && c <= 'z') {
-	    		    	    neg_az = true;
-	    		    	} else if (c >= 'A' && c <= 'Z') {
-	    		    	    neg_AZ = true;
-	    		    	}
-	    	        }
-	    	    }
-	    	}
-	    	if (sb.length() == 0)
-	    		return "∅";
-	    	if (Global.findMaxSat) {
-	    		int use_d = (!neg_d) && (num_d >= 2) ? 1 : 0;
-	    		int use_az = (!neg_az) && (num_az >= 2) ? 1 : 0;
-	    		int use_AZ = (!neg_AZ) && (num_AZ >= 2) ? 1 : 0;
-	    		if (use_d + use_az + use_AZ >=2) {
-	    			return "\\w";
-	    		}
-	    		if (use_d + use_az + use_AZ == 1) {
-	    			if (use_d == 1)
-	    				return "\\d";
-	    			if (use_az == 1)
-	    				return "[a-z]";
-	    			if (use_AZ == 1)
-	    				return "[A-Z]";
-	    		}
-	    	}
-	    	return "[" + sb.toString() + "]";
+			boolean hasd = false;
+			boolean hasaz = false;
+			boolean hasAZ = false;
+			if (Global.findMaxSat) {
+				if (Storage.model.evaluate(Storage.maxCharPreds[location][3], false).toString().equals("true")) {
+					return "\\w";
+				}
+				if (Storage.model.evaluate(Storage.maxCharPreds[location][0], false).toString().equals("true")) {
+					sb.append("\\d");
+					hasd = true;
+				}
+				if (Storage.model.evaluate(Storage.maxCharPreds[location][1], false).toString().equals("true")) {
+					sb.append("[a-z]");
+					hasaz = true;
+				}
+				if (Storage.model.evaluate(Storage.maxCharPreds[location][2], false).toString().equals("true")) {
+					sb.append("[A-Z]");
+					hasAZ = true;
+				}
+			}
+
+			for (int cNum = 0; cNum < Storage.allChars.length; cNum++) {
+				char c = Storage.allChars[cNum];
+				if ('0' <= c && c <= '9' && hasd)
+					continue;
+				if ('a' <= c && c <= 'z' && hasaz)
+					continue;
+				if ('A' <= c && c <= 'Z' && hasAZ)
+					continue;
+				if (Storage.model.evaluate(Storage.charPreds[location][cNum], false).toString().equals("true")) {
+					sb.append(c);
+				}
+			}
+			if (sb.length() == 0)
+				return "∅";
+			return "[" + sb.toString() + "]";
 	    }
 
 	    return String.format("%c", this.ch);
