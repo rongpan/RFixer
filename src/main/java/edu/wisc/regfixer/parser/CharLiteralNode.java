@@ -44,7 +44,9 @@ public class CharLiteralNode implements ConcreteCharClass {
       return "\\-";
     } else if (this.ch == '$') {
       return "\\$";
-    }
+    } else if (this.ch == '.') {
+      return "\\.";
+    } 
 
     return String.format("%c", this.ch);
   }
@@ -126,6 +128,8 @@ public class CharLiteralNode implements ConcreteCharClass {
 	      return "\\-";
 	    } else if (this.ch == '$') {
 	      return "\\$";
+	    } else if (this.ch == '.') {
+	      return "\\.";
 	    } else if (this.ch == '■') {
 	    	StringBuilder sb = new StringBuilder();
 	    	int num_d = 0;
