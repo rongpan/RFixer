@@ -52,8 +52,8 @@ public class Automaton extends automata.Automaton {
   public static final CharPred NotWord = solver.MkNot(StdCharPred.WORD);
 
   private final SFA<CharPred, Character> sfa;
-  public Map<UnknownId, Set<Integer>> unknownToExitStates = new HashMap<>();
-  public Map<UnknownId, Integer> unknownToEntryState = new HashMap<>();
+  public Map<UnknownId, List<Set<Integer>>> unknownToExitStates = new HashMap<>();
+  public Map<UnknownId, List<Integer>> unknownToEntryState = new HashMap<>();
   public Map<Integer, Set<Integer>> moveTo = new HashMap<>();
   // states which have at least one non-epsilon transition
   public Set<Integer> coreStates = new HashSet<>();
@@ -399,11 +399,19 @@ public class Automaton extends automata.Automaton {
 
   private Route traceFromState (State endState) {
     Map<UnknownId, Set<Character>> crosses = new HashMap<>();
-    Map<UnknownId, Stack<Integer>> quantTally = new HashMap<>();
-    Map<UnknownId, Boolean> outGuard = new HashMap<>();
+    Map<UnknownId, List<Stack<Integer>>> quantTally = new HashMap<>();
+    Map<UnknownId, List<Boolean>> outGuard = new HashMap<>();
 
     for (UnknownId id : this.unknownToEntryState.keySet()) {
-      quantTally.put(id, new Stack<>());
+    	List<Stack<Integer>> tallyList = new ArrayList<>();
+    	List<Boolean> guardList = new ArrayList<>();
+    	for (Integer i : this.unknownToEntryState.get(id)) {
+    		tallyList.add(new Stack<>());
+    		guardList.add(false);
+    	}
+    	quantTally.put(id, tallyList);
+    	outGuard.put(id, guardList);
+        //quantTally.put(id, new Stack<>());
       //quantTally.get(id).push(null);
     }
 
@@ -423,36 +431,43 @@ public class Automaton extends automata.Automaton {
       }
 
       for (UnknownId id : this.unknownToEntryState.keySet()) {
-        Integer entryStateId = this.unknownToEntryState.get(id);
-        if (!outGuard.containsKey(id) || outGuard.get(id) == false)
-          continue;
-        if (entryStateId == currState.getStateId()) {
-          Integer old = quantTally.get(id).pop();
+        List<Integer> entryStateIds = this.unknownToEntryState.get(id);
+        for (int index = 0; index < entryStateIds.size(); index++) {
+        	Integer entryStateId = entryStateIds.get(index);
+			if (!outGuard.containsKey(id) || outGuard.get(id).get(index) == false)
+				continue;
+			if (entryStateId == currState.getStateId()) {
+				Integer old = quantTally.get(id).get(index).pop();
 
-          //if (old == null) {
-          if (old == 0) {
-            old = 0;
-          }
+				// if (old == null) {
+				if (old == 0) {
+					old = 0;
+				}
 
-          quantTally.get(id).push(old + 1);
-          outGuard.put(id, false);
+				quantTally.get(id).get(index).push(old + 1);
+				outGuard.get(id).set(index, false);
+			}
         }
       }
 
       for (UnknownId id : this.unknownToExitStates.keySet()) {
-        Set<Integer> exitStateIds = this.unknownToExitStates.get(id);
-        if (exitStateIds.contains(currState.getStateId())) {
-          outGuard.put(id, true);
-          if (prevState != null && this.unknownToEntryState.get(id) != null) {
-             if (this.unknownToEntryState.get(id) != prevState.getStateId()) {
-               // This exit does NOT loop back to the start of this quantifier
-               // so push a new counter onto the tally stack.
-               //quantTally.get(id).push(null);
-               quantTally.get(id).push(0);
-             }
-          } else if (prevState == null) {
-        	  quantTally.get(id).push(0);
-          }
+        List<Set<Integer>> exitStateIdsList = this.unknownToExitStates.get(id);
+        for (int index = 0; index < exitStateIdsList.size(); index++) {
+        	Set<Integer> exitStateIds = exitStateIdsList.get(index);
+			if (exitStateIds.contains(currState.getStateId())) {
+				outGuard.get(id).set(index, true);
+				if (prevState != null && this.unknownToEntryState.get(id) != null) {
+					if (this.unknownToEntryState.get(id).get(index) != prevState.getStateId()) {
+						// This exit does NOT loop back to the start of
+						// this quantifier
+						// so push a new counter onto the tally stack.
+						// quantTally.get(id).push(null);
+						quantTally.get(id).get(index).push(0);
+					}
+				} else if (prevState == null) {
+					quantTally.get(id).get(index).push(0);
+				}
+			}
         }
       }
 
@@ -461,9 +476,15 @@ public class Automaton extends automata.Automaton {
     }
 
     Map<UnknownId, Set<Integer>> exits = new HashMap<>();
-    for (Map.Entry<UnknownId, Stack<Integer>> entry : quantTally.entrySet()) {
+    for (Map.Entry<UnknownId, List<Stack<Integer>>> entry : quantTally.entrySet()) {
+    	Set<Integer> set = new HashSet<>();
+    	for (Stack<Integer> stack : entry.getValue()) {
+    		for (Integer i : stack) {
+    			set.add(i);
+    		}
+    	}
       // Convert from Stack<Integer> to Set<Integer> and remove any null values.
-      exits.put(entry.getKey(), entry.getValue().stream()
+      exits.put(entry.getKey(), set.stream()
         .filter(i -> i != null)
         .collect(Collectors.toSet()));
     }
@@ -595,8 +616,11 @@ public class Automaton extends automata.Automaton {
 
       Set<Integer> filter = layers.get(i);
       frontier = getNextState(filter, frontier, source.charAt(i));*/
+    	//if (source.equals("078-05-1120") && i < 4)
     	//System.err.println("current char is " + source.charAt(i));
       frontier = getNextState(frontier, source.charAt(i));
+      //if (source.equals("078-05-1120") && i < 4)
+      //System.err.println("frontier is " + frontier);
       if (Global.useElimination) {
     	  frontier = getEpsClosureDest(frontier, valid.get(i + 1));
       } else {
@@ -663,16 +687,52 @@ public class Automaton extends automata.Automaton {
     // to ensure that the states of the first and second are disjointed.
     int offset = first.sfa.getMaxStateId() + 1;
     aut.unknownToExitStates.putAll(first.unknownToExitStates);
-    for (Map.Entry<UnknownId, Set<Integer>> entry : second.unknownToExitStates.entrySet()) {
-      aut.unknownToExitStates.put(entry.getKey(), new HashSet<>());
+    for (Map.Entry<UnknownId, List<Set<Integer>>> entry : second.unknownToExitStates.entrySet()) {
+      if (aut.unknownToExitStates.containsKey(entry.getKey())) {
+    	  List<Set<Integer>> list = new ArrayList<>();
+          list.addAll(aut.unknownToExitStates.get(entry.getKey()));
+    	  for (Set<Integer> set : entry.getValue()) {
+    		  Set<Integer> newSet = new HashSet<>();
+    		  for (Integer state : set) {
+    			  newSet.add(state + offset);
+    		  }
+    		  list.add(newSet);
+    	  }
+    	  aut.unknownToExitStates.put(entry.getKey(), list);
+      } else {
+    	  List<Set<Integer>> list = new ArrayList<>();
+    	  for (Set<Integer> set : entry.getValue()) {
+    		  Set<Integer> newSet = new HashSet<>();
+    		  for (Integer state : set) {
+    			  newSet.add(state + offset);
+    		  }
+    		  list.add(newSet);
+    	  }
+    	  aut.unknownToExitStates.put(entry.getKey(), list);
+      }
+      /*aut.unknownToExitStates.put(entry.getKey(), new HashSet<>());
       for (Integer state : entry.getValue()) {
         aut.unknownToExitStates.get(entry.getKey()).add(state + offset);
-      }
+      }*/
     }
 
     aut.unknownToEntryState.putAll(first.unknownToEntryState);
-    for (Map.Entry<UnknownId, Integer> entry : second.unknownToEntryState.entrySet()) {
-      aut.unknownToEntryState.put(entry.getKey(), entry.getValue() + offset);
+    for (Map.Entry<UnknownId, List<Integer>> entry : second.unknownToEntryState.entrySet()) {
+      if (aut.unknownToEntryState.containsKey(entry.getKey())) {
+    	  List<Integer> list = new ArrayList<>();
+    	  list.addAll(aut.unknownToEntryState.get(entry.getKey()));
+    	  for (Integer state : entry.getValue()) {
+			  list.add(state + offset);
+		  }
+    	  aut.unknownToEntryState.put(entry.getKey(), list);
+      } else {
+    	  List<Integer> list = new ArrayList<>();
+    	  for (Integer state : entry.getValue()) {
+			  list.add(state + offset);
+		  }
+    	  aut.unknownToEntryState.put(entry.getKey(), list);
+      }
+      //aut.unknownToEntryState.put(entry.getKey(), entry.getValue() + offset);
     }
 
     return aut;
@@ -703,20 +763,38 @@ public class Automaton extends automata.Automaton {
     // to ensure that the states of the first and second are disjointed.
     int offset = first.sfa.getMaxStateId() + 2;
     aut.unknownToExitStates.putAll(first.unknownToExitStates);
-    for (Map.Entry<UnknownId, Set<Integer>> entry : second.unknownToExitStates.entrySet()) {
-      aut.unknownToExitStates.put(entry.getKey(), new HashSet<>());
-      for (Integer state : entry.getValue()) {
+    for (Map.Entry<UnknownId, List<Set<Integer>>> entry : second.unknownToExitStates.entrySet()) {
+      List<Set<Integer>> list = new ArrayList<>();
+	  for (Set<Integer> set : entry.getValue()) {
+		  Set<Integer> newSet = new HashSet<>();
+		  for (Integer state : set) {
+			  newSet.add(state + offset);
+		  }
+		  list.add(newSet);
+	  }
+	  aut.unknownToExitStates.put(entry.getKey(), list);
+      /*for (Integer state : entry.getValue()) {
         aut.unknownToExitStates.get(entry.getKey()).add(state + offset);
-      }
+      }*/
     }
 
     // Update entry state ID.
-    for (Map.Entry<UnknownId, Integer> entry : first.unknownToEntryState.entrySet()) {
-        aut.unknownToEntryState.put(entry.getKey(), entry.getValue());
+    for (Map.Entry<UnknownId, List<Integer>> entry : first.unknownToEntryState.entrySet()) {
+    	List<Integer> list = new ArrayList<>();
+  	    for (Integer state : entry.getValue()) {
+			list.add(state);
+		}
+  	    aut.unknownToEntryState.put(entry.getKey(), list);
+        //aut.unknownToEntryState.put(entry.getKey(), entry.getValue());
       }
-    for (Map.Entry<UnknownId, Integer> entry : second.unknownToEntryState.entrySet()) {
+    for (Map.Entry<UnknownId, List<Integer>> entry : second.unknownToEntryState.entrySet()) {
       //aut.unknownToEntryState.put(entry.getKey(), first.sfa.getMaxStateId() + offset + 1);
-      aut.unknownToEntryState.put(entry.getKey(), entry.getValue() + offset);
+    	List<Integer> list = new ArrayList<>();
+  	    for (Integer state : entry.getValue()) {
+			list.add(state + offset);
+		}
+  	    aut.unknownToEntryState.put(entry.getKey(), list);
+      //aut.unknownToEntryState.put(entry.getKey(), entry.getValue() + offset);
     }
 
     return aut;
@@ -840,12 +918,18 @@ public class Automaton extends automata.Automaton {
     Automaton sub = nodeToAutomaton(node.getChild());
     UnknownId unknown = ((UnknownBounds)node.getBounds()).getId();
     Integer entryState = sub.sfa.getInitialState();
+    List<Integer> entryList = new ArrayList<>();
+    entryList.add(entryState);
 
     Automaton aut = star(sub);
     Set<Integer> exitStates = new HashSet<>(aut.sfa.getFinalStates());
-    aut.unknownToExitStates.put(unknown, exitStates);
+    List<Set<Integer>> exitList = new ArrayList<>();
+    exitList.add(exitStates);
+    //aut.unknownToExitStates.put(unknown, exitStates);
+    aut.unknownToExitStates.put(unknown, exitList);
     aut.unknownToExitStates.putAll(sub.unknownToExitStates);
-    aut.unknownToEntryState.put(unknown, entryState);
+    //aut.unknownToEntryState.put(unknown, entryState);
+    aut.unknownToEntryState.put(unknown, entryList);
 
     return aut;
   }
