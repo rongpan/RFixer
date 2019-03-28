@@ -769,6 +769,9 @@ public class Automaton extends automata.Automaton {
     aut.unknownToExitStates.putAll(first.unknownToExitStates);
     for (Map.Entry<UnknownId, List<Set<Integer>>> entry : second.unknownToExitStates.entrySet()) {
       List<Set<Integer>> list = new ArrayList<>();
+      if (aut.unknownToExitStates.containsKey(entry.getKey())) {
+    	  list.addAll(aut.unknownToExitStates.get(entry.getKey()));
+      }
 	  for (Set<Integer> set : entry.getValue()) {
 		  Set<Integer> newSet = new HashSet<>();
 		  for (Integer state : set) {
@@ -783,17 +786,21 @@ public class Automaton extends automata.Automaton {
     }
 
     // Update entry state ID.
-    for (Map.Entry<UnknownId, List<Integer>> entry : first.unknownToEntryState.entrySet()) {
+    /*for (Map.Entry<UnknownId, List<Integer>> entry : first.unknownToEntryState.entrySet()) {
     	List<Integer> list = new ArrayList<>();
   	    for (Integer state : entry.getValue()) {
 			list.add(state);
 		}
   	    aut.unknownToEntryState.put(entry.getKey(), list);
         //aut.unknownToEntryState.put(entry.getKey(), entry.getValue());
-      }
+      }*/
+    aut.unknownToEntryState.putAll(first.unknownToEntryState);
     for (Map.Entry<UnknownId, List<Integer>> entry : second.unknownToEntryState.entrySet()) {
       //aut.unknownToEntryState.put(entry.getKey(), first.sfa.getMaxStateId() + offset + 1);
     	List<Integer> list = new ArrayList<>();
+    	if (aut.unknownToEntryState.containsKey(entry.getKey())) {
+    		list.addAll(aut.unknownToEntryState.get(entry.getKey()));
+    	}
   	    for (Integer state : entry.getValue()) {
 			list.add(state + offset);
 		}
