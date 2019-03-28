@@ -294,13 +294,13 @@ public class RegFixer {
     
     RegexNode solutionNode;
     
-		try {
+		/*try {
 			if (!Global.pairMode) {
 				solutionNode = edu.wisc.regfixer.parser.Main.parse(solution);
 			} else {
 				solutionNode = edu.wisc.regfixer.parser.Main.parse(Global.root.finalString());
 			}
-			//System.out.println("solution is " + solutionNode);
+			System.out.println("solution is " + solutionNode);
 			Enumerant sol = new Enumerant(solutionNode, new HashSet<>(), 0, null);
 			if (job.getCorpus().passesEmptySetTest(sol)) {
 				System.out.println("pass negatives");
@@ -315,8 +315,39 @@ public class RegFixer {
 		} catch (Exception ex) {
 			// FIXME
 			throw new RuntimeException("malformed regular expression");
+		}*/
+    
+	    try {
+			if (!Global.pairMode) {
+				solutionNode = edu.wisc.regfixer.parser.Main.parse(solution);
+			} else {
+				solutionNode = edu.wisc.regfixer.parser.Main.parse(Global.root.finalString());
+			}
+	    } catch (Exception ex) {
+			// FIXME
+			throw new RuntimeException("malformed regular expression");
 		}
-    		
+	    
+		System.out.println("solution is " + solutionNode);
+		try {
+			Automaton automaton = new Automaton(solutionNode);
+			for (String positive : job.getCorpus().getPositiveExamples()) {
+				if (!automaton.accepts(positive)) {
+					System.out.println("fail positives!!!!!!!!!!!!!!!");
+				}
+			}
+			for (String negative : job.getCorpus().getNegativeExamples()) {
+				if (automaton.accepts(negative)) {
+					System.out.println("negative is " + negative);
+					System.out.println("fail negatives!!!!!!!!!!!!!!!");
+				}
+			}
+		} catch (org.sat4j.specs.TimeoutException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
     return solution;
   }
 

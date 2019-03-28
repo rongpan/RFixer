@@ -514,7 +514,11 @@ public class Automaton extends automata.Automaton {
       }
     }
 
-    return isFinalConfiguration(frontier);
+    Set<Integer> frontierIds = new HashSet<>();
+    for (State state : frontier) {
+    	frontierIds.add(state.getStateId());
+    }
+    return isFinalConfiguration(frontierIds);
   }
 
   private Set<Integer> getReverseEpsClosure (Stack<Set<Integer>> layers, Integer frontier) {
@@ -939,9 +943,6 @@ public class Automaton extends automata.Automaton {
       return getEmptyStringSFA();
     }
 
-    if (node.getBounds().getMax() > 30 && node.getBounds().getMax() < Bounds.MAX_BOUND)
-    	throw new TimeoutException();
-    		
     Automaton sub = nodeToAutomaton(node.getChild());
     Automaton min = getEmptyStringSFA();
 
