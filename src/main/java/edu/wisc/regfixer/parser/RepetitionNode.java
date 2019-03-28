@@ -103,7 +103,8 @@ public class RepetitionNode implements RegexNode {
   
   public void calUpto(int upto) {
 	  this.upto = upto;
-	  if (this.bounds instanceof UnknownBounds) {
+	  this.getChild().calUpto(upto);
+	  /*if (this.bounds instanceof UnknownBounds) {
 	      this.getChild().calUpto(upto);
 	  } else {
 		  if (this.bounds.getMin() == 0)
@@ -111,7 +112,7 @@ public class RepetitionNode implements RegexNode {
 		  else
 			  this.getChild().calUpto(Integer.min(upto/this.bounds.getMin() + 1, 
 					  Storage.curExample.length));
-	  }
+	  }*/
 	  /*System.err.println("cur exmaple is: " + String.valueOf(Storage.curExample));
       System.err.println("this is " + this);
       System.err.println("this len is " + this.len);
@@ -141,14 +142,15 @@ public class RepetitionNode implements RegexNode {
     		  for (int i = 0; i < this.upto - 1; i++) {
         	      pl.genNext();
               }
-    	      this.pairs =  pl.collectWithActualBounds(bounds.getMin(), this.upto - 1);
+    	      //this.pairs =  pl.collectWithActualBounds(bounds.getMin(), this.upto - 1);
+    		  this.pairs =  pl.collectWithActualBounds(bounds.getMin(), this.upto);
     	  }
       }
       
       /*System.err.println("curExample is " + new String(Storage.curExample));
       System.err.println("this is " + this);
-	  System.err.println("rep[0][1] is \n" + this.pairs[0][1]);
-      */
+	  System.err.println("rep[0][0] is \n" + this.pairs[0][0]);*/
+      
       /*if (!(this.bounds instanceof UnknownBounds))
           if (this.bounds.getMax() == 2)
               System.err.println("rep[0][1] is " + this.pairs[0][1]);*/

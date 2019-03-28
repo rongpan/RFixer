@@ -224,7 +224,15 @@ public class UnknownChar implements Unknown, RegexNode, Comparable<UnknownChar> 
 			if ('A' <= c && c <= 'Z' && hasAZ)
 				continue;
 			if (Storage.model.evaluate(Storage.charPreds[location][cNum], false).toString().equals("true")) {
-				sb.append(c);
+				if (c == '-') {
+					sb.append("\\-");
+			    } else if (c == '$') {
+			    	sb.append("\\$");
+			    } else if (c == '.') {
+			    	sb.append("\\.");
+			    } else {
+			    	sb.append(c);
+			    }
 			}
 		}
 		if (sb.length() == 0)

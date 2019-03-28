@@ -194,7 +194,8 @@ public class ConcatNode implements RegexNode {
 	  /*System.err.println("current exmaple: " + new String(Storage.curExample));
 	  System.err.println("this is " + this);
 	  System.err.println("concat[0][length - 1] is " + this.pairs[0][length - 1]);
-	  *///return this.pairs;
+	  */
+	  //return this.pairs;
 	  
   }
   

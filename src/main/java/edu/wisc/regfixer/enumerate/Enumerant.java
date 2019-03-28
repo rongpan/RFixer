@@ -308,12 +308,15 @@ public class Enumerant implements Comparable<Enumerant> {
     List<Set<Route>> positiveRuns = new LinkedList<>();
     List<Set<Route>> negativeRuns = new LinkedList<>();
 
-    //System.out.println("automaton: " + automaton);
-    //System.out.println("unknownToEntryState " + automaton.unknownToEntryState);
-    //System.out.println("unknownToExitStates " + automaton.unknownToExitStates);
+    /*if (this.tree.toString().equals("((((((■){■}|■)){3}\\-)(\\d){2})\\-)(\\d){4}")) {
+      System.out.println("automaton: " + automaton);
+      System.out.println("unknownToEntryState " + automaton.unknownToEntryState);
+      System.out.println("unknownToExitStates " + automaton.unknownToExitStates);
+    }*/
 
     try {
       for (String source : p) {
+    	  //if (this.tree.toString().equals("((((((■){■}|■)){3}\\-)(\\d){2})\\-)(\\d){4}"))
     		  //System.out.println("positive example: " + source);
     	//if(emptySetMatching(source))
     		//continue;
@@ -324,7 +327,8 @@ public class Enumerant implements Comparable<Enumerant> {
     	}
     	boolean ignore = false;
     	for (Route route : positiveRun) {
-    		//System.out.println("positive Route: " + route);
+    		//if (this.tree.toString().equals("((((((■){■}|■)){3}\\-)(\\d){2})\\-)(\\d){4}"))
+    			//System.out.println("positive Route: " + route);
     		if (route.hasNoRealExits() && route.hasNoSpans()) {
     			//System.out.println("positive ignore");
     			ignore = true;
@@ -461,19 +465,27 @@ public class Enumerant implements Comparable<Enumerant> {
 	  this.tree.setLen();
 	  
 	  for (String s : p) {
-		  if (s.length() < 1)
-			  continue;
+		  //if (s.length() < 1)
+			  //continue;
 		  if (!init) {
-		      expr = Storage.ctx.mkAnd(this.getConstraintForOne(s, tree));
+			  if (s.length() < 1) {
+				  expr = tree.isNullable();
+			  } else {
+				  expr = ctx.mkAnd(this.getConstraintForOne(s, tree));
+			  }
 		      init = true;
 		  } else {
-		      expr = Storage.ctx.mkAnd(expr, this.getConstraintForOne(s, tree));
+		      expr = ctx.mkAnd(expr, this.getConstraintForOne(s, tree));
 		  }
 	  }
 	  for (String s : n) {
-		  if (s.length() < 1)
-			  continue;
-		  expr = Storage.ctx.mkAnd(expr, Storage.ctx.mkNot(this.getConstraintForOne(s, tree)));
+		  //if (s.length() < 1)
+			  //continue;
+		  if (s.length() < 1) {
+			  expr = ctx.mkAnd(expr, ctx.mkNot(tree.isNullable()));
+		  } else {
+			  expr = ctx.mkAnd(expr, ctx.mkNot(this.getConstraintForOne(s, tree)));
+		  }
 	  }
 	  
 	  //Optimize opt = Storage.ctx.mkOptimize();

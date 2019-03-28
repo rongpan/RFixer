@@ -60,9 +60,9 @@ public class CharDotNode implements CharClass {
 	  this.pairs = new BoolExpr[length][length];
 	  for (int i = 0; i < length; i++) {
 		  for (int j = i; j < length; j++) {
-			  this.pairs[i][j] = Storage.ctx.mkOr(Storage.ctx.mkBool(false));
+			  this.pairs[i][j] = Storage.ctx.mkBool(false);
 		  }
-		  this.pairs[i][i] = Storage.ctx.mkOr(Storage.ctx.mkBool(true));
+		  this.pairs[i][i] = Storage.ctx.mkBool(true);
 	  }
 	  //return this.pairs;
   }

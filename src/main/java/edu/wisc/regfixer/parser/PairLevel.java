@@ -104,6 +104,8 @@ public class PairLevel {
     		    	res[i][j] = ctx.mkOr(res[i][j], ctx.mkAnd(
     		    			ctx.mkLe(l, ctx.mkInt(k+1)), ctx.mkLe(ctx.mkInt(k+1), r), all.get(k)[i][j]));
     		    }
+    		    res[i][j] = ctx.mkOr(res[i][j], ctx.mkAnd(nullable, ctx.mkLe(l, r), 
+    		    		all.get(all.size() - 1)[i][j]));
     		}
     	}
     	return res;
