@@ -190,16 +190,20 @@ public class Automaton extends automata.Automaton {
 			
 			for (Move<CharPred, Character> move : getMovesFrom(currState)) {
 		        if (move.isEpsilonTransition()) {
+		        	int oldState = move.from;
 		        	int newState = move.to;
-		        	if (!currList.contains(newState)) {
-		        		List<Integer> newList = new ArrayList<>();
-		        		newList.addAll(currList);
-		        		newList.add(newState);
-		        		res.add(newList);
-		        		//System.err.println("add newList " + newList);
-		        		
-		        		toVisit.add(newList);
+		        	int oldIndex = currList.indexOf(oldState);
+		        	int newIndex = currList.indexOf(newState);
+		        	if (newIndex != -1 && oldIndex != -1 && oldIndex + 1 == newIndex) {
+		        		continue;
 		        	}
+	        		List<Integer> newList = new ArrayList<>();
+	        		newList.addAll(currList);
+	        		newList.add(newState);
+	        		res.add(newList);
+	        		//System.err.println("add newList " + newList);
+	        		
+	        		toVisit.add(newList);
 		        }
 			}
 		}
