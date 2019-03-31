@@ -118,11 +118,18 @@ public class Enumerants {
 			if (enumerant.passDotStar && enumerant.passEmpty) {
 				//System.out.println("pass dotstar and empty");
 				expandHoles(enumerant);
-				if (enumerant.passDot && enumerant.solve) {
-					//System.out.println("pass dot and solve");
-					Global.nextHeight = 0;
-					return enumerant;
+				if (enumerant.passDot) {
+					if (enumerant.solve) {
+						Global.nextHeight = 0;
+						return enumerant;
+					} else {
+						System.out.println("fail solve");
+					}
+				} else {
+					System.out.println("fail dot");
 				}
+			} else {
+				System.out.println("fail dotstar or empty");
 			}
 			Global.nextHeight++;
 		    if (Global.nextHeight >= 50) {

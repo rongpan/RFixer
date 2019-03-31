@@ -67,6 +67,7 @@ public class RepetitionNode implements RegexNode {
 		  this.lloc = Storage.unknownBoundCounter;
 		  Storage.unknownBoundCounter++;
 		  this.rloc = Storage.unknownBoundCounter;
+		  Storage.idToLoc.put(((UnknownBounds)bounds).getId(), this.lloc);
 		  return child + 2;
 	  }
 	  return child;
@@ -78,6 +79,7 @@ public class RepetitionNode implements RegexNode {
 	  if (this.bounds instanceof UnknownBounds) {
 		  this.nullable = ctx.mkOr(this.getChild().isNullable(),
 				  ctx.mkLe(Storage.boundPreds[lloc], ctx.mkInt(0)));
+		  Storage.idToNullable.put(((UnknownBounds)bounds).getId(), this.nullable);
 	  } else {
 		  this.nullable = ctx.mkOr(this.getChild().isNullable(), 
 				  ctx.mkBool(this.bounds.getMin() <= 0));

@@ -93,7 +93,10 @@ public class Formula {
 		IntExpr one = this.ctx.mkInt(1);
 
 		Storage.reset();
+		Storage.ctx = this.ctx;
 		holes = Global.root.collectUnknown();
+		if (Storage.unknownBoundCounter > -1)
+		    Storage.boundPreds = new IntExpr[Storage.unknownBoundCounter + 1];
 		
 		// Create all 'H?_max' and 'H?_min' variables for all relevant IDs.
 		List<IntExpr> quantCosts = new LinkedList<>();
@@ -103,6 +106,9 @@ public class Formula {
 			// Create minimum and maximum bound variables.
 			IntExpr minVar = this.ctx.mkIntConst(id.toString() + "_min");
 			IntExpr maxVar = this.ctx.mkIntConst(id.toString() + "_max");
+			int lloc = Storage.idToLoc.get(id);
+			Storage.boundPreds[lloc] = minVar;
+			Storage.boundPreds[lloc + 1] = maxVar;
 
 			// Associate minimum and maximum bound variables with appropriate
 			// ID.
@@ -143,6 +149,8 @@ public class Formula {
 			}
 		}
 
+		Global.root.setNullable();
+		
 		// Build the formula and encode meta-class formulae
 		this.encodeRoutes();
 		
@@ -254,7 +262,7 @@ public class Formula {
       IntExpr minVar = unknownToMinVar.get(entry.getKey());
       IntExpr maxVar = unknownToMaxVar.get(entry.getKey());
       BoolExpr part = this.ctx.mkAnd(
-        this.ctx.mkLe(minVar, minCountVal),
+        this.ctx.mkOr(Storage.idToNullable.get(entry.getKey()), this.ctx.mkLe(minVar, minCountVal)),
         this.ctx.mkGe(maxVar, maxCountVal));
 
       if (whole == null) {
@@ -633,7 +641,17 @@ public class Formula {
     // corresponding tree and find the oldest true ancestor of that tree.
     Set<CharClass> solutions = new HashSet<>();
     for (BoolExpr var : this.unknownToVars.get(id)) {
-      MetaClassTree ancestor = this.varToTree.get(var).getFurthestTrueAncestor(treeIsTrue);
+      MetaClassTree ancestor = this.varToTree.get(var);
+      if (Global.findMaxSat) {
+        ancestor = ancestor.getFurthestTrueAncestor(treeIsTrue);
+      } else {
+    	Predicate pred = ancestor.getPred();
+    	if (!treeIsTrue.containsKey(ancestor) || !treeIsTrue.get(ancestor) || 
+    			pred.equals(MetaClassTree.pred_AZ) || pred.equals(MetaClassTree.pred_az) || 
+    			pred.equals(MetaClassTree.pred_d) || pred.equals(MetaClassTree.pred_w)) {
+    	  ancestor = null;
+    	}
+      }
       if (ancestor != null) {
         solutions.add(ancestor.getCharClass());
       }

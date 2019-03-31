@@ -323,23 +323,33 @@ public class RegFixer {
 			} else {
 				solutionNode = edu.wisc.regfixer.parser.Main.parse(Global.root.finalString());
 			}
+			System.out.println("solution is #sol#" + solutionNode + "#sol#");
+
+			Enumerant sol = new Enumerant(solutionNode, new HashSet<>(), 0, null);
+			if (!job.getCorpus().passesEmptySetTest(sol)) {
+				System.out.println("pattern fail negatives!!!!!!!!!!!!!!!");
+			}
+			if (!job.getCorpus().passesDotTest(sol)) {
+				System.out.println("pattern fail positives!!!!!!!!!!!!!!!");
+			}
 	    } catch (Exception ex) {
 			// FIXME
 			throw new RuntimeException("malformed regular expression");
 		}
 	    
-		System.out.println("solution is " + solutionNode);
+		
 		try {
 			Automaton automaton = new Automaton(solutionNode);
 			for (String positive : job.getCorpus().getPositiveExamples()) {
 				if (!automaton.accepts(positive)) {
-					System.out.println("fail positives!!!!!!!!!!!!!!!");
+					System.out.println("positive is " + positive);
+					System.out.println("auto fail positives!!!!!!!!!!!!!!!");
 				}
 			}
 			for (String negative : job.getCorpus().getNegativeExamples()) {
 				if (automaton.accepts(negative)) {
 					System.out.println("negative is " + negative);
-					System.out.println("fail negatives!!!!!!!!!!!!!!!");
+					System.out.println("auto fail negatives!!!!!!!!!!!!!!!");
 				}
 			}
 		} catch (org.sat4j.specs.TimeoutException e) {

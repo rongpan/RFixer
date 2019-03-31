@@ -67,10 +67,10 @@ import edu.wisc.regfixer.parser.CharRangeNode;
 import edu.wisc.regfixer.util.PrintableTree;
 
 public class MetaClassTree extends PrintableTree {
-  private static Predicate pred_d = new SimplePredicate('0', '9');
+  public static Predicate pred_d = new SimplePredicate('0', '9');
   private static Predicate pred_D = new CompoundPredicate(false,
     new SimplePredicate('0', '9'));
-  private static Predicate pred_w = new CompoundPredicate(
+  public static Predicate pred_w = new CompoundPredicate(
     new SimplePredicate('_'),
     new SimplePredicate('A', 'Z'),
     new SimplePredicate('a', 'z'),
@@ -80,8 +80,8 @@ public class MetaClassTree extends PrintableTree {
     new SimplePredicate('A', 'Z'),
     new SimplePredicate('a', 'z'),
     new SimplePredicate('0', '9'));
-  private static Predicate pred_az = new SimplePredicate('a', 'z');
-  private static Predicate pred_AZ = new SimplePredicate('A', 'Z');
+  public static Predicate pred_az = new SimplePredicate('a', 'z');
+  public static Predicate pred_AZ = new SimplePredicate('A', 'Z');
   private static Predicate pred_azAZ = new CompoundPredicate(
     new SimplePredicate('a', 'z'),
     new SimplePredicate('A', 'Z'));

@@ -308,7 +308,7 @@ public class Enumerant implements Comparable<Enumerant> {
     List<Set<Route>> positiveRuns = new LinkedList<>();
     List<Set<Route>> negativeRuns = new LinkedList<>();
 
-    /*if (this.tree.toString().equals("((((((■){■}|■)){3}\\-)(\\d){2})\\-)(\\d){4}")) {
+    /*if (this.tree.toString().equals("(((a)*(b){■})(a){■})*")) {
       System.out.println("automaton: " + automaton);
       System.out.println("unknownToEntryState " + automaton.unknownToEntryState);
       System.out.println("unknownToExitStates " + automaton.unknownToExitStates);
@@ -316,8 +316,8 @@ public class Enumerant implements Comparable<Enumerant> {
 
     try {
       for (String source : p) {
-    	  //if (this.tree.toString().equals("((((((■){■}|■)){3}\\-)(\\d){2})\\-)(\\d){4}"))
-    		  //System.out.println("positive example: " + source);
+    	  //if (this.tree.toString().equals("(((a)*(b){■})(a){■})*"))
+    		//  System.out.println("positive example: " + source);
     	//if(emptySetMatching(source))
     		//continue;
     	Set<Route> positiveRun = automaton.trace(source);
@@ -327,7 +327,7 @@ public class Enumerant implements Comparable<Enumerant> {
     	}
     	boolean ignore = false;
     	for (Route route : positiveRun) {
-    		//if (this.tree.toString().equals("((((((■){■}|■)){3}\\-)(\\d){2})\\-)(\\d){4}"))
+    		//if (this.tree.toString().equals("(((a)*(b){■})(a){■})*"))
     			//System.out.println("positive Route: " + route);
     		if (route.hasNoRealExits() && route.hasNoSpans()) {
     			//System.out.println("positive ignore");
@@ -340,7 +340,8 @@ public class Enumerant implements Comparable<Enumerant> {
       }
 
       for (String source : n) {
-          //System.out.println("negative example: " + source);
+    	  //if (this.tree.toString().equals("(((a)*(b){■})(a){■})*"))
+    		//  System.out.println("negative example: " + source);
     	  Set<Route> negativeRun = automaton.trace(source);
     	  //System.out.println("negativeRun:\n" + negativeRun);
     	  if (negativeRun.size() == 0) {
@@ -348,7 +349,8 @@ public class Enumerant implements Comparable<Enumerant> {
     	  }
     	  //System.err.println("source is " + source);
     	  for (Route route : negativeRun) {
-    		//System.out.println("negative route: " + route);
+    		  //if (this.tree.toString().equals("(((a)*(b){■})(a){■})*"))
+    			//  System.out.println("negative route: " + route);
       		if (route.hasNoRealExits() && route.hasNoSpans()) {
       			//System.out.println("negative skip");
       			return null;
@@ -601,8 +603,11 @@ public class Enumerant implements Comparable<Enumerant> {
             IntExpr intExpr = Storage.boundPreds[count];
             System.out.println("bound is " + intExpr + "_" + model.getConstInterp(intExpr));
       }
-     
-      System.out.println("final tree is" + this.tree.finalString());
+      if (Global.findMaxSat) {
+    	  System.out.println("final tree is#m#" + this.tree.finalString() + "#m#");
+      } else {
+    	  System.out.println("final tree is" + this.tree.finalString());
+      }
   }
   
   /*public Synthesis synthesizePairMax (Set<String> p, Set<String> n, Diagnostic diag) throws SynthesisFailure {
