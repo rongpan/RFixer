@@ -337,7 +337,8 @@ public class Formula {
       IntExpr minVar = unknownToMinVar.get(entry.getKey());
       IntExpr maxVar = unknownToMaxVar.get(entry.getKey());
       BoolExpr part = this.ctx.mkOr(
-        this.ctx.mkGt(minVar, minCountVal),
+        this.ctx.mkAnd(this.ctx.mkNot(Storage.idToNullable.get(entry.getKey())), 
+        		this.ctx.mkGt(minVar, minCountVal)),
         this.ctx.mkLt(maxVar, maxCountVal));
 
       if (whole == null) {
@@ -358,7 +359,7 @@ public class Formula {
       this.unknownChars.add(id);
 
       BoolExpr exprChars = this.encodeUnknownInRoute(id, spans.get(id), posFlag);
-
+      
       if (exprRoute == null) {
         exprRoute = exprChars;
       } else if (posFlag) {

@@ -287,7 +287,7 @@ public class RegFixer {
 		        }
 	        } 
 	    } catch (SynthesisFailure ex) {
-	        diag.output().finishRow(ex.getMessage());
+	        System.out.println(ex.getMessage());
 	    }
 	    Global.findMaxSat = false;
     }
@@ -357,6 +357,7 @@ public class RegFixer {
 			e.printStackTrace();
 		}
 		
+		System.out.println("before exit");
 		
     return solution;
   }

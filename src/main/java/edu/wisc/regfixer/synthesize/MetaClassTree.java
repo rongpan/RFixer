@@ -67,6 +67,8 @@ import edu.wisc.regfixer.parser.CharRangeNode;
 import edu.wisc.regfixer.util.PrintableTree;
 
 public class MetaClassTree extends PrintableTree {
+	
+  private static Predicate pred_underscore = new SimplePredicate('_');
   public static Predicate pred_d = new SimplePredicate('0', '9');
   private static Predicate pred_D = new CompoundPredicate(false,
     new SimplePredicate('0', '9'));
@@ -86,6 +88,7 @@ public class MetaClassTree extends PrintableTree {
     new SimplePredicate('a', 'z'),
     new SimplePredicate('A', 'Z'));
 
+  private static CharClass class_underscore = new CharLiteralNode('_');
   private static CharClass class_d = new CharEscapedNode('d');
   private static CharClass class_D = new CharEscapedNode('D');
   private static CharClass class_w = new CharEscapedNode('w');
@@ -253,11 +256,12 @@ public class MetaClassTree extends PrintableTree {
     MetaClassTree[] children_az = createMetaClassRange('a', 'z', 1);
     MetaClassTree[] children_AZ = createMetaClassRange('A', 'Z', 1);
 
+    MetaClassTree cls_underscore = new MetaClassTree(class_underscore, pred_underscore, 1);
     MetaClassTree cls_d  = new MetaClassTree(class_d,  pred_d,  2, children_d);
     MetaClassTree cls_az = new MetaClassTree(class_az, pred_az, 2, children_az);
     MetaClassTree cls_AZ = new MetaClassTree(class_AZ, pred_AZ, 2, children_AZ);
 
-    MetaClassTree cls_w  = new MetaClassTree(class_w,  pred_w,  3, cls_d, cls_az, cls_AZ);
+    MetaClassTree cls_w  = new MetaClassTree(class_w,  pred_w,  3, cls_underscore, cls_d, cls_az, cls_AZ);
 
     return cls_w;
   }
