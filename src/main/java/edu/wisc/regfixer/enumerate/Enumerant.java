@@ -316,8 +316,8 @@ public class Enumerant implements Comparable<Enumerant> {
 
     try {
       for (String source : p) {
-    	  //if (this.tree.toString().equals("(((a)*(b){■})(a){■})*"))
-    		//  System.out.println("positive example: " + source);
+    	  //if (this.tree.toString().equals("((((■)+@)(([a-zA-Z_])+)?)\\.)([a-zA-Z]){■}"))
+    		  //System.out.println("positive example: " + source);
     	//if(emptySetMatching(source))
     		//continue;
     	Set<Route> positiveRun = automaton.trace(source);
@@ -327,7 +327,7 @@ public class Enumerant implements Comparable<Enumerant> {
     	}
     	boolean ignore = false;
     	for (Route route : positiveRun) {
-    		//if (this.tree.toString().equals("(((a)*(b){■})(a){■})*"))
+    		//if (this.tree.toString().equals("((((■)+@)(([a-zA-Z_])+)?)\\.)([a-zA-Z]){■}"))
     			//System.out.println("positive Route: " + route);
     		if (route.hasNoRealExits() && route.hasNoSpans()) {
     			//System.out.println("positive ignore");
@@ -340,7 +340,7 @@ public class Enumerant implements Comparable<Enumerant> {
       }
 
       for (String source : n) {
-    	  //if (this.tree.toString().equals("(((a)*(b){■})(a){■})*"))
+    	  //if (this.tree.toString().equals("((((■)+@)(([a-zA-Z_])+)?)\\.)([a-zA-Z]){■}"))
     		//  System.out.println("negative example: " + source);
     	  Set<Route> negativeRun = automaton.trace(source);
     	  //System.out.println("negativeRun:\n" + negativeRun);
@@ -349,7 +349,7 @@ public class Enumerant implements Comparable<Enumerant> {
     	  }
     	  //System.err.println("source is " + source);
     	  for (Route route : negativeRun) {
-    		  //if (this.tree.toString().equals("(((a)*(b){■})(a){■})*"))
+    		  //if (this.tree.toString().equals("((((■)+@)(([a-zA-Z_])+)?)\\.)([a-zA-Z]){■}"))
     			//  System.out.println("negative route: " + route);
       		if (route.hasNoRealExits() && route.hasNoSpans()) {
       			//System.out.println("negative skip");
@@ -824,9 +824,14 @@ public class Enumerant implements Comparable<Enumerant> {
 		  Storage.costArray.add(weight);
 	  }
 	  
+	  int hasTwo = 0;
+	  if (num_d > 0 && num_az > 0 || num_d > 0 && num_AZ > 0 || num_az > 0 && num_AZ > 0) {
+		  hasTwo = 2;
+	  }
+	  
 	  IntExpr weight = Storage.ctx.mkIntConst(Integer.toString(index) + "num_w");
-	  BoolExpr ifTrue = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(0));
-	  BoolExpr ifFalse = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(1));
+	  BoolExpr ifTrue = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(-hasTwo+1));
+	  BoolExpr ifFalse = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(0));
 	  opt.Assert((BoolExpr)Storage.ctx.mkITE(Storage.maxCharPreds[index][3], ifTrue, ifFalse));
 	  Storage.costArray.add(weight);
 	  

@@ -194,34 +194,40 @@ public class UnknownChar implements Unknown, RegexNode, Comparable<UnknownChar> 
   
 	public String finalString() {
 		StringBuilder sb = new StringBuilder();
+		boolean hasw = false;
 		boolean hasd = false;
 		boolean hasaz = false;
 		boolean hasAZ = false;
 		if (Global.findMaxSat) {
 			if (Storage.model.evaluate(Storage.maxCharPreds[location][3], false).toString().equals("true")) {
-				return "\\w";
+				//return "\\w";
+				sb.append("\\w");
+				hasw = true;
 			}
 			if (Storage.model.evaluate(Storage.maxCharPreds[location][0], false).toString().equals("true")) {
-				sb.append("\\d");
+				if (!hasw)
+					sb.append("\\d");
 				hasd = true;
 			}
 			if (Storage.model.evaluate(Storage.maxCharPreds[location][1], false).toString().equals("true")) {
-				sb.append("[a-z]");
+				if (!hasw)
+					sb.append("[a-z]");
 				hasaz = true;
 			}
 			if (Storage.model.evaluate(Storage.maxCharPreds[location][2], false).toString().equals("true")) {
-				sb.append("[A-Z]");
+				if (!hasw)
+					sb.append("[A-Z]");
 				hasAZ = true;
 			}
 		}
 
 		for (int cNum = 0; cNum < Storage.allChars.length; cNum++) {
 			char c = Storage.allChars[cNum];
-			if ('0' <= c && c <= '9' && hasd)
+			if ('0' <= c && c <= '9' && (hasd || hasw))
 				continue;
-			if ('a' <= c && c <= 'z' && hasaz)
+			if ('a' <= c && c <= 'z' && (hasaz || hasw))
 				continue;
-			if ('A' <= c && c <= 'Z' && hasAZ)
+			if ('A' <= c && c <= 'Z' && (hasAZ || hasw))
 				continue;
 			if (Storage.model.evaluate(Storage.charPreds[location][cNum], false).toString().equals("true")) {
 				if (c == '-') {
