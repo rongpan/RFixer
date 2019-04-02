@@ -277,6 +277,15 @@ public class RegFixer {
     }
 
     System.out.println("last template: #t#" + enumerant + "#t#");
+    System.out.println("#num#" + enumerant.order + "#num#");
+    System.out.println("#dep#" + enumerant.getCost() + "#dep#");
+    System.out.println("#t1#" + Global.fail1 + "#t1#");
+    System.out.println("#t2#" + Global.fail2 + "#t2#");
+    System.out.println("#t3#" + Global.fail3 + "#t3#");
+    if (Global.cegis) {
+    	System.out.println("#p#" + Global.positives + "#p#");
+        System.out.println("#n#" + Global.negatives + "#n#");
+    }
     
     //if (Global.maxSat && !Global.pairMode) {
     if (Global.maxSat) {

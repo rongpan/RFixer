@@ -124,12 +124,15 @@ public class Enumerants {
 						return enumerant;
 					} else {
 						System.out.println("fail solve");
+						Global.fail1++;
 					}
 				} else {
 					System.out.println("fail dot");
+					Global.fail2++;
 				}
 			} else {
 				System.out.println("fail dotstar or empty");
+				Global.fail3++;
 			}
 			Global.nextHeight++;
 		    if (Global.nextHeight >= 50) {

@@ -15,4 +15,10 @@ public class Global {
 	public static RegexNode root = null;
 	public static int nextHeight = 0;
 	public static boolean skipForStack = false;
+	
+	public static int positives = 0;
+	public static int negatives = 0;
+	public static int fail1 = 0;
+	public static int fail2 = 0;
+	public static int fail3 = 0;
 }

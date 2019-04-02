@@ -388,10 +388,12 @@ public class Enumerant implements Comparable<Enumerant> {
 		    	String negative = currentAutomaton.moreNegative(Global.correctAutomaton);
 		    	if (positive != null) {
 		    		System.out.println("add positive: " + positive);
+		    		Global.positives++;
 		    		p.add(positive);
 		    	}
 		    	if (negative != null) {
 		    		System.out.println("add negative: " + negative);
+		    		Global.negatives++;
 		    		n.add(negative);
 		    	}
 		    	return synthesize(p, n, diag);
@@ -565,10 +567,12 @@ public class Enumerant implements Comparable<Enumerant> {
 	  		    	String negative = currentAutomaton.moreNegative(Global.correctAutomaton);
 	  		    	if (positive != null) {
 	  		    		System.out.println("add positive: " + positive);
+	  		    		Global.positives++;
 	  		    		p.add(positive);
 	  		    	}
 	  		    	if (negative != null) {
 	  		    		System.out.println("add negative: " + negative);
+	  		    		Global.negatives++;
 	  		    		n.add(negative);
 	  		    	}
 	  		    	return synthesizePair(p, n, diag);
