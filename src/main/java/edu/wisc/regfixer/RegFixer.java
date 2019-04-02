@@ -276,6 +276,8 @@ public class RegFixer {
       System.out.println(solution);
     }
 
+    System.out.println("last template: #t#" + enumerant + "#t#");
+    
     //if (Global.maxSat && !Global.pairMode) {
     if (Global.maxSat) {
 	    Global.findMaxSat = true;
