@@ -229,6 +229,8 @@ public class UnknownChar implements Unknown, RegexNode, Comparable<UnknownChar> 
 				continue;
 			if ('A' <= c && c <= 'Z' && (hasAZ || hasw))
 				continue;
+			if (c == '_' && hasw)
+				continue;
 			if (Storage.model.evaluate(Storage.charPreds[location][cNum], false).toString().equals("true")) {
 				if (c == '-') {
 					sb.append("\\-");

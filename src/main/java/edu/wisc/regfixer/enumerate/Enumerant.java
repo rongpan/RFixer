@@ -772,6 +772,7 @@ public class Enumerant implements Comparable<Enumerant> {
 	  int num_d = 0;
 	  int num_az = 0;
 	  int num_AZ = 0;
+	  int num_underscore = 0;
 	  for (int i = 0; i < Storage.allChars.length; i++) {
 		  char c = Storage.allChars[i];
 		  if (c >= '0' && c <= '9') {
@@ -785,6 +786,9 @@ public class Enumerant implements Comparable<Enumerant> {
 		  } else if (c >= 'A' && c <= 'Z') {
 			  num_AZ++;
 			  opt.Assert(ctx.mkImplies(Storage.maxCharPreds[index][2], Storage.charPreds[index][i]));
+			  opt.Assert(ctx.mkImplies(Storage.maxCharPreds[index][3], Storage.charPreds[index][i]));
+		  } else if (c == '_') {
+			  num_underscore++;
 			  opt.Assert(ctx.mkImplies(Storage.maxCharPreds[index][3], Storage.charPreds[index][i]));
 		  }
 		  //Storage.ctx.mkImplies(Storage.charPreds[index][i], null);
@@ -825,7 +829,9 @@ public class Enumerant implements Comparable<Enumerant> {
 	  }
 	  
 	  int hasTwo = 0;
-	  if (num_d > 0 && num_az > 0 || num_d > 0 && num_AZ > 0 || num_az > 0 && num_AZ > 0) {
+	  if (num_d > 0 && num_az > 0 || num_d > 0 && num_AZ > 0 || num_az > 0 && num_AZ > 0 ||
+			  num_d > 0 && num_underscore > 0 || num_az > 0 && num_underscore > 0 ||
+			  num_AZ > 0 && num_underscore > 0) {
 		  hasTwo = 2;
 	  }
 	  
