@@ -374,24 +374,24 @@ public class Enumerant implements Comparable<Enumerant> {
     } else {
     	Synthesis syn = new Synthesis(this, positiveRuns, negativeRuns, diag);
     	RegexNode solution = syn.getTree();
-    	System.err.println("get a solution: " + solution);
+    	System.out.println("get a solution: " + solution);
     	Automaton currentAutomaton;
     			
 	    try {
-	    	System.err.println("before building automaton");
+	    	//System.err.println("before building automaton");
 	        currentAutomaton = new Automaton(solution);
-	        System.err.println("before verify");
+	        //System.err.println("before verify");
 	        if (currentAutomaton.verify(Global.correctAutomaton)) {
 		    	return syn;
 		    } else {
 		    	String positive = currentAutomaton.morePositive(Global.correctAutomaton);
 		    	String negative = currentAutomaton.moreNegative(Global.correctAutomaton);
 		    	if (positive != null) {
-		    		System.err.println("add positive: " + positive);
+		    		System.out.println("add positive: " + positive);
 		    		p.add(positive);
 		    	}
 		    	if (negative != null) {
-		    		System.err.println("add negative: " + negative);
+		    		System.out.println("add negative: " + negative);
 		    		n.add(negative);
 		    	}
 		    	return synthesize(p, n, diag);
@@ -550,13 +550,13 @@ public class Enumerant implements Comparable<Enumerant> {
 	            // FIXME
 	            throw new RuntimeException("malformed regular expression");
 	        }
-	      	System.err.println("get a solution: " + solution);
+	      	System.out.println("get a solution: " + solution);
 	      	Automaton currentAutomaton;
 	      			
 	  	    try {
-	  	    	System.err.println("before building automaton");
+	  	    	//System.err.println("before building automaton");
 	  	        currentAutomaton = new Automaton(solution);
-	  	        System.err.println("before verify");
+	  	        //System.err.println("before verify");
 	  	        if (currentAutomaton.verify(Global.correctAutomaton)) {
 	  	        	displayPairResults(model);
 	  	    	  return new Synthesis();
@@ -564,11 +564,11 @@ public class Enumerant implements Comparable<Enumerant> {
 	  		    	String positive = currentAutomaton.morePositive(Global.correctAutomaton);
 	  		    	String negative = currentAutomaton.moreNegative(Global.correctAutomaton);
 	  		    	if (positive != null) {
-	  		    		System.err.println("add positive: " + positive);
+	  		    		System.out.println("add positive: " + positive);
 	  		    		p.add(positive);
 	  		    	}
 	  		    	if (negative != null) {
-	  		    		System.err.println("add negative: " + negative);
+	  		    		System.out.println("add negative: " + negative);
 	  		    		n.add(negative);
 	  		    	}
 	  		    	return synthesizePair(p, n, diag);
