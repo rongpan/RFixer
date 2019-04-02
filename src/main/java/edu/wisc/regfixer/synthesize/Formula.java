@@ -116,9 +116,9 @@ public class Formula {
 			this.unknownToMaxVar.put(id, maxVar);
 
 			// Force every minimum bound to be <= corresponding maximum bound.
-			this.opt.Assert(this.ctx.mkLe(minVar, maxVar));
+			//this.opt.Assert(this.ctx.mkLe(minVar, maxVar));
 			this.opt.Assert(this.ctx.mkGe(minVar, zero));
-			this.opt.Assert(this.ctx.mkGe(maxVar, one));
+			this.opt.Assert(this.ctx.mkGe(maxVar, zero));
 
 			if (Global.tutor) {
 				this.opt.Assert(this.ctx.mkLe(minVar, ctx.mkInt(2)));

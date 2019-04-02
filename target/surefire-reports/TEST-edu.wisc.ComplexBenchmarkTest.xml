@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="19" failures="0" name="edu.wisc.ComplexBenchmarkTest" time="0.65" errors="0" skipped="19">
+<testsuite tests="19" failures="0" name="edu.wisc.ComplexBenchmarkTest" time="0.383" errors="0" skipped="19">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home/jre/lib"/>
@@ -64,61 +64,61 @@
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[0]" time="0.032">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[0]" time="0.018">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[1]" time="0.032">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[1]" time="0.018">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[2]" time="0.032">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[2]" time="0.018">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[3]" time="0.032">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[3]" time="0.018">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[4]" time="0.032">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[4]" time="0.019">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[5]" time="0.033">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[5]" time="0.019">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[6]" time="0.033">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[6]" time="0.02">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[7]" time="0.033">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[7]" time="0.02">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[8]" time="0.033">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[8]" time="0.02">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[9]" time="0.033">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[9]" time="0.02">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[10]" time="0.033">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[10]" time="0.021">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[11]" time="0.034">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[11]" time="0.021">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[12]" time="0.034">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[12]" time="0.021">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[13]" time="0.034">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[13]" time="0.021">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[14]" time="0.034">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[14]" time="0.021">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[15]" time="0.037">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[15]" time="0.022">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[16]" time="0.039">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[16]" time="0.022">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[17]" time="0.04">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[17]" time="0.022">
     <skipped/>
   </testcase>
-  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[18]" time="0.04">
+  <testcase classname="edu.wisc.ComplexBenchmarkTest" name="test[18]" time="0.022">
     <skipped/>
   </testcase>
 </testsuite>

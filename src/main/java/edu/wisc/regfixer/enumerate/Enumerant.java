@@ -416,6 +416,7 @@ public class Enumerant implements Comparable<Enumerant> {
 	  
 	  Context ctx = new Context();
 	  Storage.ctx = ctx;
+	  Optimize opt = Storage.ctx.mkOptimize();
 	  Set<Character> chars = new HashSet<>();
 	  for (String s : p) {
 		  chars.addAll(this.CollectChars(s));
@@ -445,10 +446,13 @@ public class Enumerant implements Comparable<Enumerant> {
 	  BoolExpr expr = ctx.mkBoolConst("final");
 	  boolean init = false;
 	  
+	  IntExpr zero = ctx.mkInt(0);
+	  
 	  if (Storage.unknownBoundCounter > -1)
 	      Storage.boundPreds = new IntExpr[Storage.unknownBoundCounter + 1];
 	  for (int i = 0; i < Storage.unknownBoundCounter + 1; i++) {
 		  IntExpr boundExpr = Storage.ctx.mkIntConst("bound" + Integer.toString(i));
+		  opt.Assert(ctx.mkGe(boundExpr, zero));
 		  Storage.boundPreds[i] = boundExpr;
 		  if (Global.tutor) {
 			  if (i % 2 == 0) {
@@ -495,7 +499,6 @@ public class Enumerant implements Comparable<Enumerant> {
 	  //Optimize opt = Storage.ctx.mkOptimize();
 	  Model model;
 	  
-	  Optimize opt = Storage.ctx.mkOptimize();
 	  if (Global.findMaxSat) {
 		  //Storage.costArray = new ArrayList<>();
 		  /*if (Storage.unknownBoundCounter > -1)

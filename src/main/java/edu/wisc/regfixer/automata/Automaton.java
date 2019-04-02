@@ -954,6 +954,10 @@ public class Automaton extends automata.Automaton {
       return getEmptyStringSFA();
     }
 
+    if (node.getBounds().hasMax() && node.getBounds().getMax() < node.getBounds().getMin()) {
+  	  return new Automaton(SFA.getEmptySFA(solver));
+  	}
+    
     Automaton sub = nodeToAutomaton(node.getChild());
     Automaton min = getEmptyStringSFA();
 
@@ -1040,6 +1044,9 @@ public class Automaton extends automata.Automaton {
   }
 
   private static Automaton charLiteralToAutomaton (CharLiteralNode node) throws TimeoutException {
+	if (node.toString().equals("∅")) {
+	  return new Automaton(SFA.getEmptySFA(solver));
+	}
     return fromPredicate(node.getChar());
   }
 
