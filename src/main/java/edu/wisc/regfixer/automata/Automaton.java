@@ -45,10 +45,10 @@ import utilities.Pair;
 public class Automaton extends automata.Automaton {
   public static UnaryCharIntervalSolver solver = new UnaryCharIntervalSolver();
   public static final CharPred Num = StdCharPred.NUM;
-  public static final CharPred NotNum = StdCharPred.SPACES;
-  public static final CharPred Spaces = StdCharPred.WORD;
-  public static final CharPred NotSpaces = solver.MkNot(StdCharPred.NUM);
-  public static final CharPred Word = solver.MkNot(StdCharPred.SPACES);
+  public static final CharPred NotNum = solver.MkNot(StdCharPred.NUM);
+  public static final CharPred Spaces = StdCharPred.SPACES;
+  public static final CharPred NotSpaces = solver.MkNot(StdCharPred.SPACES);
+  public static final CharPred Word = StdCharPred.WORD;
   public static final CharPred NotWord = solver.MkNot(StdCharPred.WORD);
 
   private final SFA<CharPred, Character> sfa;
