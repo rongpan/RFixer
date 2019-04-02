@@ -174,13 +174,20 @@ public class Formula {
 			if (charCosts.size() > 0)
 				charCost = this.ctx.mkAdd(charCosts.toArray(new IntExpr[charCosts.size()]));
 			
-			if (quantCost != null && charCost != null) {
+			if (quantCost != null) {
+		    	this.opt.MkMinimize(quantCost);
+		    }
+			if (charCost != null) {
+		    	this.opt.MkMaximize(charCost);
+		    }
+			
+			/*if (quantCost != null && charCost != null) {
 				this.opt.MkMinimize(this.ctx.mkSub(quantCost, charCost));
 		    } else if (quantCost != null) {
 		    	this.opt.MkMinimize(quantCost);
 		    } else if (charCost != null) {
 		    	this.opt.MkMaximize(charCost);
-		    }
+		    }*/
 			
 			/*if (charCosts.size() > 0) {
 				ArithExpr[] costArray = charCosts.toArray(new ArithExpr[charCosts.size()]);

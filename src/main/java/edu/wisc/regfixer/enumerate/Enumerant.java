@@ -495,7 +495,7 @@ public class Enumerant implements Comparable<Enumerant> {
 	  
 	  Optimize opt = Storage.ctx.mkOptimize();
 	  if (Global.findMaxSat) {
-		  Storage.costArray = new ArrayList<>();
+		  //Storage.costArray = new ArrayList<>();
 		  /*if (Storage.unknownBoundCounter > -1)
 		      Storage.boundPreds = new IntExpr[Storage.unknownBoundCounter + 1];
 		  for (int i = 0; i < Storage.unknownBoundCounter + 1; i++) {
@@ -504,9 +504,11 @@ public class Enumerant implements Comparable<Enumerant> {
 		  for (int i = 0; i < Storage.unknownBoundCounter + 1; i++) {
 			  this.setOptBound(opt, i);
 		  }*/
+		  List<IntExpr> boundList = new ArrayList<>();
 		  if (Storage.unknownBoundCounter > -1) {
-			  this.setOptBound(opt);
+			  boundList = setOptBound(opt);
 		  }
+		  List<IntExpr> charList = new ArrayList<>();
 		  if (Storage.unknownCharCounter > -1) {
 			  Storage.maxCharPreds = new BoolExpr[Storage.unknownCharCounter + 1][4];
 			  for (int i = 0; i < Storage.unknownCharCounter + 1; i++) {
@@ -514,12 +516,19 @@ public class Enumerant implements Comparable<Enumerant> {
 					  Storage.maxCharPreds[i][j] = ctx.mkBoolConst(String.valueOf(i) + "_" +
 				  "maxChar" + String.valueOf(j));
 				  }
-				  this.setOpt(opt, i);
+				  charList.addAll(setOpt(opt, i));
 			  }
 		  }
-		  IntExpr[] costArray = Storage.costArray.toArray(new IntExpr[Storage.costArray.size()]);
+		  
 		  opt.Assert(expr);
-	      opt.MkMinimize(Storage.ctx.mkAdd(costArray));
+		  if (boundList.size() > 0) {
+			  IntExpr[] boundCost = boundList.toArray(new IntExpr[boundList.size()]);
+			  opt.MkMinimize(Storage.ctx.mkAdd(boundCost));
+		  }
+		  if (charList.size() > 0) {
+			  IntExpr[] charCost = charList.toArray(new IntExpr[charList.size()]);
+			  opt.MkMinimize(Storage.ctx.mkAdd(charCost));
+		  }
 	  } else {
 		  opt.Assert(expr);
 	  }
@@ -767,7 +776,8 @@ public class Enumerant implements Comparable<Enumerant> {
 	  return this.tree.getPairs()[0][length - 1];
   }
   
-  private void setOpt(Optimize opt, int index) {
+  private List<IntExpr> setOpt(Optimize opt, int index) {
+	  List<IntExpr> list = new ArrayList<>();
 	  Context ctx = Storage.ctx;
 	  int num_d = 0;
 	  int num_az = 0;
@@ -797,7 +807,7 @@ public class Enumerant implements Comparable<Enumerant> {
 		  BoolExpr ifTrue = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(2));
 		  BoolExpr ifFalse = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(0));
 		  opt.Assert((BoolExpr)Storage.ctx.mkITE(Storage.charPreds[index][i], ifTrue, ifFalse));
-		  Storage.costArray.add(weight);
+		  list.add(weight);
 	  }
 	  
 	  //ctx.mkImplies(Storage.maxCharPreds[index][3], Storage.maxCharPreds[index][0]);
@@ -809,7 +819,7 @@ public class Enumerant implements Comparable<Enumerant> {
 		  BoolExpr ifTrue = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(-(num_d*2)+3));
 		  BoolExpr ifFalse = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(0));
 		  opt.Assert((BoolExpr)Storage.ctx.mkITE(Storage.maxCharPreds[index][0], ifTrue, ifFalse));
-		  Storage.costArray.add(weight);
+		  list.add(weight);
 	  }
 	  
 	  if (num_az > 0) {
@@ -817,7 +827,7 @@ public class Enumerant implements Comparable<Enumerant> {
 		  BoolExpr ifTrue = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(-(num_az*2)+3));
 		  BoolExpr ifFalse = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(0));
 		  opt.Assert((BoolExpr)Storage.ctx.mkITE(Storage.maxCharPreds[index][1], ifTrue, ifFalse));
-		  Storage.costArray.add(weight);
+		  list.add(weight);
 	  }
 	  
 	  if (num_AZ > 0) {
@@ -825,7 +835,7 @@ public class Enumerant implements Comparable<Enumerant> {
 		  BoolExpr ifTrue = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(-(num_AZ*2)+3));
 		  BoolExpr ifFalse = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(0));
 		  opt.Assert((BoolExpr)Storage.ctx.mkITE(Storage.maxCharPreds[index][2], ifTrue, ifFalse));
-		  Storage.costArray.add(weight);
+		  list.add(weight);
 	  }
 	  
 	  int hasTwo = 0;
@@ -839,7 +849,9 @@ public class Enumerant implements Comparable<Enumerant> {
 	  BoolExpr ifTrue = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(-hasTwo+1));
 	  BoolExpr ifFalse = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(0));
 	  opt.Assert((BoolExpr)Storage.ctx.mkITE(Storage.maxCharPreds[index][3], ifTrue, ifFalse));
-	  Storage.costArray.add(weight);
+	  list.add(weight);
+	  
+	  return list;
 	  
 	  /*BoolExpr d = Storage.maxCharPreds[index][0];
 	  BoolExpr az = Storage.maxCharPreds[index][1];
@@ -850,7 +862,8 @@ public class Enumerant implements Comparable<Enumerant> {
 	  */
   }
   
-  private void setOptBound(Optimize opt) {
+  private List<IntExpr> setOptBound(Optimize opt) {
+	  List<IntExpr> list = new ArrayList<>();
 	  Context ctx = Storage.ctx;
 	  for (int i = 0; i < Storage.unknownBoundCounter + 1; i++) {
 		  IntExpr weight = Storage.ctx.mkIntConst(Integer.toString(i) + "bound");
@@ -860,17 +873,18 @@ public class Enumerant implements Comparable<Enumerant> {
 			  opt.Assert((BoolExpr)Storage.ctx.mkITE(ctx.mkOr(ctx.mkEq(Storage.boundPreds[i], ctx.mkInt(0)),
 					  ctx.mkEq(Storage.boundPreds[i],ctx.mkInt(1))),
 					  ifTrue, ifFalse));
-			  Storage.costArray.add(weight);
+			  list.add(weight);
 		  } else {
 			  BoolExpr ifTrue = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(0));
 			  BoolExpr ifFalse = Storage.ctx.mkEq(weight, Storage.ctx.mkInt(1));
 			  opt.Assert((BoolExpr)Storage.ctx.mkITE(ctx.mkOr(ctx.mkEq(Storage.boundPreds[i], ctx.mkInt(Bounds.MAX_BOUND)),
 					  ctx.mkEq(Storage.boundPreds[i],ctx.mkInt(1))),
 					  ifTrue, ifFalse));
-			  Storage.costArray.add(weight);
+			  list.add(weight);
 		  }
-		  
 	  }
+	  
+	  return list;
   }
   
 }

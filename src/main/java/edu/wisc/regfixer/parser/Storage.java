@@ -17,7 +17,7 @@ public class Storage {
     public static Context ctx;
     public static BoolExpr[][] charPreds;
     public static BoolExpr[][] maxCharPreds;
-    public static List<IntExpr> costArray;
+    //public static List<IntExpr> costArray;
     public static IntExpr[] boundPreds;
     public static char[] curExample;
     public static char[] allChars;
