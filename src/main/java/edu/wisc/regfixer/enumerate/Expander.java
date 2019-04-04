@@ -34,8 +34,7 @@ public class Expander {
 	    else if (node instanceof UnknownChar)      { return node; }
 	    else {
 	        System.err.printf("Unknown AST class: %s\n", node.getClass().getName());
-	        System.exit(1);
-	        return null;
+	        throw new UnsupportedOperationException();
 	    }
     }
 	
@@ -140,8 +139,7 @@ public class Expander {
 	    else if (node instanceof UnknownChar)      { return new LinkedHashMap<RegexNode, UnknownId>(); }
 	    else {
 	        System.err.printf("Unknown AST class: %s\n", node.getClass().getName());
-	        System.exit(1);
-	        return null;
+	        throw new UnsupportedOperationException();
 	    }
     }
 	
@@ -304,8 +302,7 @@ public class Expander {
 	    else if (node instanceof UnknownChar)      { return new LinkedHashMap<RegexNode, UnknownId>(); }
 	    else {
 	        System.err.printf("Unknown AST class: %s\n", node.getClass().getName());
-	        System.exit(1);
-	        return null;
+	        throw new UnsupportedOperationException();
 	    }
 	}
 	
@@ -498,8 +495,7 @@ public class Expander {
 	    else if (node instanceof UnknownChar)      { return expandUnknownChar((UnknownChar) node); }
 	    else {
 	        System.err.printf("Unknown AST class: %s\n", node.getClass().getName());
-	        System.exit(1);
-	        return null;
+	        throw new UnsupportedOperationException();
 	    }
     }
 	

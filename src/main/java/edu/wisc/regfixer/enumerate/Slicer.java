@@ -40,8 +40,7 @@ public class Slicer {
     else if (node instanceof CharClass)      { return sliceAtomic(history); }
     else {
       System.err.printf("Unknown AST class: %s\n", node.getClass().getName());
-      System.exit(1);
-      return null;
+      throw new UnsupportedOperationException();
     }
   }
 

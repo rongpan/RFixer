@@ -286,7 +286,7 @@ public class RegFixer {
     	System.out.println("#p#" + Global.positives + "#p#");
         System.out.println("#n#" + Global.negatives + "#n#");
     }
-    
+    String maxSatSol = null;
     //if (Global.maxSat && !Global.pairMode) {
     if (Global.maxSat) {
 	    Global.findMaxSat = true;
@@ -294,6 +294,7 @@ public class RegFixer {
 	        Synthesis synthesis = RegFixer.synthesisLoop(job, enumerant, diag);
 	        if (!Global.pairMode) {
 		        if (synthesis != null) {
+		        	maxSatSol = synthesis.toString();
 		        	System.out.println("max-sat solution: #m#" + synthesis.toString() + "#m#");
 		        }
 	        } 
@@ -327,7 +328,7 @@ public class RegFixer {
 			// FIXME
 			throw new RuntimeException("malformed regular expression");
 		}*/
-    
+        
 	    try {
 			if (!Global.pairMode) {
 				solutionNode = edu.wisc.regfixer.parser.Main.parse(solution);
@@ -364,7 +365,11 @@ public class RegFixer {
 		
 		System.out.println("before exit");
 		
-    return solution;
+    if (!Global.pairMode) {
+    	return maxSatSol;
+    } else {
+    	return Global.solution;
+    }
   }
 
   private static Synthesis synthesisLoop (Job job, Enumerant enumerant, Diagnostic diag) throws SynthesisFailure {

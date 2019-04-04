@@ -11,6 +11,7 @@ public class Job {
   private final RegexNode tree;
   private final RegexNode truth;
   private final Corpus corpus;
+  public String regex;
 
   public Job (String name, String regex, String corpus, Set<Range> positives) {
 	  this(name, regex, null, corpus, positives);
@@ -18,7 +19,7 @@ public class Job {
   
   public Job (String name, String regex, String truth, String corpus, Set<Range> positives) {
     this.name = name;
-
+    this.regex = regex;
     try {
       this.tree = edu.wisc.regfixer.parser.Main.parse(regex);
       if (truth != null) {
@@ -42,7 +43,7 @@ public class Job {
   
   public Job (String name, String regex, String truth, String corpus, Set<Range> positives, Set<Range> negatives) {
     this.name = name;
-
+    this.regex = regex;
     try {
 	  if (truth != null) {
         this.truth = edu.wisc.regfixer.parser.Main.parse(truth);

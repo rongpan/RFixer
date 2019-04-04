@@ -619,6 +619,7 @@ public class Enumerant implements Comparable<Enumerant> {
             IntExpr intExpr = Storage.boundPreds[count];
             System.out.println("bound is " + intExpr + "_" + model.getConstInterp(intExpr));
       }
+      Global.solution = this.tree.finalString();
       if (Global.findMaxSat) {
     	  System.out.println("final tree is#m#" + this.tree.finalString() + "#m#");
       } else {
