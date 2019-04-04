@@ -286,7 +286,7 @@ public class RegFixer {
     	System.out.println("#p#" + Global.positives + "#p#");
         System.out.println("#n#" + Global.negatives + "#n#");
     }
-    String maxSatSol = null;
+    String autoSol = solution;
     //if (Global.maxSat && !Global.pairMode) {
     if (Global.maxSat) {
 	    Global.findMaxSat = true;
@@ -294,7 +294,7 @@ public class RegFixer {
 	        Synthesis synthesis = RegFixer.synthesisLoop(job, enumerant, diag);
 	        if (!Global.pairMode) {
 		        if (synthesis != null) {
-		        	maxSatSol = synthesis.toString();
+		        	autoSol = synthesis.toString();
 		        	System.out.println("max-sat solution: #m#" + synthesis.toString() + "#m#");
 		        }
 	        } 
@@ -366,8 +366,22 @@ public class RegFixer {
 		System.out.println("before exit");
 		
     if (!Global.pairMode) {
-    	return maxSatSol;
+    	try {
+			solutionNode = edu.wisc.regfixer.parser.Main.parse(autoSol);
+			Global.solutionAutomaton = new Automaton(solutionNode);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return autoSol;
     } else {
+    	try {
+			solutionNode = edu.wisc.regfixer.parser.Main.parse(Global.solution);
+			Global.solutionAutomaton = new Automaton(solutionNode);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	return Global.solution;
     }
   }

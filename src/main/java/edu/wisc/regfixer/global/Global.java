@@ -16,6 +16,7 @@ public class Global {
 	public static int nextHeight = 0;
 	public static boolean skipForStack = false;
 	public static String solution = null;
+	public static Automaton solutionAutomaton = null;
 	
 	public static int positives = 0;
 	public static int negatives = 0;

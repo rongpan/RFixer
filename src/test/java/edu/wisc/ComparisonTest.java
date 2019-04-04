@@ -27,6 +27,7 @@ import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
 import edu.wisc.regfixer.RegFixer;
+import edu.wisc.regfixer.automata.Automaton;
 import edu.wisc.regfixer.enumerate.Job;
 import edu.wisc.regfixer.enumerate.Range;
 import edu.wisc.regfixer.global.Global;
@@ -97,7 +98,7 @@ public class ComparisonTest {
 		test = constructTest(direct + datasetName + "test");
 	}
 
-	@Test(timeout = 30000)
+	@Test(timeout = 300000)
 	public void test() throws TimeoutException, IOException {
 		outoftime = true;
 		exOccured = false;
@@ -110,7 +111,7 @@ public class ComparisonTest {
 		long timeS = -System.currentTimeMillis();
 		String s = "";
 		try {
-			s = RegFixer.fix(j, 5000);
+			s = RegFixer.fix(j, -1);
 		} catch (Exception e) {
 			e.printStackTrace();
 			exOccured = true;
@@ -121,21 +122,40 @@ public class ComparisonTest {
 		int negMatcho = 0;
 		int posMatch = 0;
 		int negMatch = 0;
-		for (String ex : test.first) {
-			if (Pattern.matches(s, ex)) {
-				posMatch++;
-			}
-			if (Pattern.matches(origRegex, ex)) {
-				posMatcho++;
-			}
+		
+		Automaton origAutomaton;
+		try {
+			origAutomaton = new Automaton(edu.wisc.regfixer.parser.Main.parse(origRegex));
+		} catch (org.sat4j.specs.TimeoutException e) {
+			e.printStackTrace();
+			exOccured = true;
+			return;
+		} catch (Exception e) {
+			e.printStackTrace();
+			exOccured = true;
+			return;
 		}
-		for (String ex : test.second) {
-			if (Pattern.matches(s, ex)) {
-				negMatch++;
+		
+		try {
+			for (String ex : test.first) {
+				if (Global.solutionAutomaton.accepts(ex)) {
+					posMatch++;
+				}
+				if (origAutomaton.accepts(ex)) {
+					posMatcho++;
+				}
 			}
-			if (Pattern.matches(origRegex, ex)) {
-				negMatcho++;
+			for (String ex : test.second) {
+				if (Global.solutionAutomaton.accepts(ex)) {
+					negMatch++;
+				}
+				if (origAutomaton.accepts(ex)) {
+					negMatcho++;
+				}
 			}
+		} catch (Exception ex) {
+			// FIXME
+			System.out.println("exception while checking results");
 		}
 		double preo = posMatcho / (double) test.first.size();
 		double pre = posMatch / (double) test.first.size();
