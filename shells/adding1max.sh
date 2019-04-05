@@ -1,6 +1,6 @@
 #!/bin/bash
 
-t="gtimeout 300"
+t="timeout 300"
 output_folder="results5/adding1max/"
 dir="src/test/resources/dataset/"
 run="java -jar target/regfixer.jar"
