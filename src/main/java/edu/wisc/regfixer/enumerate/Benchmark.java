@@ -1,14 +1,17 @@
 package edu.wisc.regfixer.enumerate;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
 import edu.wisc.regfixer.global.Global;
 import edu.wisc.regfixer.parser.RegexNode;
+import utilities.Pair;
 
 public class Benchmark {
 
@@ -40,6 +43,25 @@ public class Benchmark {
 		return new Job(filename, regExp, truth, corpus, pRange, nRange);
 	}
 
+	public static Pair<ArrayList<String>, ArrayList<String>> readFromTestFile(String filename)
+			throws FileNotFoundException {
+		File fp = new File(filename);
+		Scanner scnr = new Scanner(fp);
+		ArrayList<String> pos = new ArrayList<String>();
+		ArrayList<String> neg = new ArrayList<String>();
+		scnr.nextLine();
+		String example = scnr.nextLine();
+		while (!example.equals("---")) {
+			pos.add(example);
+			example = scnr.nextLine();
+		}
+		while (scnr.hasNextLine()) {
+			example = scnr.nextLine();
+			neg.add(example);
+		}
+		return new Pair<>(pos, neg);
+	}
+	
 	public static Job readFromStr(String input, RegexNode tree) {
 		Scanner scnr = new Scanner(input);
 		String regExp = "";

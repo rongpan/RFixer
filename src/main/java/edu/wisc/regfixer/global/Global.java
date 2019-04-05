@@ -1,6 +1,10 @@
 package edu.wisc.regfixer.global;
 
 import edu.wisc.regfixer.parser.RegexNode;
+import utilities.Pair;
+
+import java.util.ArrayList;
+
 import edu.wisc.regfixer.automata.Automaton;
 
 public class Global {
@@ -17,6 +21,7 @@ public class Global {
 	public static boolean skipForStack = false;
 	public static String solution = null;
 	public static Automaton solutionAutomaton = null;
+	public static Pair<ArrayList<String>, ArrayList<String>> tests = null;
 	
 	public static int positives = 0;
 	public static int negatives = 0;

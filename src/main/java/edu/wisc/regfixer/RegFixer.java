@@ -96,6 +96,15 @@ public class RegFixer {
 		}
     }
     
+    Automaton origAutomaton;
+    
+    try {
+		origAutomaton = new Automaton(job.getTree());
+	} catch (org.sat4j.specs.TimeoutException e) {
+		e.printStackTrace();
+		return null;
+	}
+    
     while ((enumerant = enumerants.next()) != null) {
       // Stop the loop if the cost of the current template is greater than
       // cutoff or if the number of templates searched is greater than the
@@ -286,7 +295,12 @@ public class RegFixer {
     	System.out.println("#p#" + Global.positives + "#p#");
         System.out.println("#n#" + Global.negatives + "#n#");
     }
+    
     String autoSol = solution;
+    String automaxSol = solution;
+    String regSol = Global.root.finalString();
+    String regmaxSol = Global.root.finalString();
+    
     //if (Global.maxSat && !Global.pairMode) {
     if (Global.maxSat) {
 	    Global.findMaxSat = true;
@@ -294,7 +308,7 @@ public class RegFixer {
 	        Synthesis synthesis = RegFixer.synthesisLoop(job, enumerant, diag);
 	        if (!Global.pairMode) {
 		        if (synthesis != null) {
-		        	autoSol = synthesis.toString();
+		        	automaxSol = synthesis.toString();
 		        	System.out.println("max-sat solution: #m#" + synthesis.toString() + "#m#");
 		        }
 	        } 
@@ -304,7 +318,9 @@ public class RegFixer {
 	    Global.findMaxSat = false;
     }
     
+    regmaxSol = Global.solution;
     RegexNode solutionNode;
+    RegexNode solutionmaxNode;
     
 		/*try {
 			if (!Global.pairMode) {
@@ -329,15 +345,31 @@ public class RegFixer {
 			throw new RuntimeException("malformed regular expression");
 		}*/
         
+	    int posMatcho = 0;
+		int negMatcho = 0;
+		int posMatch = 0;
+		int posmaxMatch = 0;
+		int negMatch = 0;
+		int negmaxMatch = 0;
+		//String s = null;
+		long timeS = Math.round(diag.timing().getTiming("timeTotal") / 1e6);
+		
 	    try {
 			if (!Global.pairMode) {
-				solutionNode = edu.wisc.regfixer.parser.Main.parse(solution);
+				solutionmaxNode = edu.wisc.regfixer.parser.Main.parse(automaxSol);
+				solutionNode = edu.wisc.regfixer.parser.Main.parse(autoSol);
 			} else {
-				solutionNode = edu.wisc.regfixer.parser.Main.parse(Global.root.finalString());
+				solutionmaxNode = edu.wisc.regfixer.parser.Main.parse(regmaxSol);
+				solutionNode = edu.wisc.regfixer.parser.Main.parse(regSol);
 			}
-			System.out.println("solution is #sol#" + solutionNode + "#sol#");
-
+			System.out.println("solution is #sol#" + solutionNode + "#sol#"
+					+ solutionNode.toString().length() + "#");
+			System.out.println("max solution is #msol#" + solutionmaxNode + "#msol#"
+					+ solutionmaxNode.toString().length() + "#");
+			
 			Automaton automaton = new Automaton(solutionNode);
+			Automaton maxAutomaton = new Automaton(solutionmaxNode);
+			
 			for (String positive : job.getCorpus().getPositiveExamples()) {
 				if (!automaton.accepts(positive)) {
 					System.out.println("positive is " + positive);
@@ -351,37 +383,76 @@ public class RegFixer {
 				}
 			}
 			
-			Enumerant sol = new Enumerant(solutionNode, new HashSet<>(), 0, null);
+			/*Enumerant sol = new Enumerant(solutionNode, new HashSet<>(), 0, null);
 			if (!job.getCorpus().passesEmptySetTest(sol)) {
 				System.out.println("pattern cfail negatives!!!!!!!!!!!!!!!");
 			}
 			if (!job.getCorpus().passesDotTest(sol)) {
 				System.out.println("pattern cfail positives!!!!!!!!!!!!!!!");
+			}*/
+			
+			for (String ex : Global.tests.first) {
+				if (automaton.accepts(ex)) {
+					posMatch++;
+				}
+				if (maxAutomaton.accepts(ex)) {
+					posmaxMatch++;
+				}
+				if (origAutomaton.accepts(ex)) {
+					posMatcho++;
+				}
 			}
+			for (String ex : Global.tests.second) {
+				if (automaton.accepts(ex)) {
+					negMatch++;
+				}
+				if (maxAutomaton.accepts(ex)) {
+					negmaxMatch++;
+				}
+				if (origAutomaton.accepts(ex)) {
+					negMatcho++;
+				}
+			}
+			
 	    } catch (Exception ex) {
 			// FIXME
 			System.out.println("exception while checking");
 		}
 		
+	    double preo = posMatcho / (double) Global.tests.first.size();
+		double pre = posMatch / (double) Global.tests.first.size();
+		double premax = posmaxMatch / (double) Global.tests.first.size();
+		
+		double reco = posMatcho / (double) (posMatcho + negMatcho);
+		double rec = posMatch / (double) (posMatch + negMatch);
+		double recmax = posmaxMatch / (double) (posmaxMatch + negmaxMatch);
+
+		double f1o = 2 * (preo * reco) / (preo + reco);
+		double f1 = 2 * (pre * rec) / (pre + rec);
+		double f1max = 2 * (premax * recmax) / (premax + recmax);
+		System.out.println("Original regex: " + job.getTree().toString());
+		System.out.println("\tOriginal length: " + job.getTree().toString().length());
+		System.out.println("\tPositive matches: " + posMatcho + "/" + Global.tests.first.size() + "\n\tNegative matches: " + negMatcho
+				+ "/" + Global.tests.second.size());
+		System.out.println("F1o score:" + f1o + "#");
+		
+		System.out.println("\tRunning time: " + timeS);
+		
+		System.out.println("\tPositive matches: " + posMatch + "/" + Global.tests.first.size() + "\n\tNegative matches: " + negMatch
+				+ "/" + Global.tests.second.size());
+		System.out.println("F1 score:" + f1 + "#");
+		System.out.println("#0" + posMatch + "#1" + negMatch + "#2" + f1 + "#3" + timeS + "#4");
+		
+		System.out.println("\tPositive max matches: " + posmaxMatch + "/" + Global.tests.first.size() + "\n\tNegative max matches: " + negmaxMatch
+				+ "/" + Global.tests.second.size());
+		System.out.println("F1 max score:" + f1max + "#");
+		System.out.println("#0" + posmaxMatch + "#1" + negmaxMatch + "#2" + f1max + "#3" + timeS + "#4");
+		
 		System.out.println("before exit");
 		
     if (!Global.pairMode) {
-    	try {
-			solutionNode = edu.wisc.regfixer.parser.Main.parse(autoSol);
-			Global.solutionAutomaton = new Automaton(solutionNode);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
     	return autoSol;
     } else {
-    	try {
-			solutionNode = edu.wisc.regfixer.parser.Main.parse(Global.solution);
-			Global.solutionAutomaton = new Automaton(solutionNode);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
     	return Global.solution;
     }
   }

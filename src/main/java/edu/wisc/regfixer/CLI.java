@@ -28,6 +28,7 @@ import edu.wisc.regfixer.enumerate.Benchmark;
 import edu.wisc.regfixer.enumerate.Job;
 import edu.wisc.regfixer.global.Global;
 import edu.wisc.regfixer.util.Ansi;
+import utilities.Pair;
 
 public class CLI {
   public static class TimingChannelValidator implements IValueValidator<List<String>> {
@@ -185,6 +186,10 @@ public class CLI {
     @Parameter(names="--file",
                required=true)
     private String file = null;
+    
+    @Parameter(names="--testfile",
+               required=true)
+    private String testfile = null;
   }
 
   public static void main (String[] argv) {
@@ -396,6 +401,8 @@ public class CLI {
 
     try {
       job = Benchmark.readFromFile(args.file);
+      Pair<ArrayList<String>, ArrayList<String>> tests = Benchmark.readFromTestFile(args.testfile);
+      Global.tests = tests;
     } catch (IOException ex) {
       System.err.println("unable to read file");
       return 1;
