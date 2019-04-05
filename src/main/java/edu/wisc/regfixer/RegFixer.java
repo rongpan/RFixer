@@ -1,6 +1,7 @@
 package edu.wisc.regfixer;
 
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 import java.util.HashMap;
 import java.util.TreeSet;
 import java.util.HashSet;
@@ -296,10 +297,14 @@ public class RegFixer {
         System.out.println("#n#" + Global.negatives + "#n#");
     }
     
-    String autoSol = solution;
-    String automaxSol = solution;
-    String regSol = Global.root.finalString();
-    String regmaxSol = Global.root.finalString();
+    String sol;
+	String maxSol = null;
+	
+	if (!Global.pairMode) {
+		sol = solution;
+	} else {
+		sol = Global.root.finalString();
+	}
     
     //if (Global.maxSat && !Global.pairMode) {
     if (Global.maxSat) {
@@ -308,7 +313,7 @@ public class RegFixer {
 	        Synthesis synthesis = RegFixer.synthesisLoop(job, enumerant, diag);
 	        if (!Global.pairMode) {
 		        if (synthesis != null) {
-		        	automaxSol = synthesis.toString();
+		        	maxSol = synthesis.toString();
 		        	System.out.println("max-sat solution: #m#" + synthesis.toString() + "#m#");
 		        }
 	        } 
@@ -318,7 +323,8 @@ public class RegFixer {
 	    Global.findMaxSat = false;
     }
     
-    regmaxSol = Global.solution;
+    if (Global.pairMode)
+    	maxSol = Global.solution;
     RegexNode solutionNode;
     RegexNode solutionmaxNode;
     
@@ -354,11 +360,20 @@ public class RegFixer {
 		//String s = null;
 		long timeS = Math.round(diag.timing().getTiming("timeTotal") / 1e6);
 		
+		String ori = job.getTree().toString();
+		
+		System.out.println("sol is " + sol + "#");
+		System.out.println("maxSol is " + maxSol + "#");
+		
 	    try {
-			if (!Global.pairMode) {
+			/*if (!Global.pairMode) {
+				System.out.println("automaxSol is " + automaxSol);
+				System.out.println("autoSol is " + autoSol);
 				solutionmaxNode = edu.wisc.regfixer.parser.Main.parse(automaxSol);
 				solutionNode = edu.wisc.regfixer.parser.Main.parse(autoSol);
 			} else {
+				System.out.println("regmaxSol is " + regmaxSol);
+				System.out.println("regSol is " + regSol);
 				solutionmaxNode = edu.wisc.regfixer.parser.Main.parse(regmaxSol);
 				solutionNode = edu.wisc.regfixer.parser.Main.parse(regSol);
 			}
@@ -381,7 +396,7 @@ public class RegFixer {
 					System.out.println("negative is " + negative);
 					System.out.println("auto cfail negatives!!!!!!!!!!!!!!!");
 				}
-			}
+			}*/
 			
 			/*Enumerant sol = new Enumerant(solutionNode, new HashSet<>(), 0, null);
 			if (!job.getCorpus().passesEmptySetTest(sol)) {
@@ -392,24 +407,24 @@ public class RegFixer {
 			}*/
 			
 			for (String ex : Global.tests.first) {
-				if (automaton.accepts(ex)) {
+				if (Pattern.matches(sol, ex)) {
 					posMatch++;
 				}
-				if (maxAutomaton.accepts(ex)) {
+				if (Pattern.matches(maxSol, ex)) {
 					posmaxMatch++;
 				}
-				if (origAutomaton.accepts(ex)) {
+				if (Pattern.matches(ori, ex)) {
 					posMatcho++;
 				}
 			}
 			for (String ex : Global.tests.second) {
-				if (automaton.accepts(ex)) {
+				if (Pattern.matches(sol, ex)) {
 					negMatch++;
 				}
-				if (maxAutomaton.accepts(ex)) {
+				if (Pattern.matches(maxSol, ex)) {
 					negmaxMatch++;
 				}
-				if (origAutomaton.accepts(ex)) {
+				if (Pattern.matches(ori, ex)) {
 					negMatcho++;
 				}
 			}
@@ -441,20 +456,16 @@ public class RegFixer {
 		System.out.println("\tPositive matches: " + posMatch + "/" + Global.tests.first.size() + "\n\tNegative matches: " + negMatch
 				+ "/" + Global.tests.second.size());
 		System.out.println("F1 score:" + f1 + "#");
-		System.out.println("#0" + posMatch + "#1" + negMatch + "#2" + f1 + "#3" + timeS + "#4");
+		System.out.println("#a#" + posMatch + "#b#" + negMatch + "#c#" + f1 + "#d#" + timeS + "#e#");
 		
 		System.out.println("\tPositive max matches: " + posmaxMatch + "/" + Global.tests.first.size() + "\n\tNegative max matches: " + negmaxMatch
 				+ "/" + Global.tests.second.size());
 		System.out.println("F1 max score:" + f1max + "#");
-		System.out.println("#0" + posmaxMatch + "#1" + negmaxMatch + "#2" + f1max + "#3" + timeS + "#4");
+		System.out.println("#a#" + posmaxMatch + "#b#" + negmaxMatch + "#c#" + f1max + "#d#" + timeS + "#e#");
 		
 		System.out.println("before exit");
-		
-    if (!Global.pairMode) {
-    	return autoSol;
-    } else {
-    	return Global.solution;
-    }
+    
+    	return solution;
   }
 
   private static Synthesis synthesisLoop (Job job, Enumerant enumerant, Diagnostic diag) throws SynthesisFailure {
