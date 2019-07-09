@@ -3,7 +3,7 @@
 t="timeout 300"
 output_folder="results5/adding2maxbase/"
 dir="src/test/resources/dataset/"
-run="java -jar target/regfixer.jar"
+run="java -jar targetRe/regfixer.jar"
 mode="--mode 2 -max -base"
 
 for filename in "$dir"YAGO-date/*; do
