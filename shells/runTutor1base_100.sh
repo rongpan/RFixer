@@ -1,7 +1,7 @@
 #!/bin/bash
 
 t="timeout 300"
-output_folder="results2/tutor1base/"
+output_folder="results1/tutor1base/"
 count=0
 stop=100
 for filename in tests/clean_AutoTutor/*; do

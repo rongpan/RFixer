@@ -1,7 +1,7 @@
 #!/bin/bash
 
 t="timeout 300"
-output_folder="results3/tutor1cegisBase/"
+output_folder="results1/tutor1cegisBase/"
 count=0
 stop=1001
 for filename in tests/clean_AutoTutorWithTrue/*; do

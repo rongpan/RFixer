@@ -1,7 +1,7 @@
 #!/bin/bash
 
-t="timeout 360"
-output_folder="results/mode1max/"
+t="timeout 300"
+output_folder="results1/mode1max/"
 for filename in tests/benchmark_explicit/*; do
   echo $filename
   echo $output_folder${filename##*/}
