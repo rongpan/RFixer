@@ -17,7 +17,7 @@ fname2 = args.folder2
 timeout = args.timeout
 
 files2 = []
-files1 = glob.glob(fname1 + "*.txt")
+files1 = glob.glob(fname1 + "*")
 res = []
 
 bad_list = ['test834.txt','test835.txt','test836.txt','test7211.txt','test7213.txt','test7214.txt','test4363.txt','test3686.txt','test2272.txt','test1965.txt','test1425.txt']
@@ -39,6 +39,8 @@ for i in range(0, len(files1)):
   t2 = ''
   t3 = ''
   template2 = ''
+  f11 = ''
+  f12 = ''
 
   with open(files1[i], "r") as file:
     print files1[i]
@@ -54,14 +56,25 @@ for i in range(0, len(files1)):
 
     t3 = contents.partition('#t3#')[2]
     t3 = t3.partition('#t3#')[0]
-    
+  
+    content = contents.partition('F1 max score:')[2]
+    content = content.partition('#')[0]
+    f11 = content
+    print f11
+
   with open(files2[i], "r") as file:
     print files2[i]
     contents = file.read()
     template2 = contents.partition('#num#')[2]
     template2 = template2.partition('#num#')[0]
-   
-  if not len(template1) == 0 and not len(template2) == 0:
+
+    content = contents.partition('F1 max score:')[2]
+    content = content.partition('#')[0]
+    f12 = content
+    print f12
+  
+  if not len(template1) == 0 and not len(template2) == 0 and len(f11) > 0 and len(f12) > 0\
+   and not f11 == '0' and not f11 == 'nan' and not f12 == '0' and not f12 == 'nan':
 
     totaltemp1 += (int(template1) - int(t1) - int(t2) - int(t3))
     print template1 + ',' + t1 + ',' + t2 + ',' + t3

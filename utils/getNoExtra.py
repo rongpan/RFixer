@@ -18,24 +18,39 @@ timeout = args.timeout
 
 files2 = []
 files1 = glob.glob(fname1 + "*.txt")
-files1.sort()
-
 res = []
 count = 0
+total_count = 0
 total_solve_time = 0
 for name in files1:
   files2.append(fname2 + name[len(fname1):])
 
+t1 = 0
+t2 = 0
+
 for i in range(0, len(files1)):
   time1 = timeout
   time2 = timeout
-  print files1[i]
+  
+  tmp1 = 0
+  tmp2 = 0
+
+  #print files1[i]
   with open(files1[i], "r") as file:
     contents = file.read()
     content = contents.partition('#c#')[2]
     time = content.partition('#c#')[0]
     if len(time) > 0:
       time1 = int(time)
+      tmp1 = 0
+      content = contents.partition('#p#')[2]
+      p = content.partition('#p#')[0]
+      tmp1 += int(p)
+      content = contents.partition('#n#')[2]
+      n = content.partition('#n#')[0]
+      tmp1 += int(n)
+      if tmp1 > 0:
+        t1 += tmp1
 
   with open(files2[i], "r") as file:
     contents = file.read()
@@ -43,16 +58,27 @@ for i in range(0, len(files1)):
     time = content.partition('#c#')[0]
     if len(time) > 0:
       time2 = int(time)
+      tmp2 = 0
+      content = contents.partition('#p#')[2]
+      p = content.partition('#p#')[0]
+      tmp2 += int(p)
+      content = contents.partition('#n#')[2]
+      n = content.partition('#n#')[0]
+      tmp2 += int(n)
+      if tmp2 > 0:
+        t2 += tmp2
 
   if not time1 == timeout or not time2 == timeout:
-    count += 1
-    total_solve_time += min(time1, time2)
-  print str(time1) + '\t' + str(time2)
+    total_count += 1
+    if tmp1 == 0 and tmp2 == 0:
+      count += 1
+
+print total_count
+print count
   #res.append((time1, time2))
 
 #print 'count ' + str(count)
 #print 'total solve time ' + str(total_solve_time)
-#print 'avg time' + str(total_solve_time/count)
 #print res
 #print files1
 #print files2

@@ -61,21 +61,21 @@ for i in range(0, len(files1)):
     template2 = contents.partition('#num#')[2]
     template2 = template2.partition('#num#')[0]
    
-  if not len(template1) == 0 and not len(template2) == 0:
+  if not len(template1) == 0 and len(template2) == 0:
 
     totaltemp1 += (int(template1) - int(t1) - int(t2) - int(t3))
     print template1 + ',' + t1 + ',' + t2 + ',' + t3
-    totaltemp2 += int(template2)
+    #totaltemp2 += int(template2)
     #totalexplored += (explored1 + explored2)
     file_num += 1
 
 print 'file_num ' + str(file_num)
 print 'totaltemp1 ' + str(totaltemp1)
-print 'totaltemp2 ' + str(totaltemp2)
+#print 'totaltemp2 ' + str(totaltemp2)
 print 'avg 1 ' + str(1.0*totaltemp1/file_num)
-print 'avg 2 ' + str(1.0*totaltemp2/file_num)
-print 'minus ' + str(1.0*totaltemp2/file_num - 1.0*totaltemp1/file_num)
-print 'percent ' + str((1.0*totaltemp2 - 1.0*totaltemp1)/totaltemp2)
+#print 'avg 2 ' + str(1.0*totaltemp2/file_num)
+#print 'minus ' + str(1.0*totaltemp2/file_num - 1.0*totaltemp1/file_num)
+#print 'percent ' + str((1.0*totaltemp2 - 1.0*totaltemp1)/totaltemp2)
  
     #if len(time) > 0:
       #cost2 = int(content)

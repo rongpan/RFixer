@@ -18,11 +18,14 @@ timeout = args.timeout
 
 files2 = []
 files1 = glob.glob(fname1 + "*.txt")
-files1.sort()
-
 res = []
 count = 0
 total_solve_time = 0
+
+total_1 = 0
+total_2 = 0
+pcount = 0
+
 for name in files1:
   files2.append(fname2 + name[len(fname1):])
 
@@ -44,13 +47,20 @@ for i in range(0, len(files1)):
     if len(time) > 0:
       time2 = int(time)
 
-  if not time1 == timeout or not time2 == timeout:
+  if not time1 == timeout and time2 == timeout:
     count += 1
     total_solve_time += min(time1, time2)
-  print str(time1) + '\t' + str(time2)
+  print str(time1) + ',' + str(time2)
+
+  if not time1 == timeout and not time2 == timeout:
+    pcount += 1
+    total_1 += time1
+    total_2 += time2
   #res.append((time1, time2))
 
-#print 'count ' + str(count)
+print 'count ' + str(count)
+print 'avg 2/1 ' + str(1.0*total_2/total_1)
+
 #print 'total solve time ' + str(total_solve_time)
 #print 'avg time' + str(total_solve_time/count)
 #print res

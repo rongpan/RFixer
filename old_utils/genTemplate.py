@@ -27,55 +27,43 @@ for name in files1:
 for name in files1:
   files2.append(fname2 + name[len(fname1):])
 
-totaltemp1 = 0
-totalexplored1 = 0
-totaltemp2 = 0
-totalexplored2 = 0
+totaltemp = 0
+totalexplored = 0
 file_num = 0
 
 for i in range(0, len(files1)):
-  template1 = ''
-  t1 = ''
-  t2 = ''
-  t3 = ''
-  template2 = ''
-
+  alltemp1 = timeout
+  alltemp2 = timeout
+  explored1 = 0
+  explored2 = 0
   with open(files1[i], "r") as file:
     print files1[i]
     contents = file.read()
-    template1 = contents.partition('#num#')[2]
-    template1 = template1.partition('#num#')[0]
-
-    t1 = contents.partition('#t1#')[2]
-    t1 = t1.partition('#t1#')[0]
-
-    t2 = contents.partition('#t2#')[2]
-    t2 = t2.partition('#t2#')[0]
-
-    t3 = contents.partition('#t3#')[2]
-    t3 = t3.partition('#t3#')[0]
-    
+    time = contents.partition('#c#')[2]
+    time = time.partition('#c#')[0]
+    if len(time) > 0:
+      alltemp1 = len(contents.split('  |  ')) - 1
+      explored1 = len(contents.split('template')) - 1
   with open(files2[i], "r") as file:
     print files2[i]
     contents = file.read()
-    template2 = contents.partition('#num#')[2]
-    template2 = template2.partition('#num#')[0]
-   
-  if not len(template1) == 0 and not len(template2) == 0:
-
-    totaltemp1 += (int(template1) - int(t1) - int(t2) - int(t3))
-    print template1 + ',' + t1 + ',' + t2 + ',' + t3
-    totaltemp2 += int(template2)
-    #totalexplored += (explored1 + explored2)
+    time = contents.partition('#c#')[2]
+    time = time.partition('#c#')[0]
+    if len(time) > 0:
+      alltemp2 = len(contents.split('  |  ')) - 1
+      explored2 = len(contents.split('template')) - 1
+  if not alltemp1 == timeout and not alltemp2 == timeout:
+    print alltemp1
+    print alltemp2
+    totaltemp += (alltemp1 + alltemp2)
+    totalexplored += (explored1 + explored2)
     file_num += 1
 
-print 'file_num ' + str(file_num)
-print 'totaltemp1 ' + str(totaltemp1)
-print 'totaltemp2 ' + str(totaltemp2)
-print 'avg 1 ' + str(1.0*totaltemp1/file_num)
-print 'avg 2 ' + str(1.0*totaltemp2/file_num)
-print 'minus ' + str(1.0*totaltemp2/file_num - 1.0*totaltemp1/file_num)
-print 'percent ' + str((1.0*totaltemp2 - 1.0*totaltemp1)/totaltemp2)
+print totalexplored/file_num
+print totaltemp/file_num
+print totalexplored
+print totaltemp
+print file_num
  
     #if len(time) > 0:
       #cost2 = int(content)
