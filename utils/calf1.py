@@ -87,7 +87,7 @@ for i in range(0, len(files1)):
     
     count += 1
 
-    print str(f1max1) + ',' + str(f1max2) + ',' + f1o + ',' + f1re
+    #print str(f1max1) + ',' + str(f1max2) + ',' + f1o + ',' + f1re
     avg = (float(f1max1) + float(f1max2))/2
     f1o = float(f1o)
     f1re = float(f1re)
@@ -115,10 +115,12 @@ for i in range(0, len(files1)):
 
 print better_base
 print same_base
+print '# of expressions where F1 scores decreased w.r.t. test set:'
 print worse_base
 
 print better_re
 print same_re
+print '# of expressions where F1 scores decreased w.r.t. Rebele.:'
 print worse_re
 
 our_avg = our_total/count
@@ -129,8 +131,8 @@ print 'our_avg: ' + str(our_avg)
 print 'base_avg: ' + str(base_avg)
 print 're_avg: ' + str(re_avg)
 
-print 'abs_impv_base: ' + str(our_avg - base_avg)
-print 'abs_impv_re: ' + str(our_avg - re_avg)
+print 'abs_impv_base (absolute improvement over test set): ' + str(our_avg - base_avg)
+print 'abs_impv_re (absolute improvement over Rebele.): ' + str(our_avg - re_avg)
 
 impv_base_total = 0
 impv_re_total = 0
@@ -139,8 +141,8 @@ for i in range(0, len(our_list)):
   impv_base_total += (our_list[i] - base_list[i])/base_list[i]
   impv_re_total += (our_list[i] - re_list[i])/re_list[i]
 
-print 'impv_base: ' + str(impv_base_total/count)
-print 'impv_re: ' + str(impv_re_total/count)
+print 'impv_base (relative improvement over test set): ' + str(impv_base_total/count)
+print 'impv_re (relative improvement over Rebele.): ' + str(impv_re_total/count)
 
 print numpy.array(our_list).std()
 print numpy.array(base_list).std()

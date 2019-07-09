@@ -87,14 +87,14 @@ for i in range(0, len(files1)):
 
   if (not time1 == timeout or not time2 == timeout) and time3 == timeout and time4 == timeout:
     count += 1
-    print examples3
-    print examples4
+    #print examples3
+    #print examples4
     example_count += (examples3 + examples4)
     if examples3 + examples4 < 100:
       reduced_count += (examples3 + examples4)
 
-print count
-print 1.0*example_count/(count*2)
+#print count
+#print 1.0*example_count/(count*2)
 print 1.0*reduced_count/(count*2)
 
   #res.append((time1, time2))
